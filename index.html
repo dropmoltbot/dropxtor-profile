@@ -439,9 +439,38 @@ main { min-height: 100vh; padding: 12px; }
   window.addEventListener('resize', () => { cols = Math.floor(c.width / fs); drops = Array(cols).fill(0); });
 })();
 
-// Tab switching
+// Tab switching with sound
+let audioCtx = null;
+function playBeep() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const ctx = audioCtx;
+  const t = ctx.currentTime;
+  // Osc 1: square wave 880→440Hz
+  const o1 = ctx.createOscillator();
+  o1.type = 'square';
+  o1.frequency.setValueAtTime(880, t);
+  o1.frequency.exponentialRampToValueAtTime(440, t + 0.06);
+  const g1 = ctx.createGain();
+  g1.gain.setValueAtTime(0.12, t);
+  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  o1.connect(g1).connect(ctx.destination);
+  o1.start(t); o1.stop(t + 0.09);
+  // Osc 2: sine wave 1320→660Hz (delayed 0.02s)
+  const o2 = ctx.createOscillator();
+  o2.type = 'sine';
+  o2.frequency.setValueAtTime(1320, t + 0.02);
+  o2.frequency.exponentialRampToValueAtTime(660, t + 0.07);
+  const g2 = ctx.createGain();
+  g2.gain.setValueAtTime(0, t);
+  g2.gain.linearRampToValueAtTime(0.06, t + 0.02);
+  g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  o2.connect(g2).connect(ctx.destination);
+  o2.start(t + 0.02); o2.stop(t + 0.09);
+}
+
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
+    playBeep();
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     tab.classList.add('active');
