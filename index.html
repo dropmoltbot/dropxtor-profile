@@ -7,328 +7,418 @@
 <meta name="description" content="Terminal-style hacker profile"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #00ff41;
+  --terminal-green: #00ff41;
+  --terminal-green-dim: #0c3;
+  --terminal-green-dark: #003a0e;
+  --bg-dark: #0a0a0a;
+  --bg-darker: #040404;
+  --bg-terminal: #080c08f7;
+  --text-primary: #e0e0e0;
+  --text-dim: #666;
+  --border-green: #00ff4133;
+  --border-green-bright: #00ff4180;
   --pink: #ff79c6;
-  --cyan: #8be9fd;
-  --purple: #bd93f9;
+  --blue: #8be9fd;
   --yellow: #f1fa8c;
-  --bg: #030303;
-  --gray5: #6b7280;
-  --gray6: #4b5563;
-  --gray7: #374151;
+  --purple: #bd93f9;
+  --glow-sm: 0 0 8px #00ff41cc, 0 0 16px #00ff4166;
+  --glow-md: 0 0 10px #00ff41e6, 0 0 20px #00ff4180, 0 0 40px #00ff4133;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: var(--bg);
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
-  color: #e0e0e0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--bg-darker);
+  color: var(--text-primary);
+  font-family: "VT323", "JetBrains Mono", monospace;
+  animation: 8s ease 0s infinite flicker;
   overflow-x: hidden;
+  min-height: 100vh;
 }
-/* CRT overlay */
-.crt-overlay {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  pointer-events: none; z-index: 9999;
-  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 3px);
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
 }
-.crt-overlay::after {
-  content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
-/* Matrix rain canvas */
-#matrix { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.15; }
-/* Terminal window */
-.terminal {
-  position: relative; z-index: 1;
-  width: 100%; max-width: 640px;
-  border: 1px solid rgba(0,255,65,0.3);
-  background: rgba(3,3,3,0.95);
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 16px;
+@keyframes titleGlitch {
+  0%, 85%, 100% { text-shadow: 0 0 10px var(--terminal-green), 0 0 20px var(--terminal-green), 0 0 40px #00ff4180; transform: translate(0); }
+  86% { text-shadow: 4px 0 #f0f, -4px 0 #0ff, 0 0 20px var(--terminal-green); transform: translate(-3px); }
+  87% { clip-path: inset(30% 0 40%); transform: translate(3px); }
+  88% { clip-path: inset(0); transform: translate(0); }
+  89% { text-shadow: #0ff 2px 0, #f0f -2px 0; transform: translate(-2px, 1px); }
+  90% { clip-path: inset(60% 0 10%); transform: translate(0); }
+  91% { clip-path: inset(0); }
 }
-/* Header bar */
-.term-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 12px;
-  border-bottom: 1px solid rgba(0,255,65,0.2);
-  background: rgba(0,255,65,0.03);
+@keyframes pixelGlitch {
+  0% { text-shadow: #f0f 3px 0, #0ff -3px 0; transform: translate(0); }
+  10% { text-shadow: #f0f -4px 0, #0ff 4px 0; transform: translate(-2px); }
+  20% { text-shadow: #0ff 3px 0, #f0f -3px 0; clip-path: inset(20% 0 60%); transform: translate(1px, -1px); }
+  21% { clip-path: inset(0); transform: translate(0); }
+  40% { text-shadow: #0ff -3px 0, #f0f 3px 0; transform: translate(0); }
+  60% { text-shadow: #f0f 3px 0, #0ff -3px 0; transform: translate(2px); }
+  80% { text-shadow: #f0f -2px 0, #0ff 2px 0; transform: translate(0); }
+  90% { text-shadow: #0ff 2px 0, #f0f -2px 0; clip-path: inset(50% 0 30%); transform: translate(-1px, 1px); }
+  91% { clip-path: inset(0); }
+  100% { text-shadow: #f0f 3px 0, #0ff -3px 0; transform: translate(0); }
 }
-.dots { display: flex; gap: 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot.r { background: #ff5f56; }
-.dot.y { background: #ffbd2e; }
-.dot.g { background: #27c93f; }
-.term-title { font-size: 10px; color: var(--gray5); letter-spacing: 1px; }
-.term-env { font-size: 10px; color: var(--gray5); }
-.term-env .sep { color: var(--gray7); }
-/* Body */
-.term-body { padding: 20px 24px 0; }
-.cmd-line { font-size: 13px; margin-bottom: 16px; }
-.cmd-line .user { color: var(--pink); }
-.cmd-line .at { color: var(--gray6); }
-.cmd-line .host { color: var(--cyan); }
-.cmd-line .prompt { color: var(--gray6); }
-.cmd-line .cmd { color: var(--yellow); margin-left: 4px; }
-/* Logo */
-.logo {
-  font-family: 'VT323', monospace;
-  font-size: 52px; color: var(--green);
-  text-align: center; letter-spacing: 4px;
-  text-shadow: 0 0 10px rgba(0,255,65,0.5), 0 0 20px rgba(0,255,65,0.3);
-  animation: flicker 3s infinite;
-  position: relative;
+@keyframes scanMove {
+  0% { top: -10%; }
+  100% { top: 110%; }
 }
-.logo::before, .logo::after {
-  content: 'DROPXTOR'; position: absolute; top:0; left:0; width:100%;
-  opacity: 0.7;
+@keyframes vignettePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.45; }
 }
-.logo::before { color: #ff004c; transform: translate(-1px,0); clip-path: inset(0 0 60% 0); animation: glitch1 2s infinite; }
-.logo::after { color: #00fff2; transform: translate(1px,0); clip-path: inset(60% 0 0 0); animation: glitch2 2.5s infinite; }
-@keyframes flicker { 0%,98%,100%{opacity:1;} 98.5%{opacity:0.8;} 99%{opacity:0.95;} }
-@keyframes glitch1 { 0%,90%,100%{transform:translate(0);} 92%{transform:translate(-2px,0);} 94%{transform:translate(1px,0);} }
-@keyframes glitch2 { 0%,90%,100%{transform:translate(0);} 93%{transform:translate(2px,0);} 95%{transform:translate(-1px,0);} }
-/* Tagline */
-.tagline { text-align: center; font-size: 12px; margin: 8px 0 20px; color: #ccc; }
-.tagline .dash { color: var(--gray6); }
-.tagline .sep { color: rgba(0,255,65,0.4); }
-/* Terminal input box */
-.term-input-box {
-  border: 1px solid rgba(0,255,65,0.15);
-  border-radius: 4px; padding: 10px 14px; margin-bottom: 16px;
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; background: var(--terminal-green); }
+  50%, 100% { opacity: 0; }
+}
+.scanlines, .crt-noise { position: relative; }
+.crt-noise::after {
+  content: ""; pointer-events: none; z-index: 9998;
+  background: radial-gradient(72% 68%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0.75) 85%, rgba(0,0,0,0.92) 100%);
+  animation: 5s ease-in-out 0s infinite vignettePulse;
+  position: fixed; inset: 0;
+}
+.scanlines::after {
+  content: ""; pointer-events: none; z-index: 9996;
+  background: linear-gradient(rgba(0,0,0,0), rgba(0,255,65,0.08) 30%, rgba(0,255,65,0.15) 50%, rgba(0,255,65,0.08) 70%, rgba(0,0,0,0));
+  width: 100%; height: 10px;
+  animation: 9s linear 0s infinite scanMove;
+  position: fixed; left: 0;
+}
+.scanlines::before {
+  content: ""; pointer-events: none; z-index: 9999;
+  image-rendering: pixelated;
+  background-image: repeating-linear-gradient(rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,0.42) 1px, rgba(0,0,0,0.42) 2px);
+  background-size: 100% 2px;
+  animation: 7s ease 0s infinite flicker;
+  position: fixed; inset: 0;
+}
+.glitch-cursor {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='22' viewBox='0 0 16 22'%3E%3Cpath d='M1 1 L1 18 L5 14 L9 21 L11 20 L7 13 L13 13 Z' fill='%2300ff41' stroke='%23006622' stroke-width='0.5'/%3E%3C/svg%3E") 1 1, pointer;
+}
+.matrix-rain { z-index: 0; opacity: 0.18; position: fixed; inset: 0; }
+.terminal-window {
+  background: var(--bg-terminal);
+  border: 1px solid var(--border-green);
+  border-radius: 10px;
+  position: relative; overflow: hidden;
+  box-shadow: rgba(0,255,65,0.08) 0 0 0 1px, rgba(0,255,65,0.08) 0 0 20px, rgba(0,255,65,0.04) 0 0 60px, rgba(0,0,0,0.9) 0 24px 80px, rgba(255,255,255,0.04) 0 1px inset, rgba(0,255,65,0.02) 0 0 80px inset;
+}
+.terminal-window::before {
+  content: ""; z-index: 1;
+  background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,255,65,0.4), rgba(0,0,0,0));
+  height: 1px; position: absolute; top: 0; left: 0; right: 0;
+}
+.terminal-header {
+  border-bottom: 1px solid var(--border-green);
+  backdrop-filter: blur(20px);
+  background: rgba(0,0,0,0.7);
+  padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.win-btn { border-radius: 50%; width: 12px; height: 12px; transition: filter 0.15s; display: inline-block; position: relative; box-shadow: rgba(0,0,0,0.5) 0 0 4px; }
+.win-btn:hover { filter: brightness(1.3); }
+.win-btn-red { background: #ff5f57; box-shadow: rgba(255,95,87,0.4) 0 0 6px; }
+.win-btn-yellow { background: #ffbd2e; box-shadow: rgba(255,189,46,0.4) 0 0 6px; }
+.win-btn-green { background: #28c840; box-shadow: rgba(40,200,64,0.4) 0 0 6px; }
+.status-bar {
+  border-top: 1px solid var(--border-green);
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.05em;
+  background: rgba(0,0,0,0.6);
+  font-size: 11px;
+  padding: 6px 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.ascii-title {
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--terminal-green);
+  -webkit-font-smoothing: none; image-rendering: pixelated;
+  filter: drop-shadow(rgba(255,0,200,0.7) 3px 0) drop-shadow(rgba(0,200,255,0.7) -3px 0) drop-shadow(rgba(0,255,65,0.6) 0 0 12px) drop-shadow(rgba(0,255,65,0.25) 0 0 30px);
+  font-size: clamp(2.8rem, 7vw, 5rem); line-height: 1;
+  animation: 4s ease 0s infinite titleGlitch;
+  font-family: "VT323", "JetBrains Mono", monospace !important;
+}
+.glow { text-shadow: var(--glow-md); }
+.glow-sm { text-shadow: var(--glow-sm); }
+.section-hover { font-family: "JetBrains Mono", monospace; letter-spacing: 0.12em; font-size: 11px; transition: 0.15s; }
+.section-hover:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
+.chromatic-hover { transition: 0.2s; }
+.chromatic-hover:hover { text-shadow: rgba(255,0,255,0.5) 1px 0, rgba(0,255,255,0.5) -1px 0; }
+.glitch:hover { animation: 0.25s ease 0s infinite pixelGlitch; }
+.term-divider { border-top: 1px solid rgba(0,255,65,0.12); margin: 8px 0; }
+.pulse { color: var(--terminal-green); animation: 1s step-end 0s infinite pulse; }
+.glitch-avatar {
+  filter: drop-shadow(rgba(255,0,200,0.6) 2px 0) drop-shadow(rgba(0,200,255,0.6) -2px 0) drop-shadow(rgba(0,255,65,0.4) 0 0 8px);
+  animation: 4s ease 0s infinite pixelGlitch;
+}
+.terminal-cursor { vertical-align: text-bottom; width: 8px; height: 1.1em; margin-left: 1px; animation: 1s step-end 0s infinite cursorBlink; display: inline-block; }
+/* Layout */
+main { min-height: 100vh; padding: 12px; }
+@media (min-width: 768px) { main { padding: 24px; } }
+.tw-wrap { max-width: 768px; margin: 0 auto; position: relative; z-index: 10; }
+.tw-body { padding: 16px; }
+@media (min-width: 768px) { .tw-body { padding: 24px; } }
+.cmd-line { display: flex; align-items: center; gap: 4px; font-family: "JetBrains Mono", monospace; font-size: 14px; margin-bottom: 20px; }
+.cmd-line .u { color: var(--pink); }
+.cmd-line .a { color: #4b5563; }
+.cmd-line .h { color: var(--blue); }
+.cmd-line .p { color: #4b5563; }
+.cmd-line .c { color: var(--yellow); margin-left: 4px; }
+.id-row { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 8px; }
+.avatar-wrap { position: relative; display: inline-block; width: 72px; height: 72px; flex-shrink: 0; }
+.avatar-glow { position: absolute; inset: 0; border-radius: 50%; box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.2) 0 0 30px; }
+.tagline { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #6b7280; margin-bottom: 20px; }
+@media (min-width: 768px) { .tagline { font-size: 14px; } }
+.tagline .d { color: #4b5563; }
+.tagline .s { color: rgba(0,255,65,0.4); }
+.tagline span { margin: 0 8px; }
+.term-box {
+  border: 1px solid rgba(0,255,65,0.2); border-radius: 6px;
+  padding: 12px 16px; margin-bottom: 20px;
   background: rgba(0,0,0,0.4);
 }
-.term-hint { color: rgba(0,255,65,0.7); font-size: 12px; margin-bottom: 8px; font-family: 'JetBrains Mono',monospace; white-space: pre-wrap; }
-.term-prompt-row { display: flex; align-items: center; gap: 6px; }
-.term-arrow { color: var(--pink); font-size: 14px; }
-.term-tilde { color: var(--cyan); font-size: 14px; }
+.term-hint { color: rgba(0,255,65,0.7); font-family: "JetBrains Mono", monospace; font-size: 13px; margin-bottom: 8px; white-space: pre-wrap; }
+.term-prompt { display: flex; align-items: center; gap: 6px; }
+.term-prompt .arrow { color: var(--pink); font-size: 14px; }
+.term-prompt .tilde { color: var(--blue); font-size: 14px; }
 .term-input {
   background: transparent; border: none; outline: none;
-  color: var(--green); font-family: 'JetBrains Mono',monospace;
-  font-size: 14px; flex: 1; caret-color: var(--green);
+  color: var(--terminal-green); font-family: "JetBrains Mono", monospace;
+  font-size: 14px; flex: 1; caret-color: transparent;
 }
-/* Tabs */
 .tabs { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
 .tab {
   padding: 4px 12px; font-size: 11px; text-transform: uppercase;
-  letter-spacing: 2px; font-family: 'JetBrains Mono',monospace;
-  border: 1px solid rgba(0,255,65,0.4); color: var(--green);
-  background: transparent; cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace;
+  border: 1px solid rgba(0,255,65,0.4); color: var(--terminal-green);
+  background: transparent; cursor: pointer; transition: 0.15s;
   border-radius: 3px;
 }
-.tab:hover { border-color: var(--green); }
-.tab.active { background: var(--green); color: #000; font-weight: 700; }
-/* Content */
-.content { min-height: 180px; padding-bottom: 16px; }
+.tab:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
+.tab.active { background: var(--terminal-green); color: #000; font-weight: 700; border-color: var(--terminal-green); }
+.content { min-height: 260px; overflow-y: auto; }
 .section { display: none; }
 .section.active { display: block; }
-.section h2 {
-  font-size: 13px; color: var(--purple); font-weight: 700;
-  letter-spacing: 2px; margin-bottom: 12px;
-}
-.section p { font-size: 12px; color: #bbb; margin-bottom: 8px; line-height: 1.6; }
-.section p .hl { color: var(--green); }
-.section p .str { color: var(--yellow); }
-/* Projects */
+.section h2 { font-size: 13px; color: var(--purple); font-weight: 700; letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace; margin-bottom: 12px; }
+.section p { font-size: 12px; color: #9ca3af; margin-bottom: 8px; line-height: 1.6; font-family: "JetBrains Mono", monospace; }
+@media (min-width: 768px) { .section p { font-size: 14px; } }
+.section .hl { color: var(--terminal-green); }
+.section .str { color: var(--yellow); }
 .proj-item { margin-bottom: 12px; }
-.proj-name { color: var(--yellow); font-weight: 700; font-size: 13px; }
-.proj-badge { font-size: 10px; color: var(--gray6); margin-left: 6px; }
-.proj-desc { color: var(--gray5); font-size: 11px; margin: 4px 0; }
+.proj-name { color: var(--yellow); font-weight: 700; font-size: 13px; font-family: "JetBrains Mono", monospace; }
+.proj-badge { font-size: 10px; color: #4b5563; margin-left: 6px; font-family: "JetBrains Mono", monospace; }
+.proj-desc { color: #6b7280; font-size: 11px; margin: 4px 0 8px; font-family: "JetBrains Mono", monospace; }
 .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.proj-tag { font-size: 10px; color: var(--pink); }
-/* Skills */
+.proj-tag { font-size: 10px; color: var(--pink); font-family: "JetBrains Mono", monospace; }
 .skill-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
-.skill-label { color: var(--pink); font-size: 11px; min-width: 100px; flex-shrink: 0; }
+.skill-label { color: var(--pink); font-size: 11px; min-width: 100px; flex-shrink: 0; font-family: "JetBrains Mono", monospace; }
 .skill-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .skill-tag {
-  padding: 2px 8px; font-size: 10px; color: var(--green);
+  padding: 2px 8px; font-size: 10px; color: var(--terminal-green);
   background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);
-  border-radius: 3px; transition: all 0.2s; cursor: default;
+  border-radius: 3px; transition: 0.15s; cursor: default;
+  font-family: "JetBrains Mono", monospace;
 }
 .skill-tag:hover { border-color: rgba(0,255,65,0.6); }
-/* Contact */
 .contact-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.contact-label { color: var(--pink); font-size: 11px; min-width: 70px; }
-.contact-val { color: var(--cyan); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+.contact-label { color: var(--pink); font-size: 11px; min-width: 70px; font-family: "JetBrains Mono", monospace; }
+.contact-val { color: var(--blue); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; font-family: "JetBrains Mono", monospace; }
 .contact-val a { color: inherit; text-decoration: none; }
-.contact-note { color: var(--pink); font-size: 12px; margin-top: 12px; }
-.contact-sub { color: var(--gray6); font-size: 11px; margin-top: 4px; }
-/* Footer */
-.term-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 12px; font-size: 10px; color: #888;
-  border-top: 1px solid rgba(0,255,65,0.15);
-  background: rgba(0,255,65,0.02);
-}
-.term-footer .stat { color: var(--green); }
-.term-footer .stat-dim { color: rgba(0,255,65,0.5); }
-.term-footer .sep { color: var(--gray7); }
-.term-footer .dot-g { color: var(--green); font-size: 9px; }
-.term-footer .pid { color: var(--gray5); }
-.term-hint-bar {
-  padding: 4px 12px 8px; font-size: 10px; color: var(--gray6);
-  border-top: 1px solid rgba(0,255,65,0.08);
-}
-.term-hint-bar .cursor { color: var(--green); animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-/* Glow */
-.glow { text-shadow: 0 0 6px currentColor; }
+.contact-note { color: var(--pink); font-size: 12px; margin-top: 12px; font-family: "JetBrains Mono", monospace; }
+.contact-sub { color: #4b5563; font-size: 11px; margin-top: 4px; font-family: "JetBrains Mono", monospace; }
+.sb-left, .sb-right { display: flex; align-items: center; gap: 4px; font-family: "JetBrains Mono", monospace; }
+.sb-sep { color: #374151; }
+.sb-dot { color: var(--terminal-green); font-size: 9px; }
+.sb-pid { color: #6b7280; }
+.sb-crt { color: rgba(0,255,65,0.5); }
+.sb-ok { color: var(--terminal-green); }
+.hint-bar { padding: 4px 16px 8px; font-size: 10px; color: #4b5563; border-top: 1px solid rgba(0,255,65,0.08); font-family: "JetBrains Mono", monospace; }
 </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
-<div class="crt-overlay"></div>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <defs>
+    <filter id="crt-filter" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"></feTurbulence>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"></feColorMatrix>
+      <feBlend in="SourceGraphic" in2="grayNoise" mode="screen" result="blended"></feBlend>
+      <feComponentTransfer in="blended"><feFuncA type="linear" slope="0.08"></feFuncA></feComponentTransfer>
+    </filter>
+  </defs>
+</svg>
 
-<div class="terminal">
-  <!-- Header -->
-  <div class="term-header">
-    <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
-    <span class="term-title">dropxtor@network: ~</span>
-    <span class="term-env">ZSH <span class="sep">·</span> UTF-8</span>
+<main class="scanlines crt-noise glitch-cursor">
+  <canvas id="matrix-canvas" class="matrix-rain" aria-hidden="true"></canvas>
+  
+  <div class="tw-wrap">
+    <div class="terminal-window">
+      <!-- Header -->
+      <div class="terminal-header">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="win-btn win-btn-red"></span>
+          <span class="win-btn win-btn-yellow"></span>
+          <span class="win-btn win-btn-green"></span>
+        </div>
+        <span style="font-size:10px;color:#6b7280;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;">dropxtor@network: ~</span>
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#4b5563;font-family:'JetBrains Mono',monospace;">
+          <span>ZSH</span><span class="sb-sep">·</span><span>UTF-8</span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="tw-body">
+        <div class="cmd-line">
+          <span class="u">dropxtor</span><span class="a">@</span><span class="h">network</span><span class="p">:~ $</span><span class="c">whoami</span>
+        </div>
+
+        <div class="id-row">
+          <div class="avatar-wrap">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" class="glitch-avatar">
+              <circle cx="36" cy="36" r="34" stroke="#00ff41" stroke-width="1" opacity="0.4"/>
+              <rect x="22" y="18" width="28" height="4" rx="2" fill="#00ff41" opacity="0.9"/>
+              <rect x="22" y="26" width="10" height="3" rx="1.5" fill="#00ff41" opacity="0.7"/>
+              <rect x="40" y="26" width="10" height="3" rx="1.5" fill="#00ff41" opacity="0.7"/>
+              <rect x="24" y="34" width="24" height="3" rx="1.5" fill="#00ff41" opacity="0.5"/>
+              <rect x="28" y="42" width="16" height="3" rx="1.5" fill="#00ff41" opacity="0.4"/>
+              <rect x="30" y="50" width="12" height="4" rx="2" fill="#00ff41" opacity="0.6"/>
+              <circle cx="36" cy="36" r="34" stroke="#ff00ff" stroke-width="0.5" opacity="0.3" transform="translate(2,0)"/>
+              <circle cx="36" cy="36" r="34" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="translate(-2,0)"/>
+            </svg>
+            <div class="avatar-glow"></div>
+          </div>
+          <div>
+            <h1 class="ascii-title glow">DROPXTOR</h1>
+          </div>
+        </div>
+
+        <div class="tagline">
+          <span class="d">──</span>
+          <span>vibe coder</span>
+          <span class="s">//</span>
+          <span>blockchain</span>
+          <span class="s">//</span>
+          <span>ai agent builder</span>
+          <span class="d">──</span>
+        </div>
+
+        <hr class="term-divider"/>
+
+        <div class="term-box">
+          <pre class="term-hint">Type "help" for available commands.</pre>
+          <div class="term-prompt">
+            <span class="arrow">➜</span>
+            <span class="tilde">~</span>
+            <input class="term-input" id="cli" type="text" autocomplete="off"/>
+          </div>
+        </div>
+
+        <hr class="term-divider"/>
+
+        <div class="tabs">
+          <button class="tab section-hover glitch chromatic-hover active" data-tab="about">about</button>
+          <button class="tab section-hover glitch chromatic-hover" data-tab="projects">projects</button>
+          <button class="tab section-hover glitch chromatic-hover" data-tab="skills">skills</button>
+          <button class="tab section-hover glitch chromatic-hover" data-tab="contact">contact</button>
+        </div>
+
+        <div class="content">
+          <div class="section active" id="about">
+            <h2>// ABOUT</h2>
+            <p>Builder at the intersection of <span class="hl">AI</span>, <span class="hl">blockchain</span> and <span class="hl">web</span>.</p>
+            <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
+            <p>const mission = <span class="str">"build the future, ship every day"</span>;</p>
+          </div>
+
+          <div class="section" id="projects">
+            <h2>// PROJECTS</h2>
+            <div class="proj-item">
+              <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[open]</span>
+              <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
+              <div class="proj-tags">
+                <span class="proj-tag">#Next.js</span>
+                <span class="proj-tag">#TypeScript</span>
+                <span class="proj-tag">#Framer Motion</span>
+                <span class="proj-tag">#CRT</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" id="skills">
+            <h2>// SKILLS</h2>
+            <div class="skill-row">
+              <span class="skill-label">Languages:</span>
+              <div class="skill-tags"><span class="skill-tag">TypeScript</span><span class="skill-tag">Python</span><span class="skill-tag">Rust</span><span class="skill-tag">Go</span><span class="skill-tag">Solidity</span></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-label">Frontend:</span>
+              <div class="skill-tags"><span class="skill-tag">Next.js</span><span class="skill-tag">React</span><span class="skill-tag">Three.js</span><span class="skill-tag">Tailwind</span></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-label">Backend:</span>
+              <div class="skill-tags"><span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">GraphQL</span></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-label">Blockchain:</span>
+              <div class="skill-tags"><span class="skill-tag">EVM</span><span class="skill-tag">Solana</span><span class="skill-tag">DeFi</span><span class="skill-tag">Smart Contracts</span></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-label">AI/ML:</span>
+              <div class="skill-tags"><span class="skill-tag">LLMs</span><span class="skill-tag">Multi-Agent</span><span class="skill-tag">RAG</span><span class="skill-tag">OpenClaw</span></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-label">DevOps:</span>
+              <div class="skill-tags"><span class="skill-tag">Docker</span><span class="skill-tag">K8s</span><span class="skill-tag">Vercel</span><span class="skill-tag">CI/CD</span></div>
+            </div>
+          </div>
+
+          <div class="section" id="contact">
+            <h2>// CONTACT</h2>
+            <div class="contact-row">
+              <span class="contact-label">github:</span>
+              <span class="contact-val"><a href="https://github.com/dropxtor" target="_blank">github.com/dropxtor</a></span>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">twitter:</span>
+              <span class="contact-val"><a href="https://x.com/0xdropxtor" target="_blank">@0xdropxtor</a></span>
+            </div>
+            <p class="contact-note">// open to collaborations</p>
+            <p class="contact-sub">DeFi · AI agents · open source · web3 infra</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="status-bar">
+        <div class="sb-left">
+          <span class="sb-dot">●</span><span>SSH</span><span class="sb-sep">│</span><span>UTF-8</span><span class="sb-sep">│</span><span>ZSH</span>
+        </div>
+        <div class="sb-right">
+          <span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span>
+        </div>
+      </div>
+      <div class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history</div>
+    </div>
   </div>
-
-  <!-- Body -->
-  <div class="term-body">
-    <div class="cmd-line">
-      <span class="user">dropxtor</span><span class="at">@</span><span class="host">network</span><span class="prompt">:~ $</span><span class="cmd">whoami</span>
-    </div>
-
-    <h1 class="logo">DROPXTOR</h1>
-    <div class="tagline">
-      <span class="dash">──</span>
-      <span style="margin:0 8px">vibe coder</span>
-      <span class="sep">//</span>
-      <span style="margin:0 8px">blockchain</span>
-      <span class="sep">//</span>
-      <span style="margin:0 8px">ai agent builder</span>
-      <span class="dash">──</span>
-    </div>
-
-    <div class="term-input-box">
-      <div class="term-hint">Type "help" for available commands.</div>
-      <div class="term-prompt-row">
-        <span class="term-arrow">➜</span>
-        <span class="term-tilde">~</span>
-        <input class="term-input" id="cli" type="text" autocomplete="off" placeholder="" />
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" data-tab="about">about</button>
-      <button class="tab" data-tab="projects">projects</button>
-      <button class="tab" data-tab="skills">skills</button>
-      <button class="tab" data-tab="contact">contact</button>
-    </div>
-
-    <div class="content">
-      <!-- About -->
-      <div class="section active" id="about">
-        <h2>// ABOUT</h2>
-        <p>Builder at the intersection of <span class="hl">AI</span>, <span class="hl">blockchain</span> and <span class="hl">web</span>.</p>
-        <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
-        <p>const mission = <span class="str">"build the future, ship every day"</span>;</p>
-      </div>
-
-      <!-- Projects -->
-      <div class="section" id="projects">
-        <h2>// PROJECTS</h2>
-        <div class="proj-item">
-          <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[open]</span>
-          <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
-          <div class="proj-tags">
-            <span class="proj-tag">#Next.js</span>
-            <span class="proj-tag">#TypeScript</span>
-            <span class="proj-tag">#Framer Motion</span>
-            <span class="proj-tag">#CRT</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Skills -->
-      <div class="section" id="skills">
-        <h2>// SKILLS</h2>
-        <div class="skill-row">
-          <span class="skill-label">Languages:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">TypeScript</span><span class="skill-tag">Python</span><span class="skill-tag">Rust</span><span class="skill-tag">Go</span><span class="skill-tag">Solidity</span>
-          </div>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Frontend:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">Next.js</span><span class="skill-tag">React</span><span class="skill-tag">Three.js</span><span class="skill-tag">Tailwind</span>
-          </div>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Backend:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">GraphQL</span>
-          </div>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">Blockchain:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">EVM</span><span class="skill-tag">Solana</span><span class="skill-tag">DeFi</span><span class="skill-tag">Smart Contracts</span>
-          </div>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">AI/ML:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">LLMs</span><span class="skill-tag">Multi-Agent</span><span class="skill-tag">RAG</span><span class="skill-tag">OpenClaw</span>
-          </div>
-        </div>
-        <div class="skill-row">
-          <span class="skill-label">DevOps:</span>
-          <div class="skill-tags">
-            <span class="skill-tag">Docker</span><span class="skill-tag">K8s</span><span class="skill-tag">Vercel</span><span class="skill-tag">CI/CD</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact -->
-      <div class="section" id="contact">
-        <h2>// CONTACT</h2>
-        <div class="contact-row">
-          <span class="contact-label">github:</span>
-          <span class="contact-val"><a href="https://github.com/dropxtor" target="_blank">github.com/dropxtor</a></span>
-        </div>
-        <div class="contact-row">
-          <span class="contact-label">twitter:</span>
-          <span class="contact-val"><a href="https://x.com/0xdropxtor" target="_blank">@0xdropxtor</a></span>
-        </div>
-        <p class="contact-note">// open to collaborations</p>
-        <p class="contact-sub">DeFi · AI agents · open source · web3 infra</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="term-footer">
-    <span><span class="dot-g">●</span> SSH <span class="sep">│</span> UTF-8 <span class="sep">│</span> ZSH</span>
-    <span><span class="stat-dim">CRT</span> <span class="sep">│</span> <span class="stat glow">SYS OK</span> <span class="sep">│</span> <span class="pid">PID 5689</span></span>
-  </div>
-  <div class="term-hint-bar"><span class="cursor">_</span> ESC clear · Tab autocomplete · ↑↓ history</div>
-</div>
+</main>
 
 <script>
 // Matrix rain
 (function() {
-  const c = document.getElementById('matrix');
+  const c = document.getElementById('matrix-canvas');
   const ctx = c.getContext('2d');
-  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+  function resize() { c.width = window.innerWidth * 2; c.height = window.innerHeight * 2; c.style.width = window.innerWidth + 'px'; c.style.height = window.innerHeight + 'px'; }
   resize(); window.addEventListener('resize', resize);
   const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const fs = 14;
   let cols = Math.floor(c.width / fs);
   let drops = Array(cols).fill(0);
   function draw() {
-    ctx.fillStyle = 'rgba(3,3,3,0.05)';
+    ctx.fillStyle = 'rgba(4,4,4,0.05)';
     ctx.fillRect(0, 0, c.width, c.height);
     ctx.fillStyle = '#00ff41';
     ctx.font = fs + 'px monospace';
@@ -371,12 +461,8 @@ cli.addEventListener('keydown', (e) => {
           hintBox.textContent = 'Available: about · projects · skills · contact · clear · whoami';
           break;
         case 'about': case 'projects': case 'skills': case 'contact':
-          document.querySelectorAll('.tab').forEach(t => {
-            t.classList.toggle('active', t.dataset.tab === cmd);
-          });
-          document.querySelectorAll('.section').forEach(s => {
-            s.classList.toggle('active', s.id === cmd);
-          });
+          document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === cmd));
+          document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === cmd));
           hintBox.textContent = '→ switched to ' + cmd;
           break;
         case 'whoami':
@@ -415,8 +501,7 @@ cli.addEventListener('keydown', (e) => {
   }
 });
 
-// Focus input on click anywhere in terminal
-document.querySelector('.terminal').addEventListener('click', () => cli.focus());
+document.querySelector('.terminal-window').addEventListener('click', () => cli.focus());
 cli.focus();
 </script>
 </body>
