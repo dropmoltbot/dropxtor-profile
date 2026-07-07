@@ -62,10 +62,16 @@ body {
 @keyframes orbFlicker { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.2; } 75% { opacity: 0.9; } }
 #boot-screen .boot-ascii {
   font-family: "VT323", monospace; font-size: 28px; line-height: 1.2;
-  color: #00ff41; opacity: 0.4; text-align: center; margin-bottom: 32px;
+  color: #00ff41; opacity: 0.4; text-align: center; margin-bottom: 16px;
   white-space: pre; letter-spacing: 8px;
   text-shadow: 0 0 10px rgba(0,255,65,0.3);
   animation: bootAsciiIn 1s ease forwards;
+}
+#boot-screen .boot-knot {
+  font-family: "JetBrains Mono", monospace; font-size: 8px; line-height: 1;
+  color: #00ff41; opacity: 0.6; text-align: center; margin-bottom: 24px;
+  white-space: pre; letter-spacing: 0; text-shadow: 0 0 3px rgba(0,255,65,0.4);
+  animation: bootAsciiIn 1.5s ease forwards;
 }
 @keyframes bootAsciiIn { from { opacity: 0; filter: blur(8px); } to { opacity: 0.4; filter: blur(0); } }
 #boot-screen .boot-lines { max-width: 500px; width: 100%; padding: 0 20px; }
@@ -357,6 +363,7 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
     </svg>
   </div>
   <div class="boot-ascii">d r o p x t o r</div>
+  <pre id="boot-knot" class="boot-knot"></pre>
   <div class="boot-lines" id="boot-lines"></div>
   <div class="boot-progress"><div class="boot-progress-bar" id="boot-bar"></div></div>
 </div>
@@ -487,6 +494,74 @@ Type "help" for available commands.</pre></div>
 <script>
 // === BOOT SEQUENCE ===
 (function() {
+  // ASCII 3D Torus Knot (2,3) — inspired by topology.tools but more original
+  const knotEl = document.getElementById('boot-knot');
+  const chars = '.:-=+*#%@';
+  const tau = Math.PI * 2;
+  const W = 48, H = 24, fps = 20;
+  const R = 2, r = 0.8, tubeR = 0.55;
+  const p = 2, q = 3; // torus knot (p,q) — (2,3) = trefoil
+  const tilt = 0.4, K2 = 12;
+  const K1 = W * K2 / (2 * (R + r + tubeR + 0.5));
+  let angle = 0;
+  const size = W * H;
+  const output = new Array(size);
+  const zbuf = new Float64Array(size);
+  const cosTilt = Math.cos(tilt), sinTilt = Math.sin(tilt);
+  const tStep = 0.008, sStep = 0.12;
+  const maxL = chars.length - 1;
+
+  function renderKnot() {
+    for (let i = 0; i < size; i++) { output[i] = ' '; zbuf[i] = 0; }
+    const cosB = Math.cos(angle), sinB = Math.sin(angle);
+    for (let t = 0; t < tau; t += tStep) {
+      const cp = Math.cos(p*t), sp = Math.sin(p*t), cq = Math.cos(q*t), sq = Math.sin(q*t);
+      const rr = R + r * cq;
+      const cx = rr * cp, cy = rr * sp, cz = r * sq;
+      // Tangent
+      const dtx = -p*r*sp*cq - q*rr*cp*sq;
+      const dty = p*r*cp*cq - q*rr*sp*sq;
+      const dtz = q*r*cq;
+      const tlen = Math.sqrt(dtx*dtx+dty*dty+dtz*dtz);
+      const Tx=dtx/tlen, Ty=dty/tlen, Tz=dtz/tlen;
+      // Normal
+      let refx=0,refy=0,refz=1; let dot=Tx*refx+Ty*refy+Tz*refz;
+      if (Math.abs(dot)>0.9){refx=1;refy=0;refz=0;dot=Tx*refx+Ty*refy+Tz*refz;}
+      let nx=refx-dot*Tx, ny=refy-dot*Ty, nz=refz-dot*Tz;
+      const nlen=Math.sqrt(nx*nx+ny*ny+nz*nz); nx/=nlen; ny/=nlen; nz/=nlen;
+      const bx=Ty*nz-Tz*ny, by=Tz*nx-Tx*nz, bz=Tx*ny-Ty*nx;
+      for (let s = 0; s < tau; s += sStep) {
+        const cosS=Math.cos(s), sinS=Math.sin(s);
+        const px = cx + tubeR*(cosS*nx + sinS*bx);
+        const py = cy + tubeR*(cosS*ny + sinS*by);
+        const pz = cz + tubeR*(cosS*nz + sinS*bz);
+        // Rotate around X (tilt)
+        const y1 = py*cosTilt - pz*sinTilt;
+        const z1 = py*sinTilt + pz*cosTilt;
+        // Rotate around Y (angle)
+        const x2 = px*cosB + z1*sinB;
+        const z2 = -px*sinB + z1*cosB;
+        if (z2 + K2 < 0.1) continue;
+        const ooz = 1/(z2+K2);
+        const sx = Math.round(W/2 + K1*ooz*x2);
+        const sy = Math.round(H/2 - K1*ooz*y1*0.5);
+        if (sx < 0 || sx >= W || sy < 0 || sy >= H) continue;
+        const idx = sy*W + sx;
+        // Lighting from top-left
+        const Lx=0.5, Ly=0.5, Lz=1;
+        const lx=cosS*nx+sinS*bx, ly=cosS*ny+sinS*by, lz=cosS*nz+sinS*bz;
+        const lum = lx*Lx + ly*Ly + lz*Lz;
+        if (lum > zbuf[idx]) { zbuf[idx] = lum; output[idx] = chars[Math.max(0, Math.min(maxL, Math.round(lum*(maxL+1))))]; }
+      }
+    }
+    let str = '';
+    for (let j = 0; j < H; j++) { for (let i = 0; i < W; i++) str += output[j*W+i]; str += '\n'; }
+    knotEl.textContent = str;
+  }
+
+  let knotInterval = setInterval(renderKnot, 1000/fps);
+  angle += 0.08;
+
   const lines = [
     { tag: '[BOOT]', msg: 'dropxtor-terminal v2.0.0', status: 'OK' },
     { tag: '[INIT]', msg: 'kernel modules', status: 'OK' },
