@@ -37,33 +37,58 @@ body {
   min-height: 100vh;
   perspective: 1000px;
 }
-/* === BOOT SCREEN === */
+/* === BOOT SCREEN (Hermes-inspired achromatic) === */
 #boot-screen {
   position: fixed; inset: 0; z-index: 10000;
-  background: #000; display: flex; flex-direction: column;
+  background: #00000a; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  font-family: "JetBrains Mono", monospace; font-size: 13px;
-  color: var(--green);
+  font-family: "JetBrains Mono", monospace; font-size: 12px;
+  color: #f5f5f5; overflow: hidden;
 }
-#boot-screen .boot-lines { max-width: 500px; width: 100%; padding: 20px; }
-.boot-line { opacity: 0; animation: bootFade 0.1s forwards; }
+/* Achromatic orb avatar */
+#boot-orb {
+  position: relative; width: 120px; height: 120px; margin-bottom: 32px;
+}
+#boot-orb svg { width: 100%; height: 100%; }
+#boot-orb .ring { fill: none; stroke: #f5f5f5; opacity: 0.15; }
+#boot-orb .ring-active { stroke: #edff45; opacity: 0.8; filter: drop-shadow(0 0 6px #edff45); }
+#boot-orb .core { fill: #f5f5f5; opacity: 0.6; }
+#boot-orb .pulse-dot { fill: #edff45; opacity: 0.9; filter: drop-shadow(0 0 4px #edff45); }
+#boot-orb .rotating { transform-origin: 60px 60px; animation: orbRotate 4s linear infinite; }
+#boot-orb .rotating-rev { transform-origin: 60px 60px; animation: orbRotateRev 6s linear infinite; }
+#boot-orb .flicker { animation: orbFlicker 2s ease-in-out infinite; }
+@keyframes orbRotate { to { transform: rotate(360deg); } }
+@keyframes orbRotateRev { to { transform: rotate(-360deg); } }
+@keyframes orbFlicker { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.2; } 75% { opacity: 0.9; } }
+#boot-screen .boot-ascii {
+  font-family: "VT323", monospace; font-size: 14px; line-height: 1.2;
+  color: #f5f5f5; opacity: 0.3; text-align: center; margin-bottom: 24px;
+  white-space: pre; letter-spacing: 1px;
+  animation: bootAsciiIn 1s ease forwards;
+}
+@keyframes bootAsciiIn { from { opacity: 0; filter: blur(8px); } to { opacity: 0.3; filter: blur(0); } }
+#boot-screen .boot-lines { max-width: 480px; width: 100%; padding: 0 20px; }
+.boot-line { opacity: 0; animation: bootFade 0.1s forwards; display: flex; gap: 8px; align-items: baseline; }
 @keyframes bootFade { to { opacity: 1; } }
-.boot-ok { color: var(--green); }
-.boot-warn { color: var(--yellow); }
-.boot-progress { width: 200px; height: 2px; background: rgba(0,255,65,0.2); margin-top: 20px; overflow: hidden; }
-.boot-progress-bar { height: 100%; width: 0; background: var(--green); box-shadow: 0 0 10px var(--green); transition: width 0.3s; }
+.boot-ok { color: #f5f5f5; }
+.boot-warn { color: #edff45; }
+.boot-tag { color: #555; min-width: 60px; }
+.boot-msg { color: #aaa; }
+.boot-status { color: #edff45; }
+.boot-progress { width: 240px; height: 1px; background: rgba(245,245,245,0.1); margin-top: 24px; overflow: hidden; }
+.boot-progress-bar { height: 100%; width: 0; background: #edff45; box-shadow: 0 0 4px #edff45; transition: width 0.3s; }
 #boot-screen .crt-power {
   position: absolute; top: 0; left: 50%; width: 0; height: 100%;
-  background: var(--green); opacity: 0.1;
+  background: #f5f5f5; opacity: 0.06;
   animation: crtPower 0.8s ease-out forwards;
 }
 @keyframes crtPower {
-  0% { width: 0; opacity: 0.8; }
-  50% { width: 4px; opacity: 0.5; }
+  0% { width: 0; opacity: 0.5; }
+  50% { width: 3px; opacity: 0.3; }
   100% { width: 100%; left: 0; opacity: 0; }
 }
-#boot-screen.fade-out { animation: bootOut 0.5s ease forwards; }
-@keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+#boot-screen.fade-out { animation: bootOut 0.6s ease forwards; }
+@keyframes bootOut { to { opacity: 0; pointer-events: none; transform: scale(1.02); filter: blur(4px); } }
 
 /* === CRT EFFECTS === */
 @keyframes flicker {
@@ -296,9 +321,37 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
 </head>
 <body>
 
-<!-- Boot screen -->
+<!-- Boot screen (Hermes-inspired achromatic) -->
 <div id="boot-screen">
   <div class="crt-power"></div>
+  <div id="boot-orb">
+    <svg viewBox="0 0 120 120" fill="none">
+      <!-- Outer ring -->
+      <circle cx="60" cy="60" r="56" class="ring" stroke-width="0.5"/>
+      <!-- Rotating ring with dashes -->
+      <g class="rotating">
+        <circle cx="60" cy="60" r="48" class="ring" stroke-width="0.5" stroke-dasharray="4 8"/>
+        <circle cx="60" cy="12" r="2" class="pulse-dot"/>
+      </g>
+      <!-- Counter-rotating ring -->
+      <g class="rotating-rev">
+        <circle cx="60" cy="60" r="40" class="ring" stroke-width="0.3" stroke-dasharray="2 6"/>
+        <circle cx="60" cy="20" r="1.5" class="pulse-dot" opacity="0.5"/>
+      </g>
+      <!-- Inner ring -->
+      <circle cx="60" cy="60" r="32" class="ring" stroke-width="0.3"/>
+      <!-- Core -->
+      <circle cx="60" cy="60" r="6" class="core flicker"/>
+      <!-- Crosshairs -->
+      <line x1="60" y1="0" x2="60" y2="12" stroke="#f5f5f5" stroke-width="0.3" opacity="0.2"/>
+      <line x1="60" y1="108" x2="60" y2="120" stroke="#f5f5f5" stroke-width="0.3" opacity="0.2"/>
+      <line x1="0" y1="60" x2="12" y2="60" stroke="#f5f5f5" stroke-width="0.3" opacity="0.2"/>
+      <line x1="108" y1="60" x2="120" y2="60" stroke="#f5f5f5" stroke-width="0.3" opacity="0.2"/>
+      <!-- Accent dots -->
+      <circle cx="60" cy="60" r="28" class="ring-active" stroke-width="0.5" stroke-dasharray="1 12" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="boot-ascii">d r o p x t o r</div>
   <div class="boot-lines" id="boot-lines"></div>
   <div class="boot-progress"><div class="boot-progress-bar" id="boot-bar"></div></div>
 </div>
@@ -393,18 +446,6 @@ Type "help" for available commands.</pre></div>
               <div class="proj-tags"><span class="proj-tag">#Next.js</span><span class="proj-tag">#TypeScript</span><span class="proj-tag">#Framer Motion</span><span class="proj-tag">#CRT</span></div>
               <div class="proj-stats"><span class="proj-stat"><span class="num">∞</span> caffeine</span><span class="proj-stat"><span class="num">42</span> deploys</span></div>
             </div>
-            <div class="proj-item">
-              <span class="proj-name">▶ mm-dash</span><span class="proj-badge">[active]</span>
-              <div class="proj-desc">MetaMask Agent dashboard — trading, perps, Polymarket</div>
-              <div class="proj-tags"><span class="proj-tag">#React 19</span><span class="proj-tag">#Tailwind v4</span><span class="proj-tag">#Framer</span><span class="proj-tag">#WebSocket</span></div>
-              <div class="proj-stats"><span class="proj-stat"><span class="num">$35K+</span> volume</span><span class="proj-stat"><span class="num">15m</span> cron</span></div>
-            </div>
-            <div class="proj-item">
-              <span class="proj-name">▶ octra-bounty</span><span class="proj-badge">[solved]</span>
-              <div class="proj-desc">PVAC-HFHE cryptographic challenge — R_com oracle attack</div>
-              <div class="proj-tags"><span class="proj-tag">#C++</span><span class="proj-tag">#Crypto</span><span class="proj-tag">#LPN</span><span class="proj-tag">#BIP39</span></div>
-              <div class="proj-stats"><span class="proj-stat"><span class="num">766K</span> attempts</span><span class="proj-stat"><span class="num">&lt;1s</span> block 0</span></div>
-            </div>
           </div>
 
           <div class="section" id="skills">
@@ -442,16 +483,16 @@ Type "help" for available commands.</pre></div>
 // === BOOT SEQUENCE ===
 (function() {
   const lines = [
-    { text: '[BOOT] dropxtor-terminal v2.0.0', cls: 'boot-ok' },
-    { text: '[ OK ] Loading kernel modules...', cls: 'boot-ok' },
-    { text: '[ OK ] Mounting /dev/crypto...', cls: 'boot-ok' },
-    { text: '[ OK ] Initializing CRT display...', cls: 'boot-ok' },
-    { text: '[ OK ] Matrix rain engine: ONLINE', cls: 'boot-ok' },
-    { text: '[ OK ] Audio subsystem: BEEP READY', cls: 'boot-ok' },
-    { text: '[WARN] Sleep schedule: NOT FOUND', cls: 'boot-warn' },
-    { text: '[ OK ] Coffee level: 100%', cls: 'boot-ok' },
-    { text: '[ OK ] Vibe check: PASSED', cls: 'boot-ok' },
-    { text: '[ OK ] System ready. Welcome, dropxtor.', cls: 'boot-ok' },
+    { tag: '[BOOT]', msg: 'dropxtor-terminal v2.0.0', status: 'OK' },
+    { tag: '[INIT]', msg: 'kernel modules', status: 'OK' },
+    { tag: '[MOUNT]', msg: '/dev/crypto → ok', status: 'OK' },
+    { tag: '[INIT]', msg: 'CRT phosphor warmup', status: 'OK' },
+    { tag: '[INIT]', msg: 'matrix rain engine', status: 'OK' },
+    { tag: '[INIT]', msg: 'audio: BEEP_READY', status: 'OK' },
+    { tag: '[SCAN]', msg: 'sleep schedule', status: 'NOT FOUND', warn: true },
+    { tag: '[SCAN]', msg: 'coffee.exe', status: '100%', warn: true },
+    { tag: '[CHECK]', msg: 'vibe', status: 'PASSED' },
+    { tag: '[DONE]', msg: 'welcome, dropxtor', status: '◆' },
   ];
   const container = document.getElementById('boot-lines');
   const bar = document.getElementById('boot-bar');
@@ -467,8 +508,19 @@ Type "help" for available commands.</pre></div>
       return;
     }
     const div = document.createElement('div');
-    div.className = 'boot-line ' + lines[i].cls;
-    div.textContent = lines[i].text;
+    div.className = 'boot-line';
+    const tagSpan = document.createElement('span');
+    tagSpan.className = 'boot-tag';
+    tagSpan.textContent = lines[i].tag;
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'boot-msg';
+    msgSpan.textContent = lines[i].msg;
+    const statusSpan = document.createElement('span');
+    statusSpan.className = lines[i].warn ? 'boot-warn' : 'boot-status';
+    statusSpan.textContent = lines[i].status;
+    div.appendChild(tagSpan);
+    div.appendChild(msgSpan);
+    div.appendChild(statusSpan);
     container.appendChild(div);
     bar.style.width = ((i + 1) / lines.length * 100) + '%';
     i++;
