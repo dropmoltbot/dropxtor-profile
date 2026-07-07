@@ -604,9 +604,9 @@ Type "help" for available commands.</pre></div>
     container.appendChild(div);
     bar.style.width = ((i + 1) / lines.length * 100) + '%';
     i++;
-    setTimeout(nextLine, 80 + Math.random() * 60);
+    setTimeout(nextLine, 150 + Math.random() * 80);
   }
-  setTimeout(nextLine, 200);
+  setTimeout(nextLine, 400);
 })();
 
 // === LIVE CLOCK ===
