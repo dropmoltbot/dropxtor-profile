@@ -102,7 +102,7 @@ body {
 .glitch-cursor {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='22' viewBox='0 0 16 22'%3E%3Cpath d='M1 1 L1 18 L5 14 L9 21 L11 20 L7 13 L13 13 Z' fill='%2300ff41' stroke='%23006622' stroke-width='0.5'/%3E%3C/svg%3E") 1 1, pointer;
 }
-.matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; width: 100%; height: 100%; }
+.matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; }
 .terminal-window {
   background: var(--bg-terminal);
   border: 1px solid var(--border-green);
@@ -143,12 +143,6 @@ body {
   animation: 4s ease 0s infinite titleGlitch;
   font-family: "VT323", "JetBrains Mono", monospace !important;
 }
-.ascii-title::before, .ascii-title::after {
-  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%;
-  pointer-events: none;
-}
-.ascii-title::before { color: #ff00c8; transform: translate(3px, 0); mix-blend-mode: screen; opacity: 0.7; }
-.ascii-title::after { color: #00c8ff; transform: translate(-3px, 0); mix-blend-mode: screen; opacity: 0.7; }
 .glow { text-shadow: var(--glow-md); }
 .glow-sm { text-shadow: var(--glow-sm); }
 .section-hover { font-family: "JetBrains Mono", monospace; letter-spacing: 0.12em; font-size: 11px; transition: 0.15s; }
@@ -162,7 +156,7 @@ body {
   filter: drop-shadow(rgba(255,0,200,0.6) 2px 0) drop-shadow(rgba(0,200,255,0.6) -2px 0) drop-shadow(rgba(0,255,65,0.4) 0 0 8px);
   animation: 4s ease 0s infinite pixelGlitch;
 }
-.terminal-cursor { vertical-align: text-bottom; width: 8px; height: 1.1em; margin-left: 1px; animation: 1s step-end 0s infinite cursorBlink; display: inline-block; }
+.terminal-cursor { vertical-align: text-bottom; width: 8px; height: 1.1em; margin-left: 1px; animation: 1s step-end 0s infinite cursorBlink; display: inline-block; background: var(--terminal-green); }
 /* Layout */
 main { min-height: 100vh; padding: 12px; }
 @media (min-width: 768px) { main { padding: 24px; } }
@@ -183,21 +177,30 @@ main { min-height: 100vh; padding: 12px; }
 .tagline .d { color: #4b5563; }
 .tagline .s { color: rgba(0,255,65,0.4); }
 .tagline span { margin: 0 8px; }
-.term-box {
-  border: 1px solid rgba(0,255,65,0.2); border-radius: 6px;
-  padding: 12px 16px; margin-bottom: 20px;
-  background: rgba(0,0,0,0.4);
+/* Terminal console */
+.term-console {
+  background: rgba(0,0,0,0.6); border: 1px solid rgba(0,255,65,0.2); border-radius: 4px;
+  padding: 16px; font-family: "JetBrains Mono", monospace; font-size: 14px;
+  height: 320px; overflow-y: auto; margin: 16px 0;
 }
-.term-hint { color: rgba(0,255,65,0.7); font-family: "JetBrains Mono", monospace; font-size: 13px; margin-bottom: 8px; white-space: pre-wrap; }
-.term-prompt { display: flex; align-items: center; gap: 6px; }
-.term-prompt .arrow { color: var(--pink); font-size: 14px; }
-.term-prompt .tilde { color: var(--blue); font-size: 14px; }
-.term-input {
-  background: transparent; border: none; outline: none;
-  color: var(--terminal-green); font-family: "JetBrains Mono", monospace;
-  font-size: 14px; flex: 1; caret-color: transparent;
+.term-console::-webkit-scrollbar { width: 4px; }
+.term-console::-webkit-scrollbar-track { background: transparent; }
+.term-console::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.2); border-radius: 2px; }
+.term-line { margin-bottom: 8px; }
+.term-output { color: #00ff41; white-space: pre-wrap; font-family: "JetBrains Mono", monospace; }
+.term-input-line { display: flex; align-items: center; gap: 8px; }
+.term-input-line .arrow { color: var(--pink); }
+.term-input-line .tilde { color: var(--blue); }
+.term-input-line .txt { color: #fff; }
+.term-form { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.term-form .arrow { color: var(--pink); }
+.term-form .tilde { color: var(--blue); }
+.term-form .input-wrap { position: relative; flex: 1; display: flex; align-items: center; }
+.term-form input {
+  flex: 1; color: var(--yellow); caret-color: transparent;
+  background: transparent; border: none; outline: none; font-family: inherit; font-size: 14px;
 }
-.tabs { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+.tabs { display: flex; gap: 6px; margin: 16px 0; flex-wrap: wrap; }
 .tab {
   padding: 4px 12px; font-size: 11px; text-transform: uppercase;
   letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace;
@@ -205,20 +208,24 @@ main { min-height: 100vh; padding: 12px; }
   background: transparent; cursor: pointer; transition: 0.15s;
   border-radius: 3px;
 }
-.tab:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
+.tab:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; text-shadow: rgba(255,0,255,0.5) 1px 0, rgba(0,255,255,0.5) -1px 0; }
 .tab.active { background: var(--terminal-green); color: #000; font-weight: 700; border-color: var(--terminal-green); }
-.content { min-height: 260px; overflow-y: auto; }
+.content { min-height: 260px; position: relative; }
 .section { display: none; }
 .section.active { display: block; }
-.section h2 { font-size: 13px; color: var(--purple); font-weight: 700; letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace; margin-bottom: 12px; }
-.section p { font-size: 12px; color: #9ca3af; margin-bottom: 8px; line-height: 1.6; font-family: "JetBrains Mono", monospace; }
-@media (min-width: 768px) { .section p { font-size: 14px; } }
-.section .hl { color: var(--terminal-green); }
-.section .str { color: var(--yellow); }
+.section h2 { font-size: 14px; color: var(--purple); font-weight: 700; letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace; margin-bottom: 12px; }
+.section p { font-size: 14px; color: #9ca3af; margin-bottom: 8px; line-height: 1.6; font-family: "JetBrains Mono", monospace; }
+.section .hl-g { color: var(--terminal-green); }
+.section .hl-b { color: var(--blue); }
+.section .hl-y { color: var(--yellow); }
+.section .hl-p { color: var(--pink); }
+.code-line { font-size: 12px; color: var(--yellow); margin-top: 12px; font-family: "JetBrains Mono", monospace; }
+.code-line .kw { color: var(--pink); }
+.code-line .str { color: var(--blue); }
 .proj-item { margin-bottom: 12px; }
-.proj-name { color: var(--yellow); font-weight: 700; font-size: 13px; font-family: "JetBrains Mono", monospace; }
+.proj-name { color: var(--yellow); font-weight: 700; font-size: 14px; font-family: "JetBrains Mono", monospace; }
 .proj-badge { font-size: 10px; color: #4b5563; margin-left: 6px; font-family: "JetBrains Mono", monospace; }
-.proj-desc { color: #6b7280; font-size: 11px; margin: 4px 0 8px; font-family: "JetBrains Mono", monospace; }
+.proj-desc { color: #6b7280; font-size: 12px; margin: 4px 0 8px; font-family: "JetBrains Mono", monospace; }
 .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .proj-tag { font-size: 10px; color: var(--pink); font-family: "JetBrains Mono", monospace; }
 .skill-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
@@ -237,29 +244,20 @@ main { min-height: 100vh; padding: 12px; }
 .contact-val a { color: inherit; text-decoration: none; }
 .contact-note { color: var(--pink); font-size: 12px; margin-top: 12px; font-family: "JetBrains Mono", monospace; }
 .contact-sub { color: #4b5563; font-size: 11px; margin-top: 4px; font-family: "JetBrains Mono", monospace; }
-.sb-left, .sb-right { display: flex; align-items: center; gap: 4px; font-family: "JetBrains Mono", monospace; }
+.sb-left, .sb-right { display: flex; align-items: center; gap: 10px; font-family: "JetBrains Mono", monospace; }
 .sb-sep { color: #374151; }
 .sb-dot { color: var(--terminal-green); font-size: 9px; }
 .sb-pid { color: #6b7280; }
 .sb-crt { color: rgba(0,255,65,0.5); }
 .sb-ok { color: var(--terminal-green); }
-.hint-bar { padding: 4px 16px 8px; font-size: 10px; color: #4b5563; border-top: 1px solid rgba(0,255,65,0.08); font-family: "JetBrains Mono", monospace; }
+.hint-bar { text-align: center; margin-top: 16px; font-size: 10px; color: #374151; font-family: "JetBrains Mono", monospace; letter-spacing: 0.05em; }
 </style>
 </head>
 <body>
-<svg style="position:absolute;width:0;height:0" aria-hidden="true">
-  <defs>
-    <filter id="crt-filter" x="0%" y="0%" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"></feTurbulence>
-      <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"></feColorMatrix>
-      <feBlend in="SourceGraphic" in2="grayNoise" mode="screen" result="blended"></feBlend>
-      <feComponentTransfer in="blended"><feFuncA type="linear" slope="0.08"></feFuncA></feComponentTransfer>
-    </filter>
-  </defs>
-</svg>
 
 <main class="scanlines crt-noise glitch-cursor">
   <canvas id="matrix-canvas" class="matrix-rain" aria-hidden="true"></canvas>
+  <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9997;mix-blend-mode:multiply;"></canvas>
   
   <div class="tw-wrap">
     <div class="terminal-window">
@@ -298,7 +296,7 @@ main { min-height: 100vh; padding: 12px; }
             <div class="avatar-glow"></div>
           </div>
           <div>
-            <h1 class="ascii-title glow" data-text="DROPXTOR">DROPXTOR</h1>
+            <h1 class="ascii-title glow">DROPXTOR</h1>
           </div>
         </div>
 
@@ -314,13 +312,20 @@ main { min-height: 100vh; padding: 12px; }
 
         <hr class="term-divider"/>
 
-        <div class="term-box">
-          <pre class="term-hint">Type "help" for available commands.</pre>
-          <div class="term-prompt">
+        <!-- Terminal console with scrollback -->
+        <div class="term-console" id="term-console">
+          <div class="term-line">
+            <pre class="term-output">dropxtor-terminal v1.0.0
+Type "help" for available commands.</pre>
+          </div>
+          <form class="term-form" id="term-form">
             <span class="arrow">➜</span>
             <span class="tilde">~</span>
-            <input class="term-input" id="cli" type="text" autocomplete="off"/>
-          </div>
+            <div class="input-wrap">
+              <input id="cli" type="text" autocomplete="off" spellcheck="false" autofocus/>
+              <span class="terminal-cursor" id="cursor" style="left:0em;"></span>
+            </div>
+          </form>
         </div>
 
         <hr class="term-divider"/>
@@ -335,9 +340,11 @@ main { min-height: 100vh; padding: 12px; }
         <div class="content">
           <div class="section active" id="about">
             <h2>// ABOUT</h2>
-            <p>Builder at the intersection of <span class="hl">AI</span>, <span class="hl">blockchain</span> and <span class="hl">web</span>.</p>
-            <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
-            <p>const mission = <span class="str">"build the future, ship every day"</span>;</p>
+            <div style="font-family:'JetBrains Mono',monospace;">
+              <p>Builder at the intersection of <span class="hl-g">AI</span>, <span class="hl-b">blockchain</span> and <span class="hl-y">web</span>.</p>
+              <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
+              <p class="code-line"><span class="kw">const</span> mission = <span class="str">"build the future, ship every day"</span>;</p>
+            </div>
           </div>
 
           <div class="section" id="projects">
@@ -346,10 +353,7 @@ main { min-height: 100vh; padding: 12px; }
               <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[open]</span>
               <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
               <div class="proj-tags">
-                <span class="proj-tag">#Next.js</span>
-                <span class="proj-tag">#TypeScript</span>
-                <span class="proj-tag">#Framer Motion</span>
-                <span class="proj-tag">#CRT</span>
+                <span class="proj-tag">#Next.js</span><span class="proj-tag">#TypeScript</span><span class="proj-tag">#Framer Motion</span><span class="proj-tag">#CRT</span>
               </div>
             </div>
           </div>
@@ -407,39 +411,145 @@ main { min-height: 100vh; padding: 12px; }
           <span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span>
         </div>
       </div>
-      <div class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history</div>
     </div>
+    <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history</p>
   </div>
 </main>
 
 <script>
-// Matrix rain
+// === Matrix Rain (exact replica of original) ===
 (function() {
-  const c = document.getElementById('matrix-canvas');
-  const ctx = c.getContext('2d');
-  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const fs = 16;
-  let cols = Math.floor(c.width / fs);
-  let drops = Array(cols).fill(0).map(() => Math.random() * c.height / fs);
-  function draw() {
-    ctx.fillStyle = 'rgba(4,4,4,0.05)';
-    ctx.fillRect(0, 0, c.width, c.height);
-    ctx.fillStyle = '#00ff41';
-    ctx.font = fs + 'px monospace';
-    for (let i = 0; i < drops.length; i++) {
-      const ch = chars[Math.floor(Math.random() * chars.length)];
-      ctx.fillText(ch, i * fs, drops[i] * fs);
-      if (drops[i] * fs > c.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  let columns = [];
+  let frameCount = 0;
+  let isVisible = true;
+  
+  function initColumns() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const n = Math.ceil(w / 14);
+    columns = [];
+    for (let i = 0; i < n; i++) {
+      const trailLen = 5 + Math.floor(Math.random() * 10);
+      const col = {
+        x: 14 * i,
+        y: Math.random() * h,
+        speed: 0.5 + 1.5 * Math.random(),
+        chars: [],
+        headBrightness: 1
+      };
+      for (let j = 0; j < trailLen; j++) col.chars.push(chars[Math.floor(Math.random() * chars.length)]);
+      columns.push(col);
     }
   }
-  setInterval(draw, 50);
-  window.addEventListener('resize', () => { cols = Math.floor(c.width / fs); drops = Array(cols).fill(0); });
+  
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(dpr, dpr);
+    initColumns();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  function draw() {
+    if (!isVisible) { requestAnimationFrame(draw); return; }
+    frameCount++;
+    const w = window.innerWidth, h = window.innerHeight;
+    const evenFrame = frameCount % 2 === 0;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = '14px "JetBrains Mono", monospace';
+    ctx.textBaseline = 'top';
+    
+    columns.forEach(col => {
+      if (evenFrame) {
+        col.y += 14 * col.speed;
+        col.chars.unshift(chars[Math.floor(Math.random() * chars.length)]);
+        if (col.chars.length > 20) col.chars.pop();
+        if (col.y > h + 280) { col.y = -70; col.speed = 0.5 + 1.5 * Math.random(); }
+      }
+      col.chars.forEach((ch, i) => {
+        const y = col.y - 14 * i;
+        if (y < -14 || y > h) return;
+        if (i === 0) {
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#00ff41';
+          ctx.shadowBlur = 10;
+          ctx.fillText(ch, col.x, y);
+          ctx.shadowBlur = 0;
+        } else if (i === 1) {
+          ctx.fillStyle = '#ccffcc';
+          ctx.fillText(ch, col.x, y);
+        } else {
+          const brightness = Math.max(0, 1 - i / 15);
+          const g = Math.floor(255 * brightness);
+          ctx.fillStyle = `rgba(0, ${g}, 65, ${0.8 * brightness})`;
+          ctx.fillText(ch, col.x, y);
+        }
+      });
+    });
+    
+    requestAnimationFrame(draw);
+  }
+  draw();
 })();
 
-// Tab switching with sound
+// === Noise Canvas (second canvas with scanlines + noise) ===
+(function() {
+  const canvas = document.getElementById('noise-canvas');
+  const ctx = canvas.getContext('2d');
+  let frameCount = 0;
+  
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  function draw() {
+    frameCount++;
+    const w = canvas.width, h = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, w, h);
+    
+    // Scanlines every 3rd frame
+    if (frameCount % 3 === 0) {
+      const gap = Math.max(2, Math.round(2 * dpr));
+      const alpha = 0.28 + 0.04 * Math.random();
+      ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+      for (let i = 0; i < h; i += gap) ctx.fillRect(0, i, w, Math.round(dpr));
+    }
+    
+    // Noise every 4th frame
+    if (frameCount % 4 === 0) {
+      const imageData = ctx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        if (0.07 > Math.random()) {
+          const g = Math.floor(15 + 55 * Math.random());
+          data[i] = 0; data[i+1] = g; data[i+2] = Math.floor(0.2 * g); data[i+3] = Math.floor(2.2 * g);
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+    
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// === Audio: terminal beep on tab click ===
 let audioCtx = null;
 function playBeep() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -468,6 +578,7 @@ function playBeep() {
   o2.start(t + 0.02); o2.stop(t + 0.09);
 }
 
+// === Tab switching ===
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     playBeep();
@@ -478,65 +589,112 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// Terminal input
+// === Terminal CLI ===
+const commands = {
+  help: `Available commands:
+  about     - About me
+  skills    - Technical skills
+  projects  - Recent projects
+  contact   - Get in touch
+  clear     - Clear terminal
+  whoami    - Current user`,
+  about: `// dropxtor
+Full-stack developer & blockchain enthusiast.
+Building the future, one deploy at a time.
+Based in the matrix.`,
+  skills: `Languages: TypeScript, Rust, Solidity, Go
+Frontend: React, Next.js, Tailwind
+Backend: Node.js, PostgreSQL, Redis
+Blockchain: EVM, Solana, DeFi, NFTs
+Tools: Docker, K8s, AWS, Vercel`,
+  projects: `1. dropxtor-profile  - Terminal-style portfolio
+2. tempo-integration - MPP payments
+3. arxiv-pulse      - Research notifier
+4. moltbook         - Social network for agents`,
+  contact: `Email: dropxtor@proton.me
+GitHub: github.com/dropxtor
+Twitter: @0xdropxtor`,
+  whoami: 'guest@dropxtor-terminal',
+  clear: '__CLEAR__'
+};
+
+const consoleEl = document.getElementById('term-console');
+const form = document.getElementById('term-form');
 const cli = document.getElementById('cli');
-const hintBox = document.querySelector('.term-hint');
-const commands = ['help', 'about', 'projects', 'skills', 'contact', 'clear', 'whoami', 'ls', 'sudo'];
+const cursor = document.getElementById('cursor');
 let history = [];
 let histIdx = -1;
 
+function addOutput(text) {
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  const pre = document.createElement('pre');
+  pre.className = 'term-output';
+  pre.textContent = text;
+  div.appendChild(pre);
+  form.before(div);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function addInputLine(text) {
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  const line = document.createElement('div');
+  line.className = 'term-input-line';
+  line.innerHTML = '<span class="arrow">➜</span><span class="tilde">~</span><span class="txt"></span>';
+  line.querySelector('.txt').textContent = text;
+  div.appendChild(line);
+  form.before(div);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const cmd = cli.value.trim().toLowerCase();
+  if (!cmd) return;
+  
+  history.push(cmd);
+  histIdx = history.length;
+  addInputLine(cli.value);
+  
+  if (cmd === 'clear' || (commands[cmd] === '__CLEAR__')) {
+    // Clear all output except the form
+    [...consoleEl.querySelectorAll('.term-line')].forEach(el => el.remove());
+  } else if (commands[cmd]) {
+    addOutput(commands[cmd]);
+  } else {
+    addOutput(`Command not found: ${cmd}. Type "help" for available commands.`);
+  }
+  
+  cli.value = '';
+  cursor.style.left = '0em';
+});
+
+cli.addEventListener('input', () => {
+  cursor.style.left = `${0.605 * cli.value.length}em`;
+});
+
 cli.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const cmd = cli.value.trim().toLowerCase();
-    if (cmd) {
-      history.push(cmd);
-      histIdx = history.length;
-      switch(cmd) {
-        case 'help':
-          hintBox.textContent = 'Available: about · projects · skills · contact · clear · whoami';
-          break;
-        case 'about': case 'projects': case 'skills': case 'contact':
-          document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === cmd));
-          document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === cmd));
-          hintBox.textContent = '→ switched to ' + cmd;
-          break;
-        case 'whoami':
-          hintBox.textContent = 'dropxtor — vibe coder // blockchain // ai agent builder';
-          break;
-        case 'clear':
-          hintBox.textContent = 'Type "help" for available commands.';
-          cli.value = '';
-          break;
-        case 'ls':
-          hintBox.textContent = 'about  projects  skills  contact';
-          break;
-        case 'sudo':
-          hintBox.textContent = '[sudo] We trust you have received the usual lecture.';
-          break;
-        default:
-          hintBox.textContent = 'command not found: ' + cmd + ' — try "help"';
-      }
-    }
-    cli.value = '';
-  } else if (e.key === 'ArrowUp') {
+  if (e.key === 'ArrowUp') {
     e.preventDefault();
-    if (histIdx > 0) { histIdx--; cli.value = history[histIdx]; }
+    if (histIdx > 0) { histIdx--; cli.value = history[histIdx]; cursor.style.left = `${0.605 * cli.value.length}em`; }
   } else if (e.key === 'ArrowDown') {
     e.preventDefault();
     if (histIdx < history.length - 1) { histIdx++; cli.value = history[histIdx]; }
     else { histIdx = history.length; cli.value = ''; }
+    cursor.style.left = `${0.605 * cli.value.length}em`;
   } else if (e.key === 'Tab') {
     e.preventDefault();
     const partial = cli.value.toLowerCase();
-    const match = commands.find(c => c.startsWith(partial));
-    if (match) cli.value = match;
+    const match = Object.keys(commands).find(c => c.startsWith(partial));
+    if (match) { cli.value = match; cursor.style.left = `${0.605 * cli.value.length}em`; }
   } else if (e.key === 'Escape') {
     cli.value = '';
-    hintBox.textContent = 'Type "help" for available commands.';
+    cursor.style.left = '0em';
   }
 });
 
-document.querySelector('.terminal-window').addEventListener('click', () => cli.focus());
+consoleEl.addEventListener('click', () => cli.focus());
 cli.focus();
 </script>
 </body>
