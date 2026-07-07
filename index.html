@@ -102,7 +102,7 @@ body {
 .glitch-cursor {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='22' viewBox='0 0 16 22'%3E%3Cpath d='M1 1 L1 18 L5 14 L9 21 L11 20 L7 13 L13 13 Z' fill='%2300ff41' stroke='%23006622' stroke-width='0.5'/%3E%3C/svg%3E") 1 1, pointer;
 }
-.matrix-rain { z-index: 0; opacity: 0.18; position: fixed; inset: 0; }
+.matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; width: 100%; height: 100%; }
 .terminal-window {
   background: var(--bg-terminal);
   border: 1px solid var(--border-green);
@@ -138,11 +138,17 @@ body {
   letter-spacing: 0.25em; text-transform: uppercase;
   color: var(--terminal-green);
   -webkit-font-smoothing: none; image-rendering: pixelated;
-  filter: drop-shadow(rgba(255,0,200,0.7) 3px 0) drop-shadow(rgba(0,200,255,0.7) -3px 0) drop-shadow(rgba(0,255,65,0.6) 0 0 12px) drop-shadow(rgba(0,255,65,0.25) 0 0 30px);
+  filter: drop-shadow(#ff00c8 3px 0) drop-shadow(#00c8ff -3px 0) drop-shadow(rgba(0,255,65,0.6) 0 0 12px) drop-shadow(rgba(0,255,65,0.25) 0 0 30px);
   font-size: clamp(2.8rem, 7vw, 5rem); line-height: 1;
   animation: 4s ease 0s infinite titleGlitch;
   font-family: "VT323", "JetBrains Mono", monospace !important;
 }
+.ascii-title::before, .ascii-title::after {
+  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%;
+  pointer-events: none;
+}
+.ascii-title::before { color: #ff00c8; transform: translate(3px, 0); mix-blend-mode: screen; opacity: 0.7; }
+.ascii-title::after { color: #00c8ff; transform: translate(-3px, 0); mix-blend-mode: screen; opacity: 0.7; }
 .glow { text-shadow: var(--glow-md); }
 .glow-sm { text-shadow: var(--glow-sm); }
 .section-hover { font-family: "JetBrains Mono", monospace; letter-spacing: 0.12em; font-size: 11px; transition: 0.15s; }
@@ -292,7 +298,7 @@ main { min-height: 100vh; padding: 12px; }
             <div class="avatar-glow"></div>
           </div>
           <div>
-            <h1 class="ascii-title glow">DROPXTOR</h1>
+            <h1 class="ascii-title glow" data-text="DROPXTOR">DROPXTOR</h1>
           </div>
         </div>
 
@@ -411,12 +417,12 @@ main { min-height: 100vh; padding: 12px; }
 (function() {
   const c = document.getElementById('matrix-canvas');
   const ctx = c.getContext('2d');
-  function resize() { c.width = window.innerWidth * 2; c.height = window.innerHeight * 2; c.style.width = window.innerWidth + 'px'; c.style.height = window.innerHeight + 'px'; }
+  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
   resize(); window.addEventListener('resize', resize);
   const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const fs = 14;
+  const fs = 16;
   let cols = Math.floor(c.width / fs);
-  let drops = Array(cols).fill(0);
+  let drops = Array(cols).fill(0).map(() => Math.random() * c.height / fs);
   function draw() {
     ctx.fillStyle = 'rgba(4,4,4,0.05)';
     ctx.fillRect(0, 0, c.width, c.height);
