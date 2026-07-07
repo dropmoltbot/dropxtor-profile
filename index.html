@@ -582,9 +582,10 @@ Type "help" for available commands.</pre></div>
     if (i >= lines.length) {
       bar.style.width = '100%';
       setTimeout(() => {
+        if (new URLSearchParams(window.location.search).has('debugboot')) return; // keep for debugging
         document.getElementById('boot-screen').classList.add('fade-out');
-        setTimeout(() => document.getElementById('boot-screen').remove(), 500);
-      }, 300);
+        setTimeout(() => { const bs = document.getElementById('boot-screen'); if (bs) bs.remove(); clearInterval(knotInterval); }, 600);
+      }, 500);
       return;
     }
     const div = document.createElement('div');
