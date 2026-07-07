@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>dropxtor // Terminal</title>
+<meta name="description" content="Terminal-style hacker profile"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #00ff41;
+  --pink: #ff79c6;
+  --cyan: #8be9fd;
+  --purple: #bd93f9;
+  --yellow: #f1fa8c;
+  --bg: #030303;
+  --gray5: #6b7280;
+  --gray6: #4b5563;
+  --gray7: #374151;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+}
+/* CRT overlay */
+.crt-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 3px);
+}
+.crt-overlay::after {
+  content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
+}
+/* Matrix rain canvas */
+#matrix { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.15; }
+/* Terminal window */
+.terminal {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 640px;
+  border: 1px solid rgba(0,255,65,0.3);
+  background: rgba(3,3,3,0.95);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 16px;
+}
+/* Header bar */
+.term-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+  background: rgba(0,255,65,0.03);
+}
+.dots { display: flex; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #ff5f56; }
+.dot.y { background: #ffbd2e; }
+.dot.g { background: #27c93f; }
+.term-title { font-size: 10px; color: var(--gray5); letter-spacing: 1px; }
+.term-env { font-size: 10px; color: var(--gray5); }
+.term-env .sep { color: var(--gray7); }
+/* Body */
+.term-body { padding: 20px 24px 0; }
+.cmd-line { font-size: 13px; margin-bottom: 16px; }
+.cmd-line .user { color: var(--pink); }
+.cmd-line .at { color: var(--gray6); }
+.cmd-line .host { color: var(--cyan); }
+.cmd-line .prompt { color: var(--gray6); }
+.cmd-line .cmd { color: var(--yellow); margin-left: 4px; }
+/* Logo */
+.logo {
+  font-family: 'VT323', monospace;
+  font-size: 52px; color: var(--green);
+  text-align: center; letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(0,255,65,0.5), 0 0 20px rgba(0,255,65,0.3);
+  animation: flicker 3s infinite;
+  position: relative;
+}
+.logo::before, .logo::after {
+  content: 'DROPXTOR'; position: absolute; top:0; left:0; width:100%;
+  opacity: 0.7;
+}
+.logo::before { color: #ff004c; transform: translate(-1px,0); clip-path: inset(0 0 60% 0); animation: glitch1 2s infinite; }
+.logo::after { color: #00fff2; transform: translate(1px,0); clip-path: inset(60% 0 0 0); animation: glitch2 2.5s infinite; }
+@keyframes flicker { 0%,98%,100%{opacity:1;} 98.5%{opacity:0.8;} 99%{opacity:0.95;} }
+@keyframes glitch1 { 0%,90%,100%{transform:translate(0);} 92%{transform:translate(-2px,0);} 94%{transform:translate(1px,0);} }
+@keyframes glitch2 { 0%,90%,100%{transform:translate(0);} 93%{transform:translate(2px,0);} 95%{transform:translate(-1px,0);} }
+/* Tagline */
+.tagline { text-align: center; font-size: 12px; margin: 8px 0 20px; color: #ccc; }
+.tagline .dash { color: var(--gray6); }
+.tagline .sep { color: rgba(0,255,65,0.4); }
+/* Terminal input box */
+.term-input-box {
+  border: 1px solid rgba(0,255,65,0.15);
+  border-radius: 4px; padding: 10px 14px; margin-bottom: 16px;
+  background: rgba(0,0,0,0.4);
+}
+.term-hint { color: rgba(0,255,65,0.7); font-size: 12px; margin-bottom: 8px; font-family: 'JetBrains Mono',monospace; white-space: pre-wrap; }
+.term-prompt-row { display: flex; align-items: center; gap: 6px; }
+.term-arrow { color: var(--pink); font-size: 14px; }
+.term-tilde { color: var(--cyan); font-size: 14px; }
+.term-input {
+  background: transparent; border: none; outline: none;
+  color: var(--green); font-family: 'JetBrains Mono',monospace;
+  font-size: 14px; flex: 1; caret-color: var(--green);
+}
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+.tab {
+  padding: 4px 12px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 2px; font-family: 'JetBrains Mono',monospace;
+  border: 1px solid rgba(0,255,65,0.4); color: var(--green);
+  background: transparent; cursor: pointer; transition: all 0.2s;
+  border-radius: 3px;
+}
+.tab:hover { border-color: var(--green); }
+.tab.active { background: var(--green); color: #000; font-weight: 700; }
+/* Content */
+.content { min-height: 180px; padding-bottom: 16px; }
+.section { display: none; }
+.section.active { display: block; }
+.section h2 {
+  font-size: 13px; color: var(--purple); font-weight: 700;
+  letter-spacing: 2px; margin-bottom: 12px;
+}
+.section p { font-size: 12px; color: #bbb; margin-bottom: 8px; line-height: 1.6; }
+.section p .hl { color: var(--green); }
+.section p .str { color: var(--yellow); }
+/* Projects */
+.proj-item { margin-bottom: 12px; }
+.proj-name { color: var(--yellow); font-weight: 700; font-size: 13px; }
+.proj-badge { font-size: 10px; color: var(--gray6); margin-left: 6px; }
+.proj-desc { color: var(--gray5); font-size: 11px; margin: 4px 0; }
+.proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.proj-tag { font-size: 10px; color: var(--pink); }
+/* Skills */
+.skill-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.skill-label { color: var(--pink); font-size: 11px; min-width: 100px; flex-shrink: 0; }
+.skill-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.skill-tag {
+  padding: 2px 8px; font-size: 10px; color: var(--green);
+  background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);
+  border-radius: 3px; transition: all 0.2s; cursor: default;
+}
+.skill-tag:hover { border-color: rgba(0,255,65,0.6); }
+/* Contact */
+.contact-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.contact-label { color: var(--pink); font-size: 11px; min-width: 70px; }
+.contact-val { color: var(--cyan); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+.contact-val a { color: inherit; text-decoration: none; }
+.contact-note { color: var(--pink); font-size: 12px; margin-top: 12px; }
+.contact-sub { color: var(--gray6); font-size: 11px; margin-top: 4px; }
+/* Footer */
+.term-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 12px; font-size: 10px; color: #888;
+  border-top: 1px solid rgba(0,255,65,0.15);
+  background: rgba(0,255,65,0.02);
+}
+.term-footer .stat { color: var(--green); }
+.term-footer .stat-dim { color: rgba(0,255,65,0.5); }
+.term-footer .sep { color: var(--gray7); }
+.term-footer .dot-g { color: var(--green); font-size: 9px; }
+.term-footer .pid { color: var(--gray5); }
+.term-hint-bar {
+  padding: 4px 12px 8px; font-size: 10px; color: var(--gray6);
+  border-top: 1px solid rgba(0,255,65,0.08);
+}
+.term-hint-bar .cursor { color: var(--green); animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+/* Glow */
+.glow { text-shadow: 0 0 6px currentColor; }
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="crt-overlay"></div>
+
+<div class="terminal">
+  <!-- Header -->
+  <div class="term-header">
+    <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+    <span class="term-title">dropxtor@network: ~</span>
+    <span class="term-env">ZSH <span class="sep">·</span> UTF-8</span>
+  </div>
+
+  <!-- Body -->
+  <div class="term-body">
+    <div class="cmd-line">
+      <span class="user">dropxtor</span><span class="at">@</span><span class="host">network</span><span class="prompt">:~ $</span><span class="cmd">whoami</span>
+    </div>
+
+    <h1 class="logo">DROPXTOR</h1>
+    <div class="tagline">
+      <span class="dash">──</span>
+      <span style="margin:0 8px">vibe coder</span>
+      <span class="sep">//</span>
+      <span style="margin:0 8px">blockchain</span>
+      <span class="sep">//</span>
+      <span style="margin:0 8px">ai agent builder</span>
+      <span class="dash">──</span>
+    </div>
+
+    <div class="term-input-box">
+      <div class="term-hint">Type "help" for available commands.</div>
+      <div class="term-prompt-row">
+        <span class="term-arrow">➜</span>
+        <span class="term-tilde">~</span>
+        <input class="term-input" id="cli" type="text" autocomplete="off" placeholder="" />
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="about">about</button>
+      <button class="tab" data-tab="projects">projects</button>
+      <button class="tab" data-tab="skills">skills</button>
+      <button class="tab" data-tab="contact">contact</button>
+    </div>
+
+    <div class="content">
+      <!-- About -->
+      <div class="section active" id="about">
+        <h2>// ABOUT</h2>
+        <p>Builder at the intersection of <span class="hl">AI</span>, <span class="hl">blockchain</span> and <span class="hl">web</span>.</p>
+        <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
+        <p>const mission = <span class="str">"build the future, ship every day"</span>;</p>
+      </div>
+
+      <!-- Projects -->
+      <div class="section" id="projects">
+        <h2>// PROJECTS</h2>
+        <div class="proj-item">
+          <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[open]</span>
+          <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
+          <div class="proj-tags">
+            <span class="proj-tag">#Next.js</span>
+            <span class="proj-tag">#TypeScript</span>
+            <span class="proj-tag">#Framer Motion</span>
+            <span class="proj-tag">#CRT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="section" id="skills">
+        <h2>// SKILLS</h2>
+        <div class="skill-row">
+          <span class="skill-label">Languages:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">TypeScript</span><span class="skill-tag">Python</span><span class="skill-tag">Rust</span><span class="skill-tag">Go</span><span class="skill-tag">Solidity</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Frontend:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">Next.js</span><span class="skill-tag">React</span><span class="skill-tag">Three.js</span><span class="skill-tag">Tailwind</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Backend:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">GraphQL</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">Blockchain:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">EVM</span><span class="skill-tag">Solana</span><span class="skill-tag">DeFi</span><span class="skill-tag">Smart Contracts</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">AI/ML:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">LLMs</span><span class="skill-tag">Multi-Agent</span><span class="skill-tag">RAG</span><span class="skill-tag">OpenClaw</span>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-label">DevOps:</span>
+          <div class="skill-tags">
+            <span class="skill-tag">Docker</span><span class="skill-tag">K8s</span><span class="skill-tag">Vercel</span><span class="skill-tag">CI/CD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="section" id="contact">
+        <h2>// CONTACT</h2>
+        <div class="contact-row">
+          <span class="contact-label">github:</span>
+          <span class="contact-val"><a href="https://github.com/dropxtor" target="_blank">github.com/dropxtor</a></span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">twitter:</span>
+          <span class="contact-val"><a href="https://x.com/0xdropxtor" target="_blank">@0xdropxtor</a></span>
+        </div>
+        <p class="contact-note">// open to collaborations</p>
+        <p class="contact-sub">DeFi · AI agents · open source · web3 infra</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="term-footer">
+    <span><span class="dot-g">●</span> SSH <span class="sep">│</span> UTF-8 <span class="sep">│</span> ZSH</span>
+    <span><span class="stat-dim">CRT</span> <span class="sep">│</span> <span class="stat glow">SYS OK</span> <span class="sep">│</span> <span class="pid">PID 5689</span></span>
+  </div>
+  <div class="term-hint-bar"><span class="cursor">_</span> ESC clear · Tab autocomplete · ↑↓ history</div>
+</div>
+
+<script>
+// Matrix rain
+(function() {
+  const c = document.getElementById('matrix');
+  const ctx = c.getContext('2d');
+  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const fs = 14;
+  let cols = Math.floor(c.width / fs);
+  let drops = Array(cols).fill(0);
+  function draw() {
+    ctx.fillStyle = 'rgba(3,3,3,0.05)';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#00ff41';
+    ctx.font = fs + 'px monospace';
+    for (let i = 0; i < drops.length; i++) {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * fs, drops[i] * fs);
+      if (drops[i] * fs > c.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 50);
+  window.addEventListener('resize', () => { cols = Math.floor(c.width / fs); drops = Array(cols).fill(0); });
+})();
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Terminal input
+const cli = document.getElementById('cli');
+const hintBox = document.querySelector('.term-hint');
+const commands = ['help', 'about', 'projects', 'skills', 'contact', 'clear', 'whoami', 'ls', 'sudo'];
+let history = [];
+let histIdx = -1;
+
+cli.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const cmd = cli.value.trim().toLowerCase();
+    if (cmd) {
+      history.push(cmd);
+      histIdx = history.length;
+      switch(cmd) {
+        case 'help':
+          hintBox.textContent = 'Available: about · projects · skills · contact · clear · whoami';
+          break;
+        case 'about': case 'projects': case 'skills': case 'contact':
+          document.querySelectorAll('.tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.tab === cmd);
+          });
+          document.querySelectorAll('.section').forEach(s => {
+            s.classList.toggle('active', s.id === cmd);
+          });
+          hintBox.textContent = '→ switched to ' + cmd;
+          break;
+        case 'whoami':
+          hintBox.textContent = 'dropxtor — vibe coder // blockchain // ai agent builder';
+          break;
+        case 'clear':
+          hintBox.textContent = 'Type "help" for available commands.';
+          cli.value = '';
+          break;
+        case 'ls':
+          hintBox.textContent = 'about  projects  skills  contact';
+          break;
+        case 'sudo':
+          hintBox.textContent = '[sudo] We trust you have received the usual lecture.';
+          break;
+        default:
+          hintBox.textContent = 'command not found: ' + cmd + ' — try "help"';
+      }
+    }
+    cli.value = '';
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (histIdx > 0) { histIdx--; cli.value = history[histIdx]; }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (histIdx < history.length - 1) { histIdx++; cli.value = history[histIdx]; }
+    else { histIdx = history.length; cli.value = ''; }
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    const partial = cli.value.toLowerCase();
+    const match = commands.find(c => c.startsWith(partial));
+    if (match) cli.value = match;
+  } else if (e.key === 'Escape') {
+    cli.value = '';
+    hintBox.textContent = 'Type "help" for available commands.';
+  }
+});
+
+// Focus input on click anywhere in terminal
+document.querySelector('.terminal').addEventListener('click', () => cli.focus());
+cli.focus();
+</script>
+</body>
+</html>
