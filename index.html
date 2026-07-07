@@ -10,43 +10,73 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root {
-  --terminal-green: #00ff41;
-  --terminal-green-dim: #0c3;
-  --terminal-green-dark: #003a0e;
-  --bg-dark: #0a0a0a;
+  --green: #00ff41;
+  --green-dim: #0c3;
+  --green-dark: #003a0e;
+  --bg: #030303;
   --bg-darker: #040404;
   --bg-terminal: #080c08f7;
-  --text-primary: #e0e0e0;
-  --text-dim: #666;
-  --border-green: #00ff4133;
-  --border-green-bright: #00ff4180;
+  --text: #e0e0e0;
+  --border: #00ff4133;
+  --border-bright: #00ff4180;
   --pink: #ff79c6;
   --blue: #8be9fd;
   --yellow: #f1fa8c;
   --purple: #bd93f9;
+  --orange: #f6851b;
   --glow-sm: 0 0 8px #00ff41cc, 0 0 16px #00ff4166;
   --glow-md: 0 0 10px #00ff41e6, 0 0 20px #00ff4180, 0 0 40px #00ff4133;
+  --glow-lg: 0 0 20px #00ff41ff, 0 0 40px #00ff4199, 0 0 80px #00ff4144;
 }
 *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background-color: var(--bg-darker);
-  color: var(--text-primary);
+  background: var(--bg-darker);
+  color: var(--text);
   font-family: "VT323", "JetBrains Mono", monospace;
-  animation: 8s ease 0s infinite flicker;
   overflow-x: hidden;
   min-height: 100vh;
+  perspective: 1000px;
 }
+/* === BOOT SCREEN === */
+#boot-screen {
+  position: fixed; inset: 0; z-index: 10000;
+  background: #000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: "JetBrains Mono", monospace; font-size: 13px;
+  color: var(--green);
+}
+#boot-screen .boot-lines { max-width: 500px; width: 100%; padding: 20px; }
+.boot-line { opacity: 0; animation: bootFade 0.1s forwards; }
+@keyframes bootFade { to { opacity: 1; } }
+.boot-ok { color: var(--green); }
+.boot-warn { color: var(--yellow); }
+.boot-progress { width: 200px; height: 2px; background: rgba(0,255,65,0.2); margin-top: 20px; overflow: hidden; }
+.boot-progress-bar { height: 100%; width: 0; background: var(--green); box-shadow: 0 0 10px var(--green); transition: width 0.3s; }
+#boot-screen .crt-power {
+  position: absolute; top: 0; left: 50%; width: 0; height: 100%;
+  background: var(--green); opacity: 0.1;
+  animation: crtPower 0.8s ease-out forwards;
+}
+@keyframes crtPower {
+  0% { width: 0; opacity: 0.8; }
+  50% { width: 4px; opacity: 0.5; }
+  100% { width: 100%; left: 0; opacity: 0; }
+}
+#boot-screen.fade-out { animation: bootOut 0.5s ease forwards; }
+@keyframes bootOut { to { opacity: 0; pointer-events: none; } }
+
+/* === CRT EFFECTS === */
 @keyframes flicker {
   0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
   20%, 24%, 55% { opacity: 0.6; }
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
+@keyframes scanMove { 0% { top: -10%; } 100% { top: 110%; } }
+@keyframes vignettePulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.45; } }
+@keyframes cursorBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 @keyframes titleGlitch {
-  0%, 85%, 100% { text-shadow: 0 0 10px var(--terminal-green), 0 0 20px var(--terminal-green), 0 0 40px #00ff4180; transform: translate(0); }
-  86% { text-shadow: 4px 0 #f0f, -4px 0 #0ff, 0 0 20px var(--terminal-green); transform: translate(-3px); }
+  0%, 85%, 100% { text-shadow: 0 0 10px var(--green), 0 0 20px var(--green), 0 0 40px #00ff4180; transform: translate(0); }
+  86% { text-shadow: 4px 0 #f0f, -4px 0 #0ff, 0 0 20px var(--green); transform: translate(-3px); }
   87% { clip-path: inset(30% 0 40%); transform: translate(3px); }
   88% { clip-path: inset(0); transform: translate(0); }
   89% { text-shadow: #0ff 2px 0, #f0f -2px 0; transform: translate(-2px, 1px); }
@@ -65,18 +95,13 @@ body {
   91% { clip-path: inset(0); }
   100% { text-shadow: #f0f 3px 0, #0ff -3px 0; transform: translate(0); }
 }
-@keyframes scanMove {
-  0% { top: -10%; }
-  100% { top: 110%; }
+@keyframes glitchSlideIn {
+  0% { opacity: 0; transform: translateX(-20px); clip-path: inset(0 100% 0 0); }
+  50% { opacity: 1; clip-path: inset(0 0 0 0); transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
-@keyframes vignettePulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.45; }
-}
-@keyframes cursorBlink {
-  0%, 49% { opacity: 1; background: var(--terminal-green); }
-  50%, 100% { opacity: 0; }
-}
+@keyframes typeIn { from { width: 0; } to { width: 100%; } }
 .scanlines, .crt-noise { position: relative; }
 .crt-noise::after {
   content: ""; pointer-events: none; z-index: 9998;
@@ -103,12 +128,17 @@ body {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='22' viewBox='0 0 16 22'%3E%3Cpath d='M1 1 L1 18 L5 14 L9 21 L11 20 L7 13 L13 13 Z' fill='%2300ff41' stroke='%23006622' stroke-width='0.5'/%3E%3C/svg%3E") 1 1, pointer;
 }
 .matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; }
+
+/* === TERMINAL WINDOW === */
 .terminal-window {
   background: var(--bg-terminal);
-  border: 1px solid var(--border-green);
+  border: 1px solid var(--border);
   border-radius: 10px;
   position: relative; overflow: hidden;
   box-shadow: rgba(0,255,65,0.08) 0 0 0 1px, rgba(0,255,65,0.08) 0 0 20px, rgba(0,255,65,0.04) 0 0 60px, rgba(0,0,0,0.9) 0 24px 80px, rgba(255,255,255,0.04) 0 1px inset, rgba(0,255,65,0.02) 0 0 80px inset;
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 .terminal-window::before {
   content: ""; z-index: 1;
@@ -116,7 +146,7 @@ body {
   height: 1px; position: absolute; top: 0; left: 0; right: 0;
 }
 .terminal-header {
-  border-bottom: 1px solid var(--border-green);
+  border-bottom: 1px solid var(--border);
   backdrop-filter: blur(20px);
   background: rgba(0,0,0,0.7);
   padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
@@ -127,16 +157,13 @@ body {
 .win-btn-yellow { background: #ffbd2e; box-shadow: rgba(255,189,46,0.4) 0 0 6px; }
 .win-btn-green { background: #28c840; box-shadow: rgba(40,200,64,0.4) 0 0 6px; }
 .status-bar {
-  border-top: 1px solid var(--border-green);
-  font-family: "JetBrains Mono", monospace;
-  letter-spacing: 0.05em;
-  background: rgba(0,0,0,0.6);
-  font-size: 11px;
+  border-top: 1px solid var(--border);
+  font-family: "JetBrains Mono", monospace; letter-spacing: 0.05em;
+  background: rgba(0,0,0,0.6); font-size: 11px;
   padding: 6px 16px; display: flex; align-items: center; justify-content: space-between;
 }
 .ascii-title {
-  letter-spacing: 0.25em; text-transform: uppercase;
-  color: var(--terminal-green);
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--green);
   -webkit-font-smoothing: none; image-rendering: pixelated;
   filter: drop-shadow(#ff00c8 3px 0) drop-shadow(#00c8ff -3px 0) drop-shadow(rgba(0,255,65,0.6) 0 0 12px) drop-shadow(rgba(0,255,65,0.25) 0 0 30px);
   font-size: clamp(2.8rem, 7vw, 5rem); line-height: 1;
@@ -145,39 +172,36 @@ body {
 }
 .glow { text-shadow: var(--glow-md); }
 .glow-sm { text-shadow: var(--glow-sm); }
+.glow-lg { text-shadow: var(--glow-lg); }
 .section-hover { font-family: "JetBrains Mono", monospace; letter-spacing: 0.12em; font-size: 11px; transition: 0.15s; }
-.section-hover:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
+.section-hover:hover { text-shadow: 0 0 8px var(--green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
 .chromatic-hover { transition: 0.2s; }
 .chromatic-hover:hover { text-shadow: rgba(255,0,255,0.5) 1px 0, rgba(0,255,255,0.5) -1px 0; }
 .glitch:hover { animation: 0.25s ease 0s infinite pixelGlitch; }
 .term-divider { border-top: 1px solid rgba(0,255,65,0.12); margin: 8px 0; }
-.pulse { color: var(--terminal-green); animation: 1s step-end 0s infinite pulse; }
+.pulse { color: var(--green); animation: 1s step-end 0s infinite pulse; }
 .glitch-avatar {
   filter: drop-shadow(rgba(255,0,200,0.6) 2px 0) drop-shadow(rgba(0,200,255,0.6) -2px 0) drop-shadow(rgba(0,255,65,0.4) 0 0 8px);
   animation: 4s ease 0s infinite pixelGlitch;
 }
-.terminal-cursor { vertical-align: text-bottom; width: 8px; height: 1.1em; margin-left: 1px; animation: 1s step-end 0s infinite cursorBlink; display: inline-block; background: var(--terminal-green); }
-/* Layout */
-main { min-height: 100vh; padding: 12px; }
+.terminal-cursor { vertical-align: text-bottom; width: 8px; height: 1.1em; margin-left: 1px; animation: 1s step-end 0s infinite cursorBlink; display: inline-block; background: var(--green); box-shadow: 0 0 4px var(--green); }
+
+/* === LAYOUT === */
+main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker; }
 @media (min-width: 768px) { main { padding: 24px; } }
 .tw-wrap { max-width: 768px; margin: 0 auto; position: relative; z-index: 10; }
 .tw-body { padding: 16px; }
 @media (min-width: 768px) { .tw-body { padding: 24px; } }
 .cmd-line { display: flex; align-items: center; gap: 4px; font-family: "JetBrains Mono", monospace; font-size: 14px; margin-bottom: 20px; }
-.cmd-line .u { color: var(--pink); }
-.cmd-line .a { color: #4b5563; }
-.cmd-line .h { color: var(--blue); }
-.cmd-line .p { color: #4b5563; }
-.cmd-line .c { color: var(--yellow); margin-left: 4px; }
+.cmd-line .u { color: var(--pink); } .cmd-line .a { color: #4b5563; } .cmd-line .h { color: var(--blue); } .cmd-line .p { color: #4b5563; } .cmd-line .c { color: var(--yellow); margin-left: 4px; }
 .id-row { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 8px; }
 .avatar-wrap { position: relative; display: inline-block; width: 72px; height: 72px; flex-shrink: 0; }
 .avatar-glow { position: absolute; inset: 0; border-radius: 50%; box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.2) 0 0 30px; }
 .tagline { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #6b7280; margin-bottom: 20px; }
 @media (min-width: 768px) { .tagline { font-size: 14px; } }
-.tagline .d { color: #4b5563; }
-.tagline .s { color: rgba(0,255,65,0.4); }
-.tagline span { margin: 0 8px; }
-/* Terminal console */
+.tagline .d { color: #4b5563; } .tagline .s { color: rgba(0,255,65,0.4); } .tagline span { margin: 0 8px; }
+
+/* === TERMINAL CONSOLE === */
 .term-console {
   background: rgba(0,0,0,0.6); border: 1px solid rgba(0,255,65,0.2); border-radius: 4px;
   padding: 16px; font-family: "JetBrains Mono", monospace; font-size: 14px;
@@ -187,81 +211,107 @@ main { min-height: 100vh; padding: 12px; }
 .term-console::-webkit-scrollbar-track { background: transparent; }
 .term-console::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.2); border-radius: 2px; }
 .term-line { margin-bottom: 8px; }
-.term-output { color: #00ff41; white-space: pre-wrap; font-family: "JetBrains Mono", monospace; }
+.term-output { color: #00ff41; white-space: pre-wrap; font-family: "JetBrains Mono", monospace; text-shadow: 0 0 4px rgba(0,255,65,0.3); }
 .term-input-line { display: flex; align-items: center; gap: 8px; }
-.term-input-line .arrow { color: var(--pink); }
-.term-input-line .tilde { color: var(--blue); }
-.term-input-line .txt { color: #fff; }
+.term-input-line .arrow { color: var(--pink); } .term-input-line .tilde { color: var(--blue); } .term-input-line .txt { color: #fff; }
 .term-form { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.term-form .arrow { color: var(--pink); }
-.term-form .tilde { color: var(--blue); }
+.term-form .arrow { color: var(--pink); } .term-form .tilde { color: var(--blue); }
 .term-form .input-wrap { position: relative; flex: 1; display: flex; align-items: center; }
-.term-form input {
-  flex: 1; color: var(--yellow); caret-color: transparent;
-  background: transparent; border: none; outline: none; font-family: inherit; font-size: 14px;
-}
+.term-form input { flex: 1; color: var(--yellow); caret-color: transparent; background: transparent; border: none; outline: none; font-family: inherit; font-size: 14px; }
+
+/* === TABS === */
 .tabs { display: flex; gap: 6px; margin: 16px 0; flex-wrap: wrap; }
 .tab {
   padding: 4px 12px; font-size: 11px; text-transform: uppercase;
   letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace;
-  border: 1px solid rgba(0,255,65,0.4); color: var(--terminal-green);
+  border: 1px solid rgba(0,255,65,0.4); color: var(--green);
   background: transparent; cursor: pointer; transition: 0.15s;
   border-radius: 3px;
 }
-.tab:hover { text-shadow: 0 0 8px var(--terminal-green); box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; text-shadow: rgba(255,0,255,0.5) 1px 0, rgba(0,255,255,0.5) -1px 0; }
-.tab.active { background: var(--terminal-green); color: #000; font-weight: 700; border-color: var(--terminal-green); }
+.tab:hover { text-shadow: rgba(255,0,255,0.5) 1px 0, rgba(0,255,255,0.5) -1px 0; box-shadow: rgba(0,255,65,0.6) 0 0 12px, rgba(0,255,65,0.1) 0 0 8px inset; }
+.tab.active { background: var(--green); color: #000; font-weight: 700; border-color: var(--green); box-shadow: var(--glow-sm); }
+
+/* === CONTENT === */
 .content { min-height: 260px; position: relative; }
 .section { display: none; }
-.section.active { display: block; }
+.section.active { display: block; animation: glitchSlideIn 0.4s ease; }
 .section h2 { font-size: 14px; color: var(--purple); font-weight: 700; letter-spacing: 0.12em; font-family: "JetBrains Mono", monospace; margin-bottom: 12px; }
 .section p { font-size: 14px; color: #9ca3af; margin-bottom: 8px; line-height: 1.6; font-family: "JetBrains Mono", monospace; }
-.section .hl-g { color: var(--terminal-green); }
-.section .hl-b { color: var(--blue); }
-.section .hl-y { color: var(--yellow); }
-.section .hl-p { color: var(--pink); }
+.hl-g { color: var(--green); } .hl-b { color: var(--blue); } .hl-y { color: var(--yellow); } .hl-p { color: var(--pink); } .hl-o { color: var(--orange); }
 .code-line { font-size: 12px; color: var(--yellow); margin-top: 12px; font-family: "JetBrains Mono", monospace; }
-.code-line .kw { color: var(--pink); }
-.code-line .str { color: var(--blue); }
-.proj-item { margin-bottom: 12px; }
+.code-line .kw { color: var(--pink); } .code-line .str { color: var(--blue); }
+
+/* Projects */
+.proj-item { margin-bottom: 12px; padding: 8px; border: 1px solid transparent; border-radius: 4px; transition: 0.2s; }
+.proj-item:hover { border-color: rgba(0,255,65,0.15); background: rgba(0,255,65,0.02); }
 .proj-name { color: var(--yellow); font-weight: 700; font-size: 14px; font-family: "JetBrains Mono", monospace; }
-.proj-badge { font-size: 10px; color: #4b5563; margin-left: 6px; font-family: "JetBrains Mono", monospace; }
+.proj-badge { font-size: 10px; color: var(--green); margin-left: 6px; font-family: "JetBrains Mono", monospace; }
 .proj-desc { color: #6b7280; font-size: 12px; margin: 4px 0 8px; font-family: "JetBrains Mono", monospace; }
 .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .proj-tag { font-size: 10px; color: var(--pink); font-family: "JetBrains Mono", monospace; }
+.proj-stats { display: flex; gap: 16px; margin-top: 8px; }
+.proj-stat { font-size: 10px; color: #4b5563; font-family: "JetBrains Mono", monospace; }
+.proj-stat .num { color: var(--green); font-weight: 700; }
+
+/* Skills */
 .skill-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
 .skill-label { color: var(--pink); font-size: 11px; min-width: 100px; flex-shrink: 0; font-family: "JetBrains Mono", monospace; }
 .skill-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .skill-tag {
-  padding: 2px 8px; font-size: 10px; color: var(--terminal-green);
+  padding: 2px 8px; font-size: 10px; color: var(--green);
   background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2);
   border-radius: 3px; transition: 0.15s; cursor: default;
   font-family: "JetBrains Mono", monospace;
 }
-.skill-tag:hover { border-color: rgba(0,255,65,0.6); }
+.skill-tag:hover { border-color: rgba(0,255,65,0.6); box-shadow: 0 0 8px rgba(0,255,65,0.3); transform: translateY(-1px); }
+
+/* Contact */
 .contact-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .contact-label { color: var(--pink); font-size: 11px; min-width: 70px; font-family: "JetBrains Mono", monospace; }
 .contact-val { color: var(--blue); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; font-family: "JetBrains Mono", monospace; }
-.contact-val a { color: inherit; text-decoration: none; }
+.contact-val a { color: inherit; text-decoration: none; transition: 0.15s; }
+.contact-val a:hover { color: var(--green); text-shadow: 0 0 8px var(--green); }
 .contact-note { color: var(--pink); font-size: 12px; margin-top: 12px; font-family: "JetBrains Mono", monospace; }
 .contact-sub { color: #4b5563; font-size: 11px; margin-top: 4px; font-family: "JetBrains Mono", monospace; }
+
+/* Footer */
 .sb-left, .sb-right { display: flex; align-items: center; gap: 10px; font-family: "JetBrains Mono", monospace; }
-.sb-sep { color: #374151; }
-.sb-dot { color: var(--terminal-green); font-size: 9px; }
-.sb-pid { color: #6b7280; }
-.sb-crt { color: rgba(0,255,65,0.5); }
-.sb-ok { color: var(--terminal-green); }
+.sb-sep { color: #374151; } .sb-dot { color: var(--green); font-size: 9px; } .sb-pid { color: #6b7280; }
+.sb-crt { color: rgba(0,255,65,0.5); } .sb-ok { color: var(--green); }
+.sb-clock { color: var(--green); font-family: "JetBrains Mono", monospace; font-size: 11px; }
 .hint-bar { text-align: center; margin-top: 16px; font-size: 10px; color: #374151; font-family: "JetBrains Mono", monospace; letter-spacing: 0.05em; }
+
+/* Konami easter egg */
+#konami-burst {
+  position: fixed; inset: 0; z-index: 99999; pointer-events: none;
+  display: none; align-items: center; justify-content: center;
+}
+#konami-burst.active { display: flex; animation: konamiFlash 2s ease; }
+@keyframes konamiFlash { 0%, 100% { opacity: 0; } 10%, 90% { opacity: 1; } }
+#konami-burst .text {
+  font-family: "VT323", monospace; font-size: 80px; color: var(--green);
+  text-shadow: var(--glow-lg); animation: titleGlitch 0.3s infinite;
+}
 </style>
 </head>
 <body>
+
+<!-- Boot screen -->
+<div id="boot-screen">
+  <div class="crt-power"></div>
+  <div class="boot-lines" id="boot-lines"></div>
+  <div class="boot-progress"><div class="boot-progress-bar" id="boot-bar"></div></div>
+</div>
+
+<!-- Konami easter egg -->
+<div id="konami-burst"><div class="text">SYSTEM UNLOCKED</div></div>
 
 <main class="scanlines crt-noise glitch-cursor">
   <canvas id="matrix-canvas" class="matrix-rain" aria-hidden="true"></canvas>
   <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9997;mix-blend-mode:multiply;"></canvas>
   
   <div class="tw-wrap">
-    <div class="terminal-window">
-      <!-- Header -->
+    <div class="terminal-window" id="term-window">
       <div class="terminal-header">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="win-btn win-btn-red"></span>
@@ -274,7 +324,6 @@ main { min-height: 100vh; padding: 12px; }
         </div>
       </div>
 
-      <!-- Body -->
       <div class="tw-body">
         <div class="cmd-line">
           <span class="u">dropxtor</span><span class="a">@</span><span class="h">network</span><span class="p">:~ $</span><span class="c">whoami</span>
@@ -295,32 +344,20 @@ main { min-height: 100vh; padding: 12px; }
             </svg>
             <div class="avatar-glow"></div>
           </div>
-          <div>
-            <h1 class="ascii-title glow">DROPXTOR</h1>
-          </div>
+          <div><h1 class="ascii-title glow">DROPXTOR</h1></div>
         </div>
 
         <div class="tagline">
-          <span class="d">──</span>
-          <span>vibe coder</span>
-          <span class="s">//</span>
-          <span>blockchain</span>
-          <span class="s">//</span>
-          <span>ai agent builder</span>
-          <span class="d">──</span>
+          <span class="d">──</span><span>vibe coder</span><span class="s">//</span><span>blockchain</span><span class="s">//</span><span>ai agent builder</span><span class="d">──</span>
         </div>
 
         <hr class="term-divider"/>
 
-        <!-- Terminal console with scrollback -->
         <div class="term-console" id="term-console">
-          <div class="term-line">
-            <pre class="term-output">dropxtor-terminal v1.0.0
-Type "help" for available commands.</pre>
-          </div>
+          <div class="term-line"><pre class="term-output">dropxtor-terminal v2.0.0
+Type "help" for available commands.</pre></div>
           <form class="term-form" id="term-form">
-            <span class="arrow">➜</span>
-            <span class="tilde">~</span>
+            <span class="arrow">➜</span><span class="tilde">~</span>
             <div class="input-wrap">
               <input id="cli" type="text" autocomplete="off" spellcheck="false" autofocus/>
               <span class="terminal-cursor" id="cursor" style="left:0em;"></span>
@@ -343,6 +380,7 @@ Type "help" for available commands.</pre>
             <div style="font-family:'JetBrains Mono',monospace;">
               <p>Builder at the intersection of <span class="hl-g">AI</span>, <span class="hl-b">blockchain</span> and <span class="hl-y">web</span>.</p>
               <p>Autonomous agent orchestration. Multi-agent systems. DeFi protocols. Scalable infra.</p>
+              <p>Shipping <span class="hl-o">overkill</span> builds since 2024. No half-measures.</p>
               <p class="code-line"><span class="kw">const</span> mission = <span class="str">"build the future, ship every day"</span>;</p>
             </div>
           </div>
@@ -350,96 +388,121 @@ Type "help" for available commands.</pre>
           <div class="section" id="projects">
             <h2>// PROJECTS</h2>
             <div class="proj-item">
-              <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[open]</span>
+              <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[live]</span>
               <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
-              <div class="proj-tags">
-                <span class="proj-tag">#Next.js</span><span class="proj-tag">#TypeScript</span><span class="proj-tag">#Framer Motion</span><span class="proj-tag">#CRT</span>
-              </div>
+              <div class="proj-tags"><span class="proj-tag">#Next.js</span><span class="proj-tag">#TypeScript</span><span class="proj-tag">#Framer Motion</span><span class="proj-tag">#CRT</span></div>
+              <div class="proj-stats"><span class="proj-stat"><span class="num">∞</span> caffeine</span><span class="proj-stat"><span class="num">42</span> deploys</span></div>
+            </div>
+            <div class="proj-item">
+              <span class="proj-name">▶ mm-dash</span><span class="proj-badge">[active]</span>
+              <div class="proj-desc">MetaMask Agent dashboard — trading, perps, Polymarket</div>
+              <div class="proj-tags"><span class="proj-tag">#React 19</span><span class="proj-tag">#Tailwind v4</span><span class="proj-tag">#Framer</span><span class="proj-tag">#WebSocket</span></div>
+              <div class="proj-stats"><span class="proj-stat"><span class="num">$35K+</span> volume</span><span class="proj-stat"><span class="num">15m</span> cron</span></div>
+            </div>
+            <div class="proj-item">
+              <span class="proj-name">▶ octra-bounty</span><span class="proj-badge">[solved]</span>
+              <div class="proj-desc">PVAC-HFHE cryptographic challenge — R_com oracle attack</div>
+              <div class="proj-tags"><span class="proj-tag">#C++</span><span class="proj-tag">#Crypto</span><span class="proj-tag">#LPN</span><span class="proj-tag">#BIP39</span></div>
+              <div class="proj-stats"><span class="proj-stat"><span class="num">766K</span> attempts</span><span class="proj-stat"><span class="num">&lt;1s</span> block 0</span></div>
             </div>
           </div>
 
           <div class="section" id="skills">
             <h2>// SKILLS</h2>
-            <div class="skill-row">
-              <span class="skill-label">Languages:</span>
-              <div class="skill-tags"><span class="skill-tag">TypeScript</span><span class="skill-tag">Python</span><span class="skill-tag">Rust</span><span class="skill-tag">Go</span><span class="skill-tag">Solidity</span></div>
-            </div>
-            <div class="skill-row">
-              <span class="skill-label">Frontend:</span>
-              <div class="skill-tags"><span class="skill-tag">Next.js</span><span class="skill-tag">React</span><span class="skill-tag">Three.js</span><span class="skill-tag">Tailwind</span></div>
-            </div>
-            <div class="skill-row">
-              <span class="skill-label">Backend:</span>
-              <div class="skill-tags"><span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">GraphQL</span></div>
-            </div>
-            <div class="skill-row">
-              <span class="skill-label">Blockchain:</span>
-              <div class="skill-tags"><span class="skill-tag">EVM</span><span class="skill-tag">Solana</span><span class="skill-tag">DeFi</span><span class="skill-tag">Smart Contracts</span></div>
-            </div>
-            <div class="skill-row">
-              <span class="skill-label">AI/ML:</span>
-              <div class="skill-tags"><span class="skill-tag">LLMs</span><span class="skill-tag">Multi-Agent</span><span class="skill-tag">RAG</span><span class="skill-tag">OpenClaw</span></div>
-            </div>
-            <div class="skill-row">
-              <span class="skill-label">DevOps:</span>
-              <div class="skill-tags"><span class="skill-tag">Docker</span><span class="skill-tag">K8s</span><span class="skill-tag">Vercel</span><span class="skill-tag">CI/CD</span></div>
-            </div>
+            <div class="skill-row"><span class="skill-label">Languages:</span><div class="skill-tags"><span class="skill-tag">TypeScript</span><span class="skill-tag">Python</span><span class="skill-tag">Rust</span><span class="skill-tag">Go</span><span class="skill-tag">Solidity</span><span class="skill-tag">C++</span></div></div>
+            <div class="skill-row"><span class="skill-label">Frontend:</span><div class="skill-tags"><span class="skill-tag">Next.js</span><span class="skill-tag">React</span><span class="skill-tag">Three.js</span><span class="skill-tag">Tailwind</span><span class="skill-tag">Framer</span></div></div>
+            <div class="skill-row"><span class="skill-label">Backend:</span><div class="skill-tags"><span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">GraphQL</span></div></div>
+            <div class="skill-row"><span class="skill-label">Blockchain:</span><div class="skill-tags"><span class="skill-tag">EVM</span><span class="skill-tag">Solana</span><span class="skill-tag">DeFi</span><span class="skill-tag">Smart Contracts</span><span class="skill-tag">MEV</span></div></div>
+            <div class="skill-row"><span class="skill-label">AI/ML:</span><div class="skill-tags"><span class="skill-tag">LLMs</span><span class="skill-tag">Multi-Agent</span><span class="skill-tag">RAG</span><span class="skill-tag">OpenClaw</span><span class="skill-tag">Hermes</span></div></div>
+            <div class="skill-row"><span class="skill-label">Security:</span><div class="skill-tags"><span class="skill-tag">OSINT</span><span class="skill-tag">Pentest</span><span class="skill-tag">RE</span><span class="skill-tag">Crypto</span></div></div>
+            <div class="skill-row"><span class="skill-label">DevOps:</span><div class="skill-tags"><span class="skill-tag">Docker</span><span class="skill-tag">K8s</span><span class="skill-tag">Vercel</span><span class="skill-tag">CI/CD</span><span class="skill-tag">Cloudflare</span></div></div>
           </div>
 
           <div class="section" id="contact">
             <h2>// CONTACT</h2>
-            <div class="contact-row">
-              <span class="contact-label">github:</span>
-              <span class="contact-val"><a href="https://github.com/dropxtor" target="_blank">github.com/dropxtor</a></span>
-            </div>
-            <div class="contact-row">
-              <span class="contact-label">twitter:</span>
-              <span class="contact-val"><a href="https://x.com/0xdropxtor" target="_blank">@0xdropxtor</a></span>
-            </div>
+            <div class="contact-row"><span class="contact-label">github:</span><span class="contact-val"><a href="https://github.com/dropxtor" target="_blank">github.com/dropxtor</a></span></div>
+            <div class="contact-row"><span class="contact-label">twitter:</span><span class="contact-val"><a href="https://x.com/0xdropxtor" target="_blank">@0xdropxtor</a></span></div>
+            <div class="contact-row"><span class="contact-label">email:</span><span class="contact-val"><a href="mailto:dropxtor@proton.me">dropxtor@proton.me</a></span></div>
             <p class="contact-note">// open to collaborations</p>
-            <p class="contact-sub">DeFi · AI agents · open source · web3 infra</p>
+            <p class="contact-sub">DeFi · AI agents · open source · web3 infra · security research</p>
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="status-bar">
-        <div class="sb-left">
-          <span class="sb-dot">●</span><span>SSH</span><span class="sb-sep">│</span><span>UTF-8</span><span class="sb-sep">│</span><span>ZSH</span>
-        </div>
-        <div class="sb-right">
-          <span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span>
-        </div>
+        <div class="sb-left"><span class="sb-dot">●</span><span>SSH</span><span class="sb-sep">│</span><span>UTF-8</span><span class="sb-sep">│</span><span>ZSH</span></div>
+        <div class="sb-right"><span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span><span class="sb-sep">│</span><span class="sb-clock" id="clock">--:--:--</span></div>
       </div>
     </div>
-    <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history</p>
+    <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history · try "help"</p>
   </div>
 </main>
 
 <script>
-// === Matrix Rain (exact replica of original) ===
+// === BOOT SEQUENCE ===
+(function() {
+  const lines = [
+    { text: '[BOOT] dropxtor-terminal v2.0.0', cls: 'boot-ok' },
+    { text: '[ OK ] Loading kernel modules...', cls: 'boot-ok' },
+    { text: '[ OK ] Mounting /dev/crypto...', cls: 'boot-ok' },
+    { text: '[ OK ] Initializing CRT display...', cls: 'boot-ok' },
+    { text: '[ OK ] Matrix rain engine: ONLINE', cls: 'boot-ok' },
+    { text: '[ OK ] Audio subsystem: BEEP READY', cls: 'boot-ok' },
+    { text: '[WARN] Sleep schedule: NOT FOUND', cls: 'boot-warn' },
+    { text: '[ OK ] Coffee level: 100%', cls: 'boot-ok' },
+    { text: '[ OK ] Vibe check: PASSED', cls: 'boot-ok' },
+    { text: '[ OK ] System ready. Welcome, dropxtor.', cls: 'boot-ok' },
+  ];
+  const container = document.getElementById('boot-lines');
+  const bar = document.getElementById('boot-bar');
+  let i = 0;
+  
+  function nextLine() {
+    if (i >= lines.length) {
+      bar.style.width = '100%';
+      setTimeout(() => {
+        document.getElementById('boot-screen').classList.add('fade-out');
+        setTimeout(() => document.getElementById('boot-screen').remove(), 500);
+      }, 300);
+      return;
+    }
+    const div = document.createElement('div');
+    div.className = 'boot-line ' + lines[i].cls;
+    div.textContent = lines[i].text;
+    container.appendChild(div);
+    bar.style.width = ((i + 1) / lines.length * 100) + '%';
+    i++;
+    setTimeout(nextLine, 80 + Math.random() * 60);
+  }
+  setTimeout(nextLine, 200);
+})();
+
+// === LIVE CLOCK ===
+(function() {
+  const clock = document.getElementById('clock');
+  function update() {
+    const d = new Date();
+    clock.textContent = d.toLocaleTimeString('en-GB');
+  }
+  update();
+  setInterval(update, 1000);
+})();
+
+// === MATRIX RAIN (exact replica + improvements) ===
 (function() {
   const canvas = document.getElementById('matrix-canvas');
   const ctx = canvas.getContext('2d', { alpha: true });
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
   let columns = [];
   let frameCount = 0;
-  let isVisible = true;
   
   function initColumns() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = window.innerWidth, h = window.innerHeight;
     const n = Math.ceil(w / 14);
     columns = [];
     for (let i = 0; i < n; i++) {
       const trailLen = 5 + Math.floor(Math.random() * 10);
-      const col = {
-        x: 14 * i,
-        y: Math.random() * h,
-        speed: 0.5 + 1.5 * Math.random(),
-        chars: [],
-        headBrightness: 1
-      };
+      const col = { x: 14 * i, y: Math.random() * h, speed: 0.5 + 1.5 * Math.random(), chars: [] };
       for (let j = 0; j < trailLen; j++) col.chars.push(chars[Math.floor(Math.random() * chars.length)]);
       columns.push(col);
     }
@@ -458,16 +521,13 @@ Type "help" for available commands.</pre>
   window.addEventListener('resize', resize);
   
   function draw() {
-    if (!isVisible) { requestAnimationFrame(draw); return; }
     frameCount++;
     const w = window.innerWidth, h = window.innerHeight;
     const evenFrame = frameCount % 2 === 0;
-    
     ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
     ctx.fillRect(0, 0, w, h);
     ctx.font = '14px "JetBrains Mono", monospace';
     ctx.textBaseline = 'top';
-    
     columns.forEach(col => {
       if (evenFrame) {
         col.y += 14 * col.speed;
@@ -478,35 +538,21 @@ Type "help" for available commands.</pre>
       col.chars.forEach((ch, i) => {
         const y = col.y - 14 * i;
         if (y < -14 || y > h) return;
-        if (i === 0) {
-          ctx.fillStyle = '#ffffff';
-          ctx.shadowColor = '#00ff41';
-          ctx.shadowBlur = 10;
-          ctx.fillText(ch, col.x, y);
-          ctx.shadowBlur = 0;
-        } else if (i === 1) {
-          ctx.fillStyle = '#ccffcc';
-          ctx.fillText(ch, col.x, y);
-        } else {
-          const brightness = Math.max(0, 1 - i / 15);
-          const g = Math.floor(255 * brightness);
-          ctx.fillStyle = `rgba(0, ${g}, 65, ${0.8 * brightness})`;
-          ctx.fillText(ch, col.x, y);
-        }
+        if (i === 0) { ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#00ff41'; ctx.shadowBlur = 10; ctx.fillText(ch, col.x, y); ctx.shadowBlur = 0; }
+        else if (i === 1) { ctx.fillStyle = '#ccffcc'; ctx.fillText(ch, col.x, y); }
+        else { const b = Math.max(0, 1 - i / 15); const g = Math.floor(255 * b); ctx.fillStyle = `rgba(0, ${g}, 65, ${0.8 * b})`; ctx.fillText(ch, col.x, y); }
       });
     });
-    
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
-// === Noise Canvas (second canvas with scanlines + noise) ===
+// === NOISE CANVAS ===
 (function() {
   const canvas = document.getElementById('noise-canvas');
   const ctx = canvas.getContext('2d');
   let frameCount = 0;
-  
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.floor(window.innerWidth * dpr);
@@ -514,71 +560,78 @@ Type "help" for available commands.</pre>
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerHeight + 'px';
   }
-  resize();
-  window.addEventListener('resize', resize);
-  
+  resize(); window.addEventListener('resize', resize);
   function draw() {
     frameCount++;
-    const w = canvas.width, h = canvas.height;
-    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width, h = canvas.height, dpr = window.devicePixelRatio || 1;
     ctx.clearRect(0, 0, w, h);
-    
-    // Scanlines every 3rd frame
     if (frameCount % 3 === 0) {
       const gap = Math.max(2, Math.round(2 * dpr));
-      const alpha = 0.28 + 0.04 * Math.random();
-      ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+      ctx.fillStyle = `rgba(0, 0, 0, ${0.28 + 0.04 * Math.random()})`;
       for (let i = 0; i < h; i += gap) ctx.fillRect(0, i, w, Math.round(dpr));
     }
-    
-    // Noise every 4th frame
     if (frameCount % 4 === 0) {
       const imageData = ctx.getImageData(0, 0, w, h);
       const data = imageData.data;
       for (let i = 0; i < data.length; i += 4) {
-        if (0.07 > Math.random()) {
-          const g = Math.floor(15 + 55 * Math.random());
-          data[i] = 0; data[i+1] = g; data[i+2] = Math.floor(0.2 * g); data[i+3] = Math.floor(2.2 * g);
-        }
+        if (0.07 > Math.random()) { const g = Math.floor(15 + 55 * Math.random()); data[i] = 0; data[i+1] = g; data[i+2] = Math.floor(0.2 * g); data[i+3] = Math.floor(2.2 * g); }
       }
       ctx.putImageData(imageData, 0, 0);
     }
-    
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
-// === Audio: terminal beep on tab click ===
+// === AUDIO ===
 let audioCtx = null;
 function playBeep() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const ctx = audioCtx;
-  const t = ctx.currentTime;
-  // Osc 1: square wave 880→440Hz
-  const o1 = ctx.createOscillator();
-  o1.type = 'square';
-  o1.frequency.setValueAtTime(880, t);
-  o1.frequency.exponentialRampToValueAtTime(440, t + 0.06);
-  const g1 = ctx.createGain();
-  g1.gain.setValueAtTime(0.12, t);
-  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-  o1.connect(g1).connect(ctx.destination);
-  o1.start(t); o1.stop(t + 0.09);
-  // Osc 2: sine wave 1320→660Hz (delayed 0.02s)
-  const o2 = ctx.createOscillator();
-  o2.type = 'sine';
-  o2.frequency.setValueAtTime(1320, t + 0.02);
-  o2.frequency.exponentialRampToValueAtTime(660, t + 0.07);
-  const g2 = ctx.createGain();
-  g2.gain.setValueAtTime(0, t);
-  g2.gain.linearRampToValueAtTime(0.06, t + 0.02);
-  g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-  o2.connect(g2).connect(ctx.destination);
-  o2.start(t + 0.02); o2.stop(t + 0.09);
+  const ctx = audioCtx, t = ctx.currentTime;
+  const o1 = ctx.createOscillator(); o1.type = 'square';
+  o1.frequency.setValueAtTime(880, t); o1.frequency.exponentialRampToValueAtTime(440, t + 0.06);
+  const g1 = ctx.createGain(); g1.gain.setValueAtTime(0.12, t); g1.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  o1.connect(g1).connect(ctx.destination); o1.start(t); o1.stop(t + 0.09);
+  const o2 = ctx.createOscillator(); o2.type = 'sine';
+  o2.frequency.setValueAtTime(1320, t + 0.02); o2.frequency.exponentialRampToValueAtTime(660, t + 0.07);
+  const g2 = ctx.createGain(); g2.gain.setValueAtTime(0, t); g2.gain.linearRampToValueAtTime(0.06, t + 0.02); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  o2.connect(g2).connect(ctx.destination); o2.start(t + 0.02); o2.stop(t + 0.09);
+}
+function playKey() {
+  if (!audioCtx) return;
+  const ctx = audioCtx, t = ctx.currentTime;
+  const o = ctx.createOscillator(); o.type = 'square';
+  o.frequency.setValueAtTime(1200 + Math.random() * 200, t);
+  const g = ctx.createGain(); g.gain.setValueAtTime(0.03, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.03);
+}
+function playBoot() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const ctx = audioCtx, t = ctx.currentTime;
+  for (let i = 0; i < 3; i++) {
+    const o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(440 + i * 220, t + i * 0.08);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.08, t + i * 0.08); g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.1);
+    o.connect(g).connect(ctx.destination); o.start(t + i * 0.08); o.stop(t + i * 0.08 + 0.1);
+  }
 }
 
-// === Tab switching ===
+// === PARALLAX 3D ===
+(function() {
+  const win = document.getElementById('term-window');
+  let rafId = null;
+  document.addEventListener('mousemove', (e) => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 4;
+      const y = (e.clientY / window.innerHeight - 0.5) * 4;
+      win.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
+      rafId = null;
+    });
+  });
+})();
+
+// === TABS ===
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     playBeep();
@@ -589,7 +642,7 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// === Terminal CLI ===
+// === CLI ===
 const commands = {
   help: `Available commands:
   about     - About me
@@ -597,24 +650,40 @@ const commands = {
   projects  - Recent projects
   contact   - Get in touch
   clear     - Clear terminal
-  whoami    - Current user`,
+  whoami    - Current user
+  ls        - List sections
+  sudo      - Try it
+  date      - Current time
+  echo      - Echo text
+  matrix    - Toggle matrix rain
+  coffee    - ☕`,
   about: `// dropxtor
 Full-stack developer & blockchain enthusiast.
 Building the future, one deploy at a time.
 Based in the matrix.`,
-  skills: `Languages: TypeScript, Rust, Solidity, Go
-Frontend: React, Next.js, Tailwind
-Backend: Node.js, PostgreSQL, Redis
-Blockchain: EVM, Solana, DeFi, NFTs
-Tools: Docker, K8s, AWS, Vercel`,
-  projects: `1. dropxtor-profile  - Terminal-style portfolio
-2. tempo-integration - MPP payments
-3. arxiv-pulse      - Research notifier
-4. moltbook         - Social network for agents`,
-  contact: `Email: dropxtor@proton.me
-GitHub: github.com/dropxtor
-Twitter: @0xdropxtor`,
+  skills: `Languages: TypeScript, Rust, Solidity, Go, C++
+Frontend: React, Next.js, Tailwind, Framer
+Backend: Node.js, PostgreSQL, Redis, GraphQL
+Blockchain: EVM, Solana, DeFi, MEV
+AI/ML: LLMs, Multi-Agent, RAG, OpenClaw, Hermes
+Security: OSINT, Pentest, RE, Crypto
+DevOps: Docker, K8s, Vercel, CI/CD, Cloudflare`,
+  projects: `1. dropxtor-profile  - CRT terminal portfolio (this)
+2. mm-dash          - MetaMask Agent dashboard
+3. octra-bounty     - PVAC-HFHE crypto challenge
+4. moltbook         - Social network for AI agents`,
+  contact: `GitHub:   github.com/dropxtor
+Twitter: @0xdropxtor
+Email:   dropxtor@proton.me`,
   whoami: 'guest@dropxtor-terminal',
+  ls: 'about/  projects/  skills/  contact/',
+  sudo: `[sudo] We trust you have received the usual lecture.
+This is not your grandmother's terminal.
+Access granted. You are already root. 🏴`,
+  date: () => new Date().toString(),
+  echo: (args) => args.join(' ') || '',
+  coffee: '☕ Brewing... Error: coffee.exe not found. Already consumed.',
+  matrix: 'Matrix rain: TOGGLE (refresh to reset)',
   clear: '__CLEAR__'
 };
 
@@ -635,7 +704,6 @@ function addOutput(text) {
   form.before(div);
   consoleEl.scrollTop = consoleEl.scrollHeight;
 }
-
 function addInputLine(text) {
   const div = document.createElement('div');
   div.className = 'term-line';
@@ -650,52 +718,57 @@ function addInputLine(text) {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  const cmd = cli.value.trim().toLowerCase();
-  if (!cmd) return;
-  
-  history.push(cmd);
+  const raw = cli.value.trim();
+  if (!raw) return;
+  const cmd = raw.toLowerCase();
+  const parts = cmd.split(/\s+/);
+  const main = parts[0];
+  const args = parts.slice(1);
+  history.push(raw);
   histIdx = history.length;
-  addInputLine(cli.value);
+  addInputLine(raw);
   
-  if (cmd === 'clear' || (commands[cmd] === '__CLEAR__')) {
-    // Clear all output except the form
+  if (main === 'clear' || commands[main] === '__CLEAR__') {
     [...consoleEl.querySelectorAll('.term-line')].forEach(el => el.remove());
-  } else if (commands[cmd]) {
-    addOutput(commands[cmd]);
+  } else if (main === 'matrix') {
+    const c = document.getElementById('matrix-canvas');
+    c.style.opacity = c.style.opacity === '0.15' ? '0.35' : '0.15';
+    addOutput('Matrix rain opacity: ' + c.style.opacity);
+  } else if (main === 'date') {
+    addOutput(new Date().toString());
+  } else if (main === 'echo') {
+    addOutput(args.join(' ') || '');
+  } else if (commands[main]) {
+    addOutput(typeof commands[main] === 'function' ? commands[main](args) : commands[main]);
   } else {
-    addOutput(`Command not found: ${cmd}. Type "help" for available commands.`);
+    addOutput(`Command not found: ${raw}. Type "help" for available commands.`);
   }
-  
   cli.value = '';
   cursor.style.left = '0em';
 });
 
-cli.addEventListener('input', () => {
-  cursor.style.left = `${0.605 * cli.value.length}em`;
-});
-
+cli.addEventListener('input', () => { cursor.style.left = `${0.605 * cli.value.length}em`; playKey(); });
 cli.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (histIdx > 0) { histIdx--; cli.value = history[histIdx]; cursor.style.left = `${0.605 * cli.value.length}em`; }
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (histIdx < history.length - 1) { histIdx++; cli.value = history[histIdx]; }
-    else { histIdx = history.length; cli.value = ''; }
-    cursor.style.left = `${0.605 * cli.value.length}em`;
-  } else if (e.key === 'Tab') {
-    e.preventDefault();
-    const partial = cli.value.toLowerCase();
-    const match = Object.keys(commands).find(c => c.startsWith(partial));
-    if (match) { cli.value = match; cursor.style.left = `${0.605 * cli.value.length}em`; }
-  } else if (e.key === 'Escape') {
-    cli.value = '';
-    cursor.style.left = '0em';
-  }
+  if (e.key === 'ArrowUp') { e.preventDefault(); if (histIdx > 0) { histIdx--; cli.value = history[histIdx]; cursor.style.left = `${0.605 * cli.value.length}em`; } }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); if (histIdx < history.length - 1) { histIdx++; cli.value = history[histIdx]; } else { histIdx = history.length; cli.value = ''; } cursor.style.left = `${0.605 * cli.value.length}em`; }
+  else if (e.key === 'Tab') { e.preventDefault(); const p = cli.value.toLowerCase(); const m = Object.keys(commands).find(c => c.startsWith(p)); if (m) { cli.value = m; cursor.style.left = `${0.605 * cli.value.length}em`; } }
+  else if (e.key === 'Escape') { cli.value = ''; cursor.style.left = '0em'; }
 });
-
 consoleEl.addEventListener('click', () => cli.focus());
-cli.focus();
+
+// === KONAMI CODE EASTER EGG ===
+(function() {
+  const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let idx = 0;
+  document.addEventListener('keydown', (e) => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === konami[idx]) { idx++; if (idx === konami.length) { idx = 0; const burst = document.getElementById('konami-burst'); burst.classList.add('active'); playBoot(); setTimeout(() => burst.classList.remove('active'), 2000); } }
+    else idx = 0;
+  });
+})();
+
+// Play boot sound after first user interaction
+document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once: true });
 </script>
 </body>
 </html>
