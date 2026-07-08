@@ -233,6 +233,7 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
 .tagline { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #6b7280; margin-bottom: 20px; }
 @media (min-width: 768px) { .tagline { font-size: 14px; } }
 .tagline .d { color: #4b5563; } .tagline .s { color: rgba(0,255,65,0.4); } .tagline span { margin: 0 8px; }
+#subtitle-typewriter { color: rgba(0,255,65,0.7); text-shadow: 0 0 4px rgba(0,255,65,0.2); }
 
 /* === TERMINAL CONSOLE === */
 .term-console {
@@ -410,11 +411,11 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
             </svg>
             <div class="avatar-glow"></div>
           </div>
-          <div><h1 class="ascii-title glow">DROPXTOR</h1></div>
+          <div><h1 class="ascii-title glow" id="title-scramble">DROPXTOR</h1></div>
         </div>
 
         <div class="tagline">
-          <span class="d">──</span><span>vibe coder</span><span class="s">//</span><span>blockchain</span><span class="s">//</span><span>ai agent builder</span><span class="d">──</span>
+          <span class="d">──</span><span id="subtitle-typewriter">vibe coder//blockchain//ai agent builder</span><span class="d">──</span>
         </div>
 
         <hr class="term-divider"/>
@@ -493,6 +494,74 @@ Type "help" for available commands.</pre></div>
 </main>
 
 <script>
+// === TITLE GLITCH SCRAMBLE + SUBTITLE TYPEWRITER ===
+// Inspired by ∀GI agi-agent-infra-stack — adapted for dropxtor profile
+(function() {
+  // --- Title: Glitch Scramble ---
+  const GLITCH_CHARS = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`01';
+  const titleEl = document.getElementById('title-scramble');
+  const titleText = titleEl ? titleEl.textContent : '';
+  if (titleEl) {
+    let revealed = 0;
+    let isGlitching = true;
+    const glitchDuration = 800;
+    const stepDelay = glitchDuration / titleText.length;
+
+    setTimeout(() => {
+      titleEl.style.opacity = '0';
+      titleEl.style.transform = 'translateY(10px)';
+      titleEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      requestAnimationFrame(() => {
+        titleEl.style.opacity = '1';
+        titleEl.style.transform = 'translateY(0)';
+      });
+
+      const interval = setInterval(() => {
+        titleEl.textContent = titleText.split('').map((ch, i) =>
+          ch === ' ' ? ' ' : (i < revealed ? titleText[i] : GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)])
+        ).join('');
+        revealed += 1;
+        if (revealed >= titleText.length) {
+          clearInterval(interval);
+          titleEl.textContent = titleText;
+          isGlitching = false;
+          titleEl.style.textShadow = '0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.15), 0 0 60px rgba(0,255,65,0.05)';
+        }
+      }, stepDelay);
+    }, 300); // 0.3s delay
+  }
+
+  // --- Subtitle: Typewriter + Glitch chars ---
+  const SUB_GLITCH = '█▓▒░╔╗╚╝╠╣╦╩╬│─┌┐└┘├┤┬┴┼⟟⧫⬡⬢';
+  const subEl = document.getElementById('subtitle-typewriter');
+  const subText = subEl ? subEl.textContent : '';
+  if (subEl) {
+    subEl.textContent = '';
+    let tick = 0;
+    let pos = 0;
+
+    setTimeout(() => {
+      const type = () => {
+        tick++;
+        // Reveal one char every 2 ticks (smooth reveal)
+        const display = subText.slice(0, pos) +
+          subText.slice(pos, Math.min(pos + 8, subText.length))
+            .split('')
+            .map(() => SUB_GLITCH[Math.floor(Math.random() * SUB_GLITCH.length)])
+            .join('');
+        subEl.textContent = display;
+        if (tick % 2 === 0) pos++;
+        if (pos < subText.length) {
+          setTimeout(type, 28); // speed=28ms
+        } else {
+          subEl.textContent = subText; // final clean text
+        }
+      };
+      type();
+    }, 600); // revealDelay=600ms
+  }
+})();
+
 // === BOOT SEQUENCE ===
 (function() {
   // ASCII 3D Catbot — point cloud from catbot image, rotating with orthographic projection
