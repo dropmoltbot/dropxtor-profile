@@ -494,64 +494,153 @@ Type "help" for available commands.</pre></div>
 <script>
 // === BOOT SEQUENCE ===
 (function() {
-  // ASCII 3D Torus Knot (2,3) — inspired by topology.tools but more original
+  // ASCII 3D Hopf Fibration — S³ → S²纤维, each fiber is a circle in 3D
+  // Far more original than a torus knot: visualizes the Hopf map π: S³ → S²
+  // Each point on S² lifts to a circle (fiber) in S³, stereographically projected to R³
   const knotEl = document.getElementById('boot-knot');
-  const chars = '.:-=+*#%@';
+  const chars = ' .,:;-=_+*#%@';
   const tau = Math.PI * 2;
-  const W = 48, H = 24, fps = 20;
-  const R = 2, r = 0.8, tubeR = 0.55;
-  const p = 2, q = 3; // torus knot (p,q) — (2,3) = trefoil
-  const tilt = 0.4, K2 = 12;
-  const K1 = W * K2 / (2 * (R + r + tubeR + 0.5));
+  const W = 52, H = 26, fps = 22;
+  const tubeR = 0.12;     // tube radius around each Hopf circle
+  const tubeStep = 0.18;  // angular step for tube
+  const K2 = 7;           // camera distance
+  const K1 = W * K2 / 5;
+  const tilt = 0.35;
   let angle = 0;
   const size = W * H;
   const output = new Array(size);
   const zbuf = new Float64Array(size);
   const cosTilt = Math.cos(tilt), sinTilt = Math.sin(tilt);
-  const tStep = 0.008, sStep = 0.12;
   const maxL = chars.length - 1;
 
+  // Stereographic projection from S³ to R³
+  // S³ point: (x1,x2,x3,x4) with x1²+x2²+x3²+x4²=1
+  // Project: (x1/(1-x4), x2/(1-x4), x3/(1-x4))
+  function stereo(x1,x2,x3,x4) {
+    const denom = 1 - x4;
+    if (Math.abs(denom) < 0.001) return [0,0,0];
+    const s = 1/denom;
+    return [x1*s, x2*s, x3*s];
+  }
+
+  // Hopf map: S³ → S²
+  // Given (z1,z2) ∈ C² with |z1|²+|z2|²=1, Hopf fiber maps to:
+  // (2·Re(z1·conj(z2)), 2·Im(z1·conj(z2)), |z1|²-|z2|²) ∈ S²
+  // For a base point (X,Y,Z) on S², the fiber is parametrized by φ ∈ [0,2π):
+  //   z1 = e^{iφ} · cos(θ)
+  //   z2 = e^{iφ} · sin(θ) · (X+iY)/sqrt(X²+Y²)
+  // But simpler: use the standard parametrization
+  // For base point (a,b,c) on S² with a²+b²+c²=1:
+  //   f = atan2(sqrt(a²+b²), c)  (colatitude)
+  //   The fiber circle in S³:
+  //   x1 = cos(f)·cos(φ)
+  //   x2 = cos(f)·sin(φ)
+  //   x3 = sin(f)·cos(φ+δ)
+  //   x4 = sin(f)·sin(φ+δ)
+  //   where δ = atan2(b,a)
+  
+  // Precompute N fibers at evenly spaced base points on S²
+  const N_FIBERS = 12;
+  const fibers = [];
+  for (let n = 0; n < N_FIBERS; n++) {
+    // Fibonacci sphere distribution for even coverage
+    const ph = Math.acos(1 - 2*(n+0.5)/N_FIBERS);
+    const th = Math.PI * (1 + Math.sqrt(5)) * n;
+    const X = Math.sin(ph)*Math.cos(th);
+    const Y = Math.sin(ph)*Math.sin(th);
+    const Z = Math.cos(ph);
+    // Colatitude and longitude
+    const r_xy = Math.sqrt(X*X+Y*Y);
+    const colat = Math.atan2(r_xy, Z);  // θ ∈ [0,π]
+    const lon = Math.atan2(Y, X);        // δ ∈ [0,2π)
+    fibers.push({ colat, lon });
+  }
+
   function renderKnot() {
-    for (let i = 0; i < size; i++) { output[i] = ' '; zbuf[i] = 0; }
+    for (let i = 0; i < size; i++) { output[i] = ' '; zbuf[i] = -1e9; }
     const cosB = Math.cos(angle), sinB = Math.sin(angle);
-    for (let t = 0; t < tau; t += tStep) {
-      const cp = Math.cos(p*t), sp = Math.sin(p*t), cq = Math.cos(q*t), sq = Math.sin(q*t);
-      const rr = R + r * cq;
-      const cx = rr * cp, cy = rr * sp, cz = r * sq;
-      // Tangent
-      const dtx = -p*r*sp*cq - q*rr*cp*sq;
-      const dty = p*r*cp*cq - q*rr*sp*sq;
-      const dtz = q*r*cq;
-      const tlen = Math.sqrt(dtx*dtx+dty*dty+dtz*dtz);
-      const Tx=dtx/tlen, Ty=dty/tlen, Tz=dtz/tlen;
-      // Normal
-      let refx=0,refy=0,refz=1; let dot=Tx*refx+Ty*refy+Tz*refz;
-      if (Math.abs(dot)>0.9){refx=1;refy=0;refz=0;dot=Tx*refx+Ty*refy+Tz*refz;}
-      let nx=refx-dot*Tx, ny=refy-dot*Ty, nz=refz-dot*Tz;
-      const nlen=Math.sqrt(nx*nx+ny*ny+nz*nz); nx/=nlen; ny/=nlen; nz/=nlen;
-      const bx=Ty*nz-Tz*ny, by=Tz*nx-Tx*nz, bz=Tx*ny-Ty*nx;
-      for (let s = 0; s < tau; s += sStep) {
-        const cosS=Math.cos(s), sinS=Math.sin(s);
-        const px = cx + tubeR*(cosS*nx + sinS*bx);
-        const py = cy + tubeR*(cosS*ny + sinS*by);
-        const pz = cz + tubeR*(cosS*nz + sinS*bz);
-        // Rotate around X (tilt)
-        const y1 = py*cosTilt - pz*sinTilt;
-        const z1 = py*sinTilt + pz*cosTilt;
-        // Rotate around Y (angle)
-        const x2 = px*cosB + z1*sinB;
-        const z2 = -px*sinB + z1*cosB;
-        if (z2 + K2 < 0.1) continue;
-        const ooz = 1/(z2+K2);
-        const sx = Math.round(W/2 + K1*ooz*x2);
-        const sy = Math.round(H/2 - K1*ooz*y1*0.5);
-        if (sx < 0 || sx >= W || sy < 0 || sy >= H) continue;
-        const idx = sy*W + sx;
-        // Lighting from top-left
-        const Lx=0.5, Ly=0.5, Lz=1;
-        const lx=cosS*nx+sinS*bx, ly=cosS*ny+sinS*by, lz=cosS*nz+sinS*bz;
-        const lum = lx*Lx + ly*Ly + lz*Lz;
-        if (lum > zbuf[idx]) { zbuf[idx] = lum; output[idx] = chars[Math.max(0, Math.min(maxL, Math.round(lum*(maxL+1))))]; }
+    const cosB2 = Math.cos(angle*0.37), sinB2 = Math.sin(angle*0.37); // slight wobble
+    
+    for (let fi = 0; fi < fibers.length; fi++) {
+      const { colat, lon } = fibers[fi];
+      const cf = Math.cos(colat), sf = Math.sin(colat);
+      const cl = Math.cos(lon), sl = Math.sin(lon);
+      
+      // Parametrize the Hopf fiber circle: φ ∈ [0, 2π)
+      const phiStep = 0.025;
+      for (let phi = 0; phi < tau; phi += phiStep) {
+        // S³ coordinates
+        const x1 = cf*Math.cos(phi);
+        const x2 = cf*Math.sin(phi);
+        const x3 = sf*Math.cos(phi + lon);
+        const x4 = sf*Math.sin(phi + lon);
+        
+        // Stereographic projection → R³
+        const denom = 1 - x4;
+        if (Math.abs(denom) < 0.01) continue;
+        const s = 1/denom;
+        const px = x1*s, py = x2*s, pz = x3*s;
+        
+        // Build tube around this point on the fiber
+        // Tangent direction: derivative w.r.t. phi (approximate via finite diff)
+        const d = 0.01;
+        const x1d = cf*Math.cos(phi+d), x2d = cf*Math.sin(phi+d);
+        const x3d = sf*Math.cos(phi+d+lon), x4d = sf*Math.sin(phi+d+lon);
+        const denomD = 1 - x4d;
+        if (Math.abs(denomD) < 0.01) continue;
+        const sd = 1/denomD;
+        const dx = x1d*sd - px, dy = x2d*sd - py, dz = x3d*sd - pz;
+        const dlen = Math.sqrt(dx*dx+dy*dy+dz*dz);
+        if (dlen < 0.001) continue;
+        const Tx=dx/dlen, Ty=dy/dlen, Tz=dz/dlen;
+        
+        // Normal (arbitrary perpendicular to tangent)
+        let nx=-Ty, ny=Tx, nz=0;
+        let nlen = Math.sqrt(nx*nx+ny*ny+nz*nz);
+        if (nlen < 0.01) { nx=0; ny=-Tz; nz=Ty; nlen=Math.sqrt(nx*nx+ny*ny+nz*nz); }
+        nx/=nlen; ny/=nlen; nz/=nlen;
+        // Binormal
+        const bx=Ty*nz-Tz*ny, by=Tz*nx-Tx*nz, bz=Tx*ny-Ty*nx;
+        
+        // Scale down to fit viewport
+        const scale = 0.45;
+        
+        for (let s2 = 0; s2 < tau; s2 += tubeStep) {
+          const cosS2=Math.cos(s2), sinS2=Math.sin(s2);
+          const ox = px + tubeR*(cosS2*nx + sinS2*bx);
+          const oy = py + tubeR*(cosS2*ny + sinS2*by);
+          const oz = pz + tubeR*(cosS2*nz + sinS2*bz);
+          
+          // Scale
+          const X = ox*scale, Y = oy*scale, Z = oz*scale;
+          
+          // Rotate around X (tilt)
+          const y1 = Y*cosTilt - Z*sinTilt;
+          const z1 = Y*sinTilt + Z*cosTilt;
+          // Rotate around Y (main angle)
+          const x2 = X*cosB + z1*sinB;
+          const z2 = -X*sinB + z1*cosB;
+          
+          if (z2 + K2 < 0.1) continue;
+          const ooz = 1/(z2+K2);
+          const sx = Math.round(W/2 + K1*ooz*x2);
+          const sy = Math.round(H/2 - K1*ooz*y1*0.5);
+          if (sx < 0 || sx >= W || sy < 0 || sy >= H) continue;
+          const idx = sy*W + sx;
+          
+          // Lighting
+          const Lx=0.4, Ly=0.7, Lz=0.6;
+          const lx=cosS2*nx+sinS2*bx, ly=cosS2*ny+sinS2*by, lz=cosS2*nz+sinS2*bz;
+          const lum = Math.max(0, lx*Lx + ly*Ly + lz*Lz);
+          // Add depth-based glow for far fibers
+          const depthGlow = 0.15 * (1 - Math.min(1, (z2+K2)/12));
+          const totalLum = lum + depthGlow;
+          
+          if (totalLum > zbuf[idx]) {
+            zbuf[idx] = totalLum;
+            output[idx] = chars[Math.max(0, Math.min(maxL, Math.round(totalLum*(maxL))))]; 
+          }
+        }
       }
     }
     let str = '';
@@ -560,10 +649,10 @@ Type "help" for available commands.</pre></div>
   }
 
   let knotInterval = setInterval(renderKnot, 1000/fps);
-  angle += 0.08;
+  angle += 0.06;
 
   const lines = [
-    { tag: '[BOOT]', msg: 'dropxtor-terminal v2.0.0', status: 'OK' },
+    { tag: '[BOOT]', msg: 'dropxtor-terminal v3.0.0 · hopf fibr.', status: 'OK' },
     { tag: '[INIT]', msg: 'kernel modules', status: 'OK' },
     { tag: '[MOUNT]', msg: '/dev/crypto → ok', status: 'OK' },
     { tag: '[INIT]', msg: 'CRT phosphor warmup', status: 'OK' },
