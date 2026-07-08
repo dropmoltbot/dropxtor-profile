@@ -525,10 +525,11 @@ Type "help" for available commands.</pre></div>
           clearInterval(interval);
           titleEl.textContent = titleText;
           isGlitching = false;
+          // Keep CSS titleGlitch running infinitely; only stabilize textShadow
           titleEl.style.textShadow = '0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.15), 0 0 60px rgba(0,255,65,0.05)';
         }
       }, stepDelay);
-    }, 3500); // delay=3.5s (après boot screen)
+    }, 1000); // delay=1s (pendant boot screen, visible après)
   }
 
   // --- Subtitle: Typewriter + Glitch chars ---
@@ -558,7 +559,7 @@ Type "help" for available commands.</pre></div>
         }
       };
       type();
-    }, 4700); // revealDelay=4.7s (après glitch title)
+    }, 3200); // revealDelay=3.2s (après glitch title)
   }
 })();
 
