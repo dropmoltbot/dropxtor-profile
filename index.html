@@ -504,7 +504,7 @@ Type "help" for available commands.</pre></div>
   if (titleEl) {
     let revealed = 0;
     let isGlitching = true;
-    const glitchDuration = 800;
+    const glitchDuration = 2000;
     const stepDelay = glitchDuration / titleText.length;
 
     setTimeout(() => {
@@ -528,7 +528,7 @@ Type "help" for available commands.</pre></div>
           titleEl.style.textShadow = '0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.15), 0 0 60px rgba(0,255,65,0.05)';
         }
       }, stepDelay);
-    }, 300); // 0.3s delay
+    }, 850); // delay=0.85s
   }
 
   // --- Subtitle: Typewriter + Glitch chars ---
@@ -552,13 +552,13 @@ Type "help" for available commands.</pre></div>
         subEl.textContent = display;
         if (tick % 2 === 0) pos++;
         if (pos < subText.length) {
-          setTimeout(type, 28); // speed=28ms
+          setTimeout(type, 80); // speed=80ms
         } else {
           subEl.textContent = subText; // final clean text
         }
       };
       type();
-    }, 600); // revealDelay=600ms
+    }, 2100); // revealDelay=2100ms
   }
 })();
 
