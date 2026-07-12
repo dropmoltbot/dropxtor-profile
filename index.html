@@ -1,6 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- === ANTI-REPLIT: must run before Replit injects its pill script === -->
+<script>
+(function(){
+  // Intercept script creation before Replit's pill loads
+  var origCreate = document.createElement.bind(document);
+  document.createElement = function(tag) {
+    var el = origCreate(tag);
+    if (tag.toLowerCase() === 'script') {
+      var desc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+      if (desc && desc.set) {
+        try {
+          Object.defineProperty(el, 'src', {
+            set: function(v) {
+              if (typeof v === 'string' && v.indexOf('replit') !== -1) return;
+              desc.set.call(this, v);
+            },
+            get: function() { return desc.get.call(this); }
+          });
+        } catch(e) {}
+      }
+    }
+    return el;
+  };
+  // Kill #replit-pill-host when it appears
+  new MutationObserver(function(){
+    var h = document.getElementById('replit-pill-host');
+    if (h) h.remove();
+    document.querySelectorAll('script[src*="replit"]').forEach(function(s){ s.remove(); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+<style>
+#replit-pill-host { display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; overflow:hidden !important; }
+</style>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>dropxtor // Terminal</title>
