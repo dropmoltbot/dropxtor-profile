@@ -963,46 +963,76 @@ consoleEl.addEventListener('click', () => cli.focus());
 // Play boot sound after first user interaction
 document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once: true });
 
-// === KILL REPLIT BRANDING ===
+// === KILL REPLIT "Made with Replit" PILL ===
+// Replit injects: <script src="replit-cdn.com/replit-pill/...">
+// Which creates: <div id="replit-pill-host"> with CLOSED shadow DOM
+// Shadow contains: <div id="replit-pill"> "Made with Replit" at bottom-right
+// Strategy: kill the HOST div + intercept the script BEFORE it runs
 (function() {
-  // Remove Replit pill/badge injected by replit-cdn
-  const killReplit = () => {
-    // Remove replit-pill elements
-    document.querySelectorAll('replit-pill, [data-replit-pill], .replit-pill, #replit-pill').forEach(el => el.remove());
-    // Remove proj-badge elements
-    document.querySelectorAll('.proj-badge, .proj-name').forEach(el => el.remove());
-    // Remove any replit-cdn injected elements
-    document.querySelectorAll('[class*="replit"], [id*="replit"], [data-repl-id], [data-referral-code]').forEach(el => {
-      if (el.tagName !== 'SCRIPT') el.remove();
-    });
-    // Remove iframes injected by replit
-    document.querySelectorAll('iframe[src*="replit"]').forEach(el => el.remove());
+  // 1. Prevent the replit-pill script from executing by monkey-patching
+  //    document.createElement to neutralize replit-cdn scripts
+  const origCreate = document.createElement.bind(document);
+  document.createElement = function(tag) {
+    const el = origCreate(tag);
+    if (tag.toLowerCase() === 'script') {
+      const origSetSrc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+      try {
+        Object.defineProperty(el, 'src', {
+          set(v) {
+            if (typeof v === 'string' && v.includes('replit')) {
+              console.log('[anti-replit] blocked script:', v);
+              return; // swallow it
+            }
+            origSetSrc.set.call(this, v);
+          },
+          get() { return origSetSrc.get.call(this); }
+        });
+      } catch(e) {}
+    }
+    return el;
   };
-  // Run immediately + after DOM ready + periodically (Replit re-injects)
-  killReplit();
-  document.addEventListener('DOMContentLoaded', killReplit);
-  setTimeout(killReplit, 100);
-  setTimeout(killReplit, 500);
-  setTimeout(killReplit, 1000);
-  setTimeout(killReplit, 2000);
-  setTimeout(killReplit, 3000);
-  // MutationObserver to catch re-injections
-  const obs = new MutationObserver(() => killReplit());
-  obs.observe(document.body, { childList: true, subtree: true });
-  // Block the replit-pill script from loading
-  document.querySelectorAll('script[src*="replit-cdn"]').forEach(s => s.remove());
+
+  // 2. Kill the host element (the shadow DOM container)
+  const killPill = () => {
+    // Remove #replit-pill-host (contains the closed shadow DOM)
+    const host = document.getElementById('replit-pill-host');
+    if (host) {
+      host.remove();
+      console.log('[anti-replit] removed #replit-pill-host');
+    }
+    // Remove any replit script that slipped through
+    document.querySelectorAll('script[src*="replit"]').forEach(s => {
+      s.remove();
+      console.log('[anti-replit] removed script');
+    });
+  };
+
+  // 3. Run immediately + on DOMContentLoaded + delayed + observer
+  killPill();
+  document.addEventListener('DOMContentLoaded', killPill);
+  for (let t = 50; t <= 5000; t += 100) setTimeout(killPill, t);
+
+  // 4. MutationObserver: re-kill if Replit re-injects
+  const obs = new MutationObserver(() => killPill());
+  if (document.body) obs.observe(document.body, { childList: true, subtree: true });
+  else document.addEventListener('DOMContentLoaded', () => {
+    killPill();
+    obs.observe(document.body, { childList: true, subtree: true });
+  });
 })();
 </script>
 <style>
-/* Final kill: hide anything replit-related via CSS */
-[class*="replit" i], [id*="replit" i], replit-pill, [data-replit-pill],
-.proj-badge, .proj-name, iframe[src*="replit" i] {
+/* CSS final: hide #replit-pill-host even if JS is blocked */
+#replit-pill-host {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   width: 0 !important;
   height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
   pointer-events: none !important;
+  overflow: hidden !important;
 }
 </style>
 </body>
