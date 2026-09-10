@@ -41,7 +41,7 @@
 <meta name="description" content="Terminal-style hacker profile"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root {
   --green: #00ff41;
@@ -66,7 +66,7 @@
 body {
   background: var(--bg-darker);
   color: var(--text);
-  font-family: "VT323", "JetBrains Mono", monospace;
+  font-family: "IBM Plex Mono", "JetBrains Mono", "VT323", monospace;
   overflow-x: hidden;
   min-height: 100vh;
   perspective: 1000px;
@@ -409,7 +409,7 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
 
 <main class="scanlines crt-noise glitch-cursor">
   <canvas id="matrix-canvas" class="matrix-rain" aria-hidden="true"></canvas>
-  <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9997;mix-blend-mode:multiply;"></canvas>
+  <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9997;mix-blend-mode:screen;opacity:0.42;"></canvas>
   
   <div class="tw-wrap">
     <div class="terminal-window" id="term-window">
@@ -489,10 +489,24 @@ Type "help" for available commands.</pre></div>
           <div class="section" id="projects">
             <h2>// PROJECTS</h2>
             <div class="proj-item">
+              <span class="proj-name">▶ flop-labs</span><span class="proj-badge">[live]</span>
+              <div class="proj-desc">FLOP Labs — Chip on the technocore mesh</div>
+              <div class="proj-tags"><span class="proj-tag">#Next.js</span><span class="proj-tag">#p5</span><span class="proj-tag">#technocore</span></div>
+            </div>
+            <div class="proj-item">
               <span class="proj-name">▶ dropxtor-profile</span><span class="proj-badge">[live]</span>
-              <div class="proj-desc">CRT terminal portfolio — the one you're looking at</div>
-              <div class="proj-tags"><span class="proj-tag">#Next.js</span><span class="proj-tag">#TypeScript</span><span class="proj-tag">#Framer Motion</span><span class="proj-tag">#CRT</span></div>
-              <div class="proj-stats"><span class="proj-stat"><span class="num">∞</span> caffeine</span><span class="proj-stat"><span class="num">42</span> deploys</span></div>
+              <div class="proj-desc">CRT terminal portfolio — this page (static HTML, Replit + GH Pages)</div>
+              <div class="proj-tags"><span class="proj-tag">#HTML</span><span class="proj-tag">#Canvas</span><span class="proj-tag">#WebAudio</span><span class="proj-tag">#CRT</span></div>
+            </div>
+            <div class="proj-item">
+              <span class="proj-name">▶ ashes</span>
+              <div class="proj-desc">Onchain dead man's switch on Monad</div>
+              <div class="proj-tags"><span class="proj-tag">#Monad</span><span class="proj-tag">#Solidity</span></div>
+            </div>
+            <div class="proj-item">
+              <span class="proj-name">▶ ap1ph3x</span>
+              <div class="proj-desc">x402 + MPP payment client for agents. Zero custody.</div>
+              <div class="proj-tags"><span class="proj-tag">#x402</span><span class="proj-tag">#MPP</span></div>
             </div>
           </div>
 
@@ -520,7 +534,7 @@ Type "help" for available commands.</pre></div>
 
       <div class="status-bar">
         <div class="sb-left"><span class="sb-dot">●</span><span>SSH</span><span class="sb-sep">│</span><span>UTF-8</span><span class="sb-sep">│</span><span>ZSH</span></div>
-        <div class="sb-right"><span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span><span class="sb-sep">│</span><span class="sb-clock" id="clock">--:--:--</span></div>
+        <div class="sb-right"><span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">dropxtor</span><span class="sb-sep">│</span><span class="sb-clock" id="clock">--:--:--</span></div>
       </div>
     </div>
     <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history · try "help"</p>
@@ -563,7 +577,7 @@ Type "help" for available commands.</pre></div>
           titleEl.style.textShadow = '0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.15), 0 0 60px rgba(0,255,65,0.05)';
         }
       }, stepDelay);
-    }, 1000); // delay=1s (pendant boot screen, visible après)
+    }, 5200); // after boot failsafe (~5s), glitch is visible
   }
 
   // --- Subtitle: Typewriter + Glitch chars ---
@@ -593,7 +607,7 @@ Type "help" for available commands.</pre></div>
         }
       };
       type();
-    }, 7200); // revealDelay=7.2s ( après glitch title 6s )
+    }, 11400); // after title glitch
   }
 })();
 
@@ -655,6 +669,13 @@ Type "help" for available commands.</pre></div>
 
   let knotInterval = setInterval(renderKnot, 1000/fps);
   angle += 0.04;
+  setTimeout(() => {
+    const bs = document.getElementById('boot-screen');
+    if (!bs || bs.classList.contains('fade-out')) return;
+    if (new URLSearchParams(window.location.search).has('debugboot')) return;
+    bs.classList.add('fade-out');
+    setTimeout(() => { bs.remove(); clearInterval(knotInterval); }, 600);
+  }, 5000);
 
   const lines = [
     { tag: '[BOOT]', msg: 'dropxtor-terminal v3.1.0 · catbot 3D', status: 'OK' },
@@ -798,12 +819,14 @@ Type "help" for available commands.</pre></div>
       for (let i = 0; i < h; i += gap) ctx.fillRect(0, i, w, Math.round(dpr));
     }
     if (frameCount % 4 === 0) {
-      const imageData = ctx.getImageData(0, 0, w, h);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        if (0.07 > Math.random()) { const g = Math.floor(15 + 55 * Math.random()); data[i] = 0; data[i+1] = g; data[i+2] = Math.floor(0.2 * g); data[i+3] = Math.floor(2.2 * g); }
+      const n = Math.max(40, Math.floor(w * h * 0.0008));
+      for (let k = 0; k < n; k++) {
+        const x = Math.floor(Math.random() * w);
+        const y = Math.floor(Math.random() * h);
+        const g = Math.floor(15 + 55 * Math.random());
+        ctx.fillStyle = `rgba(0,${g},${Math.floor(0.2*g)},${(2.2*g)/255})`;
+        ctx.fillRect(x, y, 1, 1);
       }
-      ctx.putImageData(imageData, 0, 0);
     }
     requestAnimationFrame(draw);
   }
@@ -842,6 +865,11 @@ function playBoot() {
     o.connect(g).connect(ctx.destination); o.start(t + i * 0.08); o.stop(t + i * 0.08 + 0.1);
   }
 }
+document.addEventListener('pointerdown', function unlockAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
+  playBoot();
+}, { once: true });
 
 // === PARALLAX 3D ===
 (function() {
@@ -875,6 +903,7 @@ const commands = {
   about     - About me
   skills    - Technical skills
   projects  - Recent projects
+  flop      - FLOP Labs
   contact   - Get in touch
   clear     - Clear terminal
   whoami    - Current user
@@ -888,17 +917,19 @@ const commands = {
 Full-stack vibe coder & blockchain enthusiast.
 Building the future, one deploy at a time.
 Based in the matrix.`,
-  skills: `Languages: TypeScript, Rust, Solidity, Go, C++
-Frontend: React, Next.js, Tailwind, Framer
-Backend: Node.js, PostgreSQL, Redis, GraphQL
+  skills: `Languages: TypeScript, Python, Rust, Solidity, Go, C++
+Frontend: Next.js, React, p5, Canvas
+Backend: Node.js, PostgreSQL, Redis
 Blockchain: EVM, Solana, DeFi, MEV
-AI/ML: LLMs, Multi-Agent, RAG, OpenClaw, Hermes
+AI/ML: LLMs, Multi-Agent, Hermes
 Security: OSINT, Pentest, RE, Crypto
-DevOps: Docker, K8s, Vercel, CI/CD, Cloudflare`,
-  projects: `1. dropxtor-profile  - CRT terminal portfolio (this)
-2. mm-dash          - MetaMask Agent dashboard
-3. octra-bounty     - PVAC-HFHE crypto challenge
-4. moltbook         - Social network for AI agents`,
+DevOps: Docker, Vercel, Cloudflare`,
+  projects: `1. flop-labs          - Chip on the technocore mesh
+2. dropxtor-profile   - CRT terminal (this page)
+3. ashes              - Dead man's switch on Monad
+4. ap1ph3x            - x402 + MPP agent payments`,
+  flop: `FLOP Labs
+https://dropmoltbot.github.io/flop-labs/`,
   contact: `GitHub:   github.com/dropxtor
 Twitter: @0xdropxtor
 Email:   dropxtor@proton.me`,
