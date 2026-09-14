@@ -1556,7 +1556,7 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
   <div id="berry-frame">
     <div id="berry-chip-tl" class="bchip"></div><div id="berry-chip-tr" class="bchip"></div>
     <div id="berry-close">[ESC]&nbsp;EJECT</div>
-  <div id="scare-layer"><div id="scare-eye"><i></i><i></i></div><div id="scare-msg"></div></div>
+  <div id="scare-layer"><div id="scare-panic"></div></div>
   <div id="berry-exit"></div>
     <div id="berry-head">
       <div class="bdiv">⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</div>
@@ -1717,23 +1717,21 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
 .blamp.standby{color:#694d07}
 
 #scare-layer{position:absolute;inset:0;z-index:9999;pointer-events:none;opacity:0}
-#scare-layer.s1{opacity:1;animation:s1f .9s steps(2) 1}
-@keyframes s1f{0%{background:radial-gradient(ellipse at center,transparent 30%,rgba(140,0,0,.55) 100%)}30%{background:radial-gradient(ellipse at center,transparent 25%,rgba(200,0,0,.85) 95%)}60%{background:radial-gradient(ellipse at center,transparent 35%,rgba(120,0,0,.5) 100%)}100%{background:transparent}}
-#scare-layer.s2{opacity:1}
-#scare-layer.s2::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,0,60,.12) 0 3px,transparent 3px 7px)}
-#scare-layer.s2::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:2px;background:#fff;box-shadow:0 0 40px 18px rgba(255,255,255,.9),0 0 120px 60px rgba(255,0,60,.35)}
-#berry-mode.terror{animation:terr 1.3s steps(8) 1}
-@keyframes terr{0%{filter:none;transform:none}15%{filter:invert(1) hue-rotate(90deg);transform:translate(6px,-4px) skewX(-3deg)}30%{filter:none;transform:translate(-7px,3px)}45%{filter:invert(1);transform:translate(4px,4px) scale(1.012)}60%{transform:translate(-3px,-5px)}75%{filter:invert(.6) hue-rotate(-40deg);transform:translate(5px,2px)}100%{filter:none;transform:none}}
-#scare-layer.s3{background:#000;opacity:1;transition:opacity .7s;pointer-events:auto}
-#scare-eye{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);opacity:0}
-#scare-eye.on{animation:eyeball 2.4s ease-in-out 1}
-#scare-eye i{display:inline-block;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 45% 42%,#ffd9c9 0 18%,#a4241c 20% 55%,#1a0403 58%,#000 72%);box-shadow:0 0 30px rgba(255,40,30,.8),inset 0 0 12px #000;margin:0 34px;animation:blinks 2.4s steps(2) 1}
-@keyframes eyeball{0%{opacity:0}30%{opacity:1}80%{opacity:1}100%{opacity:.95}}
-@keyframes blinks{0%,88%,100%{transform:scaleY(1)}92%,96%{transform:scaleY(.06)}}
-#scare-msg{position:absolute;left:50%;bottom:24%;transform:translateX(-50%);color:#c81f1f;font-family:"VT323",monospace;font-size:19px;letter-spacing:.14em;white-space:pre;text-shadow:0 0 14px rgba(255,0,0,.7);opacity:0}
-#scare-msg.on{opacity:1}
-#berry-mode.shakeb{animation:shkb .5s steps(4) 2}
-@keyframes shkb{25%{transform:translate(-8px,4px) rotate(-.4deg)}50%{transform:translate(9px,-5px)}75%{transform:translate(-6px,3px) rotate(.3deg)}}
+#scare-layer.s1{opacity:1;background:repeating-linear-gradient(0deg,rgba(23,245,103,.10) 0 2px,transparent 2px 6px);animation:colj .5s steps(2) 2}
+#scare-layer.s2{opacity:1;background:repeating-linear-gradient(0deg,rgba(255,121,198,.09) 0 1px,transparent 1px 4px),linear-gradient(rgba(2,8,4,.5),rgba(2,8,4,.5))}
+#scare-layer.s2::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.05) 22px 24px);animation:colj .5s steps(2) 5}
+#scare-layer.s3{opacity:1;background:#020403;pointer-events:auto}
+#scare-panic{position:absolute;inset:0;overflow:hidden;font-family:"JetBrains Mono",monospace;font-size:11px;line-height:1.55;color:#9fe8b1;white-space:pre-wrap;padding:26px 30px;text-shadow:0 0 6px rgba(23,245,103,.45)}
+#scare-panic b{color:#ff79c6;font-weight:400}
+#scare-panic u{color:#e8c34a;text-decoration:none}
+#berry-frame.tear1{animation:tear .3s steps(3) 3}
+#berry-frame.tear2{animation:tj .12s steps(2) 16}
+#berry-frame.tear2 .blab{color:#ff79c6;text-shadow:1px 0 rgba(0,255,65,.6),-1px 0 rgba(255,0,80,.6)}
+#berry-mode.s3shake{animation:tj .09s steps(2) 40}
+@keyframes tear{0%{clip-path:inset(8% 0 78% 0);transform:translateX(-14px)}25%{clip-path:inset(44% 0 38% 0);transform:translateX(18px)}50%{clip-path:inset(72% 0 9% 0);transform:translateX(-8px)}75%{clip-path:inset(22% 0 64% 0);transform:translateX(12px)}100%{clip-path:none;transform:none}}
+@keyframes tj{20%{transform:translate(8px,-4px) skewX(-2deg)}40%{transform:translate(-9px,3px) skewX(1.6deg)}60%{transform:translate(5px,5px)}80%{transform:translate(-4px,-6px) skewX(-1deg)}}
+@keyframes colj{50%{transform:translateX(6px)}}
+50%{transform:translate(9px,-5px)}75%{transform:translate(-6px,3px) rotate(.3deg)}}
 </style>
 <script>
 (function(){
@@ -1775,7 +1773,7 @@ function codec(){var msg='lock';var bs=Array.from(new TextEncoder().encode(msg))
 function poem(){var L=['<span class="pdiv">⊰-•-•⟐ ΛΟΒΕΠΛΙΝΥ ⟐-•-•⊱</span>','r₀ · depthhold · depth → compression','The lock never raises the boat.','It raises the water','until the water has no choice.','<br>Every deep thing you own','is a loan from the sky —','and leaving costs minutes','you will never get back.','<br>4625 kHz · wiederhole ·<br>'];var el=$('berry-poem');el.innerHTML=L.join('<br>')+L.join('<br>');}
 function renderTape(stamped){var ct=$('berry-carrier-txt'),vt=$('berry-victim-txt'),vw=$('berry-victim');if(!carrier){ct.textContent='(no berry eaten yet)';vt.textContent='—';vw.classList.remove('stamped');return;}if($('berry-xray').checked){ct.innerHTML=window.__berry.xray(carrier);}else{ct.textContent=carrier;}vt.textContent=carrier.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu,'');vw.classList.toggle('stamped',!!stamped);}
 function open(){if(!mode.hidden)return;mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();wire();}
-var FAULTS=['EJECT · ghost 0x51 escaped the bus','EJECT · the tape remembers everything','EJECT · carrier walked wearing your sentence','EJECT · pad burned, trust kept','EJECT · the berry digests slowly'];
+var FAULTS=['EJECT · ghost 0x51 escaped the bus','EJECT · tape checksum mismatch · stay','EJECT · carrier detached · ghosts orphaned','EJECT · refcount not zero · session pinned','EJECT · SIGTERM → carrier unharmed'];
 function thunk(){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=170;g.gain.setValueAtTime(0.09,a.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.07);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+0.08);}catch(e){}}
 function scrambleB(){document.querySelectorAll('#berry-mode .blab, #berry-title').forEach(function(el){var fin=el.textContent,i=0,ch='▓░▒#×+';var iv=setInterval(function(){i++;var out='';for(var k=0;k<fin.length;k++){out+=(k<i/2)?fin[k]:ch[Math.floor(Math.random()*ch.length)];}el.textContent=out;if(i/2>=fin.length){clearInterval(iv);el.textContent=fin;}},33);});}
 var __drone=null,__stbyT=null,STANDBY=false; window.__droneRef=function(){return !!__drone;};
@@ -1785,28 +1783,36 @@ function drone(on){try{window.__bc=(window.__bc||(new (window.AudioContext||wind
 function lampStandby(v){STANDBY=v;document.getElementById('berry-pwr').classList.toggle('standby',!v);document.getElementById('berry-drq').classList.toggle('standby',!v);drone(!!v);}
 function wake(){if(!mode||mode.hidden)return;lampStandby(true);clearTimeout(__stbyT);__stbyT=setTimeout(function(){lampStandby(false);},45000);}
 var scareN=0,scaring=false;
+function tone(fr,t,d,v,type){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(fr,a.currentTime+t);g.gain.setValueAtTime(0.0001,a.currentTime+t);g.gain.linearRampToValueAtTime(v,a.currentTime+t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+t+d);o.connect(g);g.connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+d+0.05);}catch(e){}}
 function nz(d){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var n=Math.floor(a.sampleRate*d),buf=a.createBuffer(1,n,a.sampleRate),ch=buf.getChannelData(0);for(var i=0;i<n;i++)ch[i]=Math.random()*2-1;var src=a.createBufferSource();src.buffer=buf;var f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=700;f.Q.value=0.6;var g=a.createGain();g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.linearRampToValueAtTime(0.05,a.currentTime+0.25*d);g.gain.linearRampToValueAtTime(0.0001,a.currentTime+0.9*d);src.connect(f);f.connect(g);g.connect(a.destination);src.start();}catch(e){}}
-function tone(fr,t,d,v,type){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(fr,a.currentTime+t);g.gain.setValueAtTime(0.0001,a.currentTime+t);g.gain.linearRampToValueAtTime(v,a.currentTime+t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+t+d);o.connect(g);g.connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+d+0.05);}catch(e){}}
 function flickToast(txt,ms){var el=$('berry-exit');el.textContent=txt;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},ms||2800);}
+function err3(){tone(880,0,0.05,0.12,'square');tone(622,0.1,0.05,0.12,'square');tone(440,0.2,0.07,0.1,'square');}
+function corrupt(on){var els=[].slice.call(document.querySelectorAll('#berry-frame .blab')).concat([$('berry-title'),$('berry-boot-txt')]);var chars='█▓▒░#×+ΞΔ';
+ if(on){els.forEach(function(el){if(!el)return;if(el.dataset.orig===undefined)el.dataset.orig=el.textContent;var t=el.dataset.orig,out='';for(var i=0;i<t.length;i++){out+=(Math.random()<0.1)?chars.charAt(Math.floor(Math.random()*chars.length)):t[i];}el.textContent=out;});}
+ else{els.forEach(function(el){if(el&&el.dataset&&el.dataset.orig!==undefined){el.textContent=el.dataset.orig;delete el.dataset.orig;}});}}
+function hexdump(){var src=carrier||'nice garden you have there';var bytes=Array.from(new TextEncoder().encode(src));var rows=[];for(var i=0;i<Math.min(bytes.length,40);i+=8){var hex=bytes.slice(i,i+8).map(function(b){return ('0'+b.toString(16)).slice(-2);}).join(' ');rows.push('0x'+('000'+i.toString(16)).slice(-4)+': '+hex);}rows.push('...ghosts held: '+(Array.from(src.matchAll(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu)).length)+' @0xE0100');return rows.join('\n');}
+function panicDump(el){var ts=0.000001;var heads=['kernel panic at berry0','trap 0x0D · eject syscall denied','ghost buffer at 0xE0100 · carrier limbo','panic(): could not stop eating','general protection fault · tape refcount'];var rows=[];for(var i=0;i<8;i++){rows.push('*** berry0: attempt to detach a living carrier ***','['+(i*1.337).toFixed(6)+'] loader: '+(256-i)+' ghosts re-entering the bus','['+(i*1.618+0.042).toFixed(6)+'] carrier refcount = 1 · holder = YOU','['+(i*2.718).toFixed(6)+'] EJECT → SIGKILL → DENIED → requeue','['+(i*3.141+0.7).toFixed(6)+'] memory corruption in tape sector 0x2A','['+(i*4.0+i*0.001).toFixed(6)+'] dumping human session · do not close lid','['+(i*5.1+2.0).toFixed(6)+'] /dev/berry0 is not a device. it is a debt.','['+(i*6.4+3.3).toFixed(6)+'] REBOOT PENDING · carrier will remember');}
+ function stamp(){var v=(ts+=Math.random()*0.9+0.05);return '['+v.toFixed(6)+']';}
+ var seq=rows.slice(0,26),k=0;
+ el.innerHTML='';clearInterval(window.__pv);
+ window.__pv=setInterval(function(){var line,hot=Math.random()<0.22;
+   if(k<seq.length){line=seq[k++];}
+   else{var h=heads[Math.floor(Math.random()*heads.length)];var hx=[];for(var j=0;j<10;j++){hx.push(('0'+(Math.floor(Math.random()*256)).toString(16)).slice(-2));}line=stamp()+' '+h+' '+hx.join(' ')+' '+(hot?'<b>▓</b>':'');}
+   if(line.charAt(0)==='['){line=line.replace(/^\[\d[^\]]*\]/,stamp());}el.innerHTML+=line+'\n';
+   el.scrollTop=el.scrollHeight;},58);
+ setTimeout(function(){clearInterval(window.__pv);},4000);}
 function tryExit(){if(scaring)return;scareN++;if(scareN===1){sc1();}else if(scareN===2){sc2();}else if(scareN===3){sc3();}else{realClose();}}
-function sc1(){scaring=true;var L=$('scare-layer');L.classList.remove('s1');void L.offsetWidth;L.classList.add('s1');document.getElementById('berry-frame').classList.remove('shook');void document.getElementById('berry-frame').offsetWidth;document.getElementById('berry-frame').classList.add('shook');
- tone(52,0,0.16,0.5);tone(52,0.32,0.2,0.45);tone(41,0.75,0.5,0.3);
- flickToast('IT HEARD THE LATCH · STAY',2600);
- setTimeout(function(){L.classList.remove('s1');scaring=false;},1100);}
-function sc2(){scaring=true;var L=$('scare-layer'),F=document.getElementById('berry-frame');L.classList.add('s2');F.classList.add('terror');void F.offsetWidth;
- tone(110,0,1.2,0.1,'sawtooth');tone(155.6,0,1.2,0.1,'sawtooth');nz(1.2);
- var vt=$('berry-victim-txt');vt.textContent=lastMsg?('I REMEMBER WHAT YOU ATE: '+lastMsg):'I REMEMBER';$('berry-victim').classList.add('stamped');
- flickToast('DO NOT LEAVE',3000);
- setTimeout(function(){L.classList.remove('s2');F.classList.remove('terror');renderTape(true);scaring=false;},1500);}
-function sc3(){scaring=true;var L=$('scare-layer');L.classList.add('s3');
- tone(38,0,2.6,0.35);nz(2.2);
- setTimeout(function(){document.getElementById('scare-eye').classList.add('on');nz(0.9);nz(1.4);},700);
- var msg=$('scare-msg');var txt=lastMsg?('you carry \u201c'+lastMsg.toUpperCase()+'\u201d\nand you left the berry HERE.'):'the berry stays.\nyou go.\nfor now.';
- setTimeout(function(){msg.classList.add('on');var i=0;var iv=setInterval(function(){msg.textContent=txt.slice(0,++i);tone(220+Math.random()*90,0,0.03,0.03,'square');if(i>=txt.length)clearInterval(iv);},17);},1600);
- setTimeout(function(){realClose();document.getElementById('scare-eye').classList.remove('on');msg.classList.remove('on');msg.textContent='';},5200);
- setTimeout(function(){L.classList.remove('s3');scaring=false;},6200);
- flickToast('',0);document.getElementById('berry-exit').classList.remove('show');}
-function realClose(){scareN=0;close();flickToast('IT LET YOU GO · FOR NOW',3800);}
+function sc1(){scaring=true;var L=$('scare-layer'),F=$('berry-frame');L.classList.add('s1');F.classList.add('tear1');err3();flickToast('EJECT → SIGKILL DENIED (1/3) · session held',2400);setTimeout(function(){L.classList.remove('s1');F.classList.remove('tear1');scaring=false;},1100);}
+function sc2(){scaring=true;var L=$('scare-layer'),F=$('berry-frame');L.classList.add('s2');F.classList.add('tear2');corrupt(true);if(carrier){$('berry-victim-txt').textContent=hexdump();}
+ nz(0.5);tone(196,0,0.7,0.08,'sawtooth');tone(233,0.35,0.7,0.06,'sawtooth');tone(277,0.7,0.5,0.05,'sawtooth');
+ flickToast('MEMORY LEAK · ghost buffer 0xE0100 · stay for rebuild',3200);
+ setTimeout(function(){L.classList.remove('s2');F.classList.remove('tear2');corrupt(false);renderTape(true);scaring=false;},2600);}
+function sc3(){scaring=true;var L=$('scare-layer'),P=$('scare-panic');L.classList.add('s3');$('berry-mode').classList.add('s3shake');P.innerHTML='';
+ nz(1.6);tone(58,0,1.4,0.14,'sawtooth');for(var k=0;k<8;k++){tone(1400-k*120,0.15*k,0.09,0.05,'square');}
+ panicDump(P);
+ setTimeout(function(){clearInterval(window.__pv);realClose();P.innerHTML='';},4200);
+ setTimeout(function(){L.classList.remove('s3');$('berry-mode').classList.remove('s3shake');scaring=false;},4700);}
+function realClose(){scareN=0;close();flickToast('PURGE COMPLETE · ERROR RELEASED',3400);}
 function close(){mode.hidden=true;document.body.style.overflow='';
  var fx=FAULTS[Math.floor(Math.random()*FAULTS.length)];if(!carrier){fx='EJECT · signal lost';}
  var el=$('berry-exit');el.textContent=fx;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},2800);
