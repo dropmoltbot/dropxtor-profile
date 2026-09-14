@@ -1797,7 +1797,7 @@ function flickToast(txt,ms){var el=$('berry-exit');el.textContent=txt;el.classLi
 function err3(){tone(880,0,0.05,0.12,'square');tone(622,0.1,0.05,0.12,'square');tone(440,0.2,0.07,0.1,'square');}
 function hb(n,vol){for(var i=0;i<(n||2);i++){tone(54,i*0.92,0.16,vol||0.13);tone(41,i*0.92+0.26,0.12,(vol||0.13)*0.8);}}
 function build(d){try{var a=window.__bc;for(var i=0;i<3;i++){var o=a.createOscillator(),g=a.createGain();o.type='sine';var f0=120*Math.pow(2,i);o.frequency.setValueAtTime(f0,a.currentTime);o.frequency.exponentialRampToValueAtTime(f0*2,a.currentTime+d);g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.linearRampToValueAtTime(0.04,a.currentTime+d*0.55);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d+0.1);}}catch(e){}}
-function flash(txt,hold,fs,col){try{var d=document.createElement('div');d.textContent=txt;d.style.cssText='position:fixed;inset:0;z-index:10000;background:#020403;color:'+(col||'#ff79c6')+';display:flex;align-items:center;justify-content:center;font:400 '+(fs||110)+'px "Press Start 2P",monospace;letter-spacing:.06em;opacity:0;pointer-events:none';document.body.appendChild(d);requestAnimationFrame(function(){d.style.opacity='1';});setTimeout(function(){d.style.opacity='0';setTimeout(function(){d.remove();},50);},hold||60);}catch(e){}}
+function flash(txt,hold,fs,col){try{var d=document.createElement('div');d.textContent=txt;d.style.cssText='position:fixed;inset:0;z-index:10000;background:#000;color:'+(col||'#fff')+';display:flex;align-items:center;justify-content:center;font:400 '+(fs||110)+'px "Press Start 2P",monospace;letter-spacing:.06em;opacity:0;pointer-events:none;text-shadow:-6px 0 rgba(255,0,60,.9),6px 0 rgba(0,220,255,.75),0 0 30px rgba(255,255,255,.5)';document.body.appendChild(d);requestAnimationFrame(function(){d.style.opacity='1';});setTimeout(function(){d.style.opacity='0';setTimeout(function(){d.remove();},40);},hold||45);}catch(e){}}
 function who(){try{var tz='?';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone;}catch(e){}var lang=(navigator.languages&&navigator.languages[0])||navigator.language||'?';var dur='?:??';if(window.__openT){var x=(Date.now()-window.__openT)/1000|0;dur=('0'+(x/60|0)).slice(-2)+':'+('0'+(x%60)).slice(-2);}return 'screen '+screen.width+'\u00d7'+screen.height+' \u00b7 tz '+tz+' \u00b7 lang '+lang+' \u00b7 your clock '+new Date().toLocaleTimeString()+' \u00b7 you held it '+dur;}catch(e){return 'device: unknown \u00b7 session: ongoing';}}
 function corrupt(on){var els=[].slice.call(document.querySelectorAll('#berry-frame .blab')).concat([$('berry-title'),$('berry-boot-txt')]);var chars='\u2588\u2593\u2592\u2591#\u00d7+\u039e\u0394';
  if(on){els.forEach(function(el){if(!el)return;if(el.dataset.orig===undefined)el.dataset.orig=el.textContent;var t=el.dataset.orig,out='';for(var i=0;i<t.length;i++){out+=(Math.random()<0.1)?chars.charAt(Math.floor(Math.random()*chars.length)):t[i];}el.textContent=out;});}
@@ -1806,10 +1806,10 @@ function tryExit(){if(scaring)return;scareN++;if(scareN===1){sc1();}else if(scar
 function sc1(){ // the freeze: time stops before the machine does
  scaring=true;window.__frozen=1;document.getElementById('berry-mode').classList.add('frz');
  tone(48,0,1.2,0.16);hb(1);
- setTimeout(function(){flash('DO NOT',60);},280);
- setTimeout(function(){flash('EJECT',60);},760);
- setTimeout(function(){flash('\u2593\u2593\u2593',60,190,'#17f567');},1240);
- setTimeout(function(){window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
+ setTimeout(function(){flash('DO NOT',45);},280);
+ setTimeout(function(){flash('EJECT',45,130,'#ff2a2a');},760);
+ setTimeout(function(){var bt=$('berry-boot-txt');if(bt){bt.dataset.orig=bt.textContent;bt.textContent=bt.dataset.orig.replace('YOU ARE NOW THE','YOU ARE NOT THE').replace('YOU ARE THE','YOU ARE NOT THE');}flash('\u2593\u2593\u2593',45,190);},1240);
+ setTimeout(function(){window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');var bt=$('berry-boot-txt');if(bt&&bt.dataset.orig){bt.textContent=bt.dataset.orig;delete bt.dataset.orig};
   var F=$('berry-frame');var M=document.getElementById('berry-mode');M.classList.add('jf');setTimeout(function(){M.classList.remove('jf');},700);
   document.getElementById('berry-pwr').classList.add('standby');
   flickToast('(1/3) DENIED \u00b7 the tape is still recording',3000);
