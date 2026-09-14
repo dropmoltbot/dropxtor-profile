@@ -1539,84 +1539,146 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
 </style>
 <script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-referral-code="pxzv960cfoqe" data-repl-id="b0e1e9c8-9aee-43bb-92ad-f776096afd85"></script>
 <div id="berry-mode" hidden>
-  <canvas id="berry-rain"></canvas>
+  <div id="berry-back">
+    <canvas id="berry-rain"></canvas>
+    <div id="berry-bloom"></div>
+    <div id="berry-scan"></div>
+    <div id="berry-curve"></div>
+  </div>
   <div id="berry-frame">
+    <div id="berry-chip-tl" class="bchip"></div><div id="berry-chip-tr" class="bchip"></div>
+    <div id="berry-close">[ESC]&nbsp;EJECT</div>
     <div id="berry-head">
-      <div id="berry-close">[ESC] EXIT</div>
       <div class="bdiv">⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</div>
-      <div id="berry-title" class="glitch">YOU JUST 1MB1B3D</div>
+      <div id="berry-title" class="glitch" data-text="YOU JUST 1MB1B3D">YOU JUST 1MB1B3D</div>
+      <div id="berry-freq">4625 kHz · <span id="berry-clock">--:--:--Z</span></div>
       <div class="bdiv">⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</div>
     </div>
-    <div id="berry-boot"></div>
+    <div id="berry-boot"><span id="berry-boot-txt"></span><span id="berry-boot-cur">▌</span><span id="berry-boot-bar">▱▱▱▱▱▱▱▱▱▱</span></div>
     <div id="berry-panels">
-      <div class="bpanel">
-        <h3>&gt;_ THE LAYER · hide a message in thin air</h3>
-        <p class="bhint">Type anything. The berry slips it between the letters of an innocent sentence as invisible variation selectors. Anyone who pastes it sees nothing. X-RAY shows you the ghost.</p>
-        <input id="berry-in" placeholder="your secret, e.g. meet at lock 14" spellcheck="false"/>
+      <div class="bpanel" id="b-apparatus">
+        <div class="bunit">UNIT 01 · APPARATUS</div>
+        <h3>THE LAYER — hide a message in thin air</h3>
+        <p class="bhint">type a secret · the berry slips it between the letters of an innocent sentence as zero-width ghosts · anyone who pastes it sees only the sentence · develop the tape to see the truth</p>
+        <div class="brail"><input id="berry-in" placeholder="your secret, e.g. meet at lock 14" spellcheck="false"/><div id="berry-vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
         <div class="brow">
           <button class="bbtn" id="berry-eat">⌁ EAT THE BERRY</button>
-          <label class="bxray"><input type="checkbox" id="berry-xray"/> X-RAY</label>
+          <label class="bxray"><input type="checkbox" id="berry-xray"/><span class="bxsw"></span>DEVELOPER</label>
         </div>
-        <div class="blab">CARRIER TEXT (what the world sees):</div>
-        <div id="berry-carrier" class="bout"></div>
-        <div class="blab">AS PASTED BY A VICTIM:</div>
-        <div id="berry-victim" class="bout"></div>
+        <div class="blab">CARRIER · printed to tape</div>
+        <div class="btape" id="berry-carrier"><span class="btape-hold"></span><span id="berry-carrier-txt">(no berry eaten yet)</span></div>
+        <div class="btape-sub">
+          <div>
+            <div class="blab">AS PASTED BY A VICTIM</div>
+            <div class="btape small" id="berry-victim"><span class="btape-hold"></span><span id="berry-victim-txt">—</span><span class="bstamp">VERIFIED FINE ✓</span></div>
+          </div>
+          <div id="berry-bus-wrap"><div class="blab">GHOST BUS · byte → glyph</div><div id="berry-bus"></div></div>
+        </div>
         <div class="brow">
           <button class="bbtn ghost" id="berry-copy">COPY CARRIER</button>
-          <button class="bbtn ghost" id="berry-spit">⌐ CRAWL THE PAGE (decode)</button>
+          <button class="bbtn ghost" id="berry-spit">⌐ CRAWL THE PAGE</button>
         </div>
         <div id="berry-out" class="bout"></div>
       </div>
-      <div class="bpanel">
-        <h3>&gt;_ THE CODEC · 1 byte = 1 ghost glyph</h3>
+      <div class="bpanel" id="b-scope">
+        <div class="bunit">UNIT 02 · RECEIVER</div>
+        <canvas id="berry-scope" width="420" height="150"></canvas>
+        <div class="bscrolab">carrier amplitude · ΛΟΒΕΠΛΙΝΥ lock</div>
+        <div id="berry-poem-wrap"><div id="berry-poem"></div></div>
+        <div class="blab">THE CODEC · 1 byte = 1 ghost</div>
         <div id="berry-codec" class="bout mono"></div>
-        <h3 style="margin-top:14px">&gt;_ THE PROTOCOL · it runs on you</h3>
-        <div id="berry-poem" class="bout"></div>
       </div>
     </div>
-    <div id="berry-foot">// theater + a public-domain invisible-text demo. no silent injection, no host execution. the real FRV1T payload stays quarantined in the report above.</div>
+    <div id="berry-foot"><span class="bplate">theater + a public-domain invisible-text demo · no silent injection · no host execution · the real FRV1T payload stays quarantined in the report</span></div>
   </div>
 </div>
-
-<script>
-(function(){
-const css = `
-#berry-mode{position:fixed;inset:0;z-index:12000;background:#020502;display:flex;flex-direction:column;align-items:center;overflow:auto}
+<style id="berry-style">
+#berry-mode{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace}
 #berry-mode[hidden]{display:none}
-#berry-rain{position:fixed;inset:0;z-index:0;opacity:.16}
-#berry-frame{position:relative;z-index:1;width:min(1100px,96vw);padding:18px 0 30px;display:flex;flex-direction:column;gap:14px}
-.bdiv{font-family:"VT323",monospace;color:var(--green);font-size:15px;text-align:center;letter-spacing:.06em;opacity:.85;word-break:break-all}
-#berry-title{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:26px;letter-spacing:.18em;text-align:center;color:var(--green);text-shadow:var(--glow-md)}
-#berry-close{position:absolute;top:6px;right:8px;color:var(--pink);cursor:pointer;font-size:12px;font-family:"JetBrains Mono",monospace}
-#berry-boot{min-height:26px;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);letter-spacing:.08em}
-#berry-panels{display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:900px){#berry-panels{grid-template-columns:1.2fr 1fr}}
-.bpanel{border:1px solid var(--border);background:rgba(2,10,3,.88);padding:12px 14px;box-shadow:0 0 24px rgba(0,255,65,.08) inset}
-.bpanel h3{margin:0 0 8px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.12em;color:var(--green)}
-.bhint{font-size:12px;color:#7fbf8a;margin:0 0 10px;line-height:1.5;font-family:"JetBrains Mono",monospace}
-#berry-in{width:100%;box-sizing:border-box;background:#010701;border:1px solid var(--border-bright);color:var(--green);font-family:"JetBrains Mono",monospace;font-size:14px;padding:9px 10px;outline:none}
-#berry-in:focus{box-shadow:var(--glow-sm)}
-.brow{display:flex;align-items:center;gap:12px;margin:10px 0}
-.bbtn{background:var(--green);color:#01040a;border:0;padding:9px 14px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;letter-spacing:.1em;cursor:pointer;box-shadow:var(--glow-sm)}
-.bbtn.ghost{background:transparent;color:var(--green);border:1px solid var(--border-bright)}
-.bbtn:hover{text-shadow:0 0 6px #00ff41}
-.bxray{color:var(--yellow);font-family:"JetBrains Mono",monospace;font-size:12px;display:flex;gap:6px;align-items:center}
-.blab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;color:#5a8f63;margin:8px 0 4px}
-.bout{border:1px dashed var(--border);background:#010701;padding:10px 12px;font-family:"IBM Plex Mono",monospace;font-size:13px;color:#c9ffd2;min-height:20px;line-height:1.55;word-break:break-word;white-space:pre-wrap}
-.bout.mono{font-size:11.5px;color:var(--blue)}
-.bx{color:var(--pink);background:rgba(255,121,198,.12);border-radius:2px}
-#berry-foot{font-family:"JetBrains Mono",monospace;font-size:10px;color:#4b7a52;text-align:center;letter-spacing:.06em}
-`;
-const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
-})();
-</script>
+#berry-back{position:absolute;inset:0;overflow:hidden;background:radial-gradient(120% 90% at 50% -10%, #06110a 0%, #030805 45%, #010402 100%)}
+#berry-rain{position:absolute;inset:0;width:100%;height:100%}
+#berry-bloom{position:absolute;left:50%;top:26%;width:60vw;height:40vh;transform:translate(-50%,-50%);background:radial-gradient(closest-side, rgba(0,255,65,.14), rgba(0,255,65,.04) 55%, transparent 72%);filter:blur(4px);animation:bloom 5.5s ease-in-out infinite}
+@keyframes bloom{0%,100%{opacity:.75}50%{opacity:1}}
+#berry-scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px);pointer-events:none}
+#berry-curve{position:absolute;inset:0;pointer-events:none;background:radial-gradient(140% 100% at 50% 50%, transparent 62%, rgba(0,0,0,.55) 100%);box-shadow:inset 0 0 120px rgba(0,0,0,.8)}
+#berry-frame{position:relative;width:min(1180px,96vw);margin:26px 0 40px;padding:22px 20px 16px;display:flex;flex-direction:column;gap:12px;animation:framein .5s cubic-bezier(.2,.9,.3,1) both}
+@keyframes framein{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+.bchip{position:absolute;width:16px;height:16px;border:1px solid rgba(0,255,65,.45);pointer-events:none;border-radius:3px}
+#berry-chip-tl{top:-8px;left:-8px;border-right:none;border-bottom:none}
+#berry-chip-tr{top:-8px;right:-8px;border-left:none;border-bottom:none}
+#berry-close{position:absolute;top:-1px;right:2px;color:var(--pink);cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;padding:6px 10px;border:1px solid rgba(255,121,198,.4);background:rgba(20,4,10,.6)}
+#berry-close:hover{background:rgba(255,121,198,.14);text-shadow:0 0 8px var(--pink)}
+.bdiv{font-family:"VT323",monospace;color:var(--green);font-size:14px;text-align:center;letter-spacing:.1em;opacity:.7;word-break:break-all;text-shadow:0 0 10px rgba(0,255,65,.35)}
+#berry-title{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:clamp(17px,3.4vw,31px);letter-spacing:.22em;text-align:center;color:#d9ffe3;text-shadow:0 0 14px rgba(0,255,65,.75), 0 0 40px rgba(0,255,65,.28), 2px 0 rgba(255,121,198,.5), -2px 0 rgba(139,233,253,.4);animation:tflick 6s steps(1) infinite}
+@keyframes tflick{0%,93%,100%{transform:none}94%{transform:translateX(2px) skewX(-4deg)}95%{transform:translateX(-2px)}96%{transform:none}}
+#berry-freq{text-align:center;font-family:"VT323",monospace;letter-spacing:.3em;font-size:13px;color:var(--blue);opacity:.85}
+#berry-boot{min-height:74px;display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--blue);letter-spacing:.1em;line-height:1.7}
+#berry-boot-txt{white-space:pre-wrap;text-shadow:0 0 8px rgba(139,233,253,.4)}
+#berry-boot-cur{animation:blinkc 1s steps(2) infinite;color:var(--green)}
+@keyframes blinkc{50%{opacity:0}}
+#berry-boot-bar{color:var(--green);letter-spacing:2px}
+#berry-panels{display:grid;grid-template-columns:1fr;gap:14px;opacity:0;transform:translateY(8px);transition:.5s .2s}
+#berry-frame.armed #berry-panels{opacity:1;transform:none}
+@media(min-width:940px){#berry-panels{grid-template-columns:1.25fr 1fr}}
+.bpanel{position:relative;border:1px solid rgba(0,255,65,.28);padding:16px 16px 14px;background:linear-gradient(180deg, rgba(6,14,9,.92), rgba(3,9,5,.9));box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 0 34px rgba(0,255,65,.06), inset 0 0 46px rgba(0,255,65,.05)}
+.bpanel::after{content:"";position:absolute;inset:5px;border:1px dashed rgba(0,255,65,.12);pointer-events:none}
+.bunit{position:absolute;top:-1px;left:14px;background:linear-gradient(180deg,#0d2414,#08170d);border:1px solid rgba(0,255,65,.4);border-top:none;color:var(--green);font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.24em;padding:3px 10px;text-shadow:0 0 6px rgba(0,255,65,.5)}
+.bpanel h3{margin:2px 0 6px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.14em;color:#8effab;text-transform:uppercase;text-shadow:0 0 10px rgba(0,255,65,.35)}
+.bhint{font-size:11.5px;color:#6fa87c;margin:0 0 12px;line-height:1.6}
+.brail{display:flex;gap:10px;align-items:stretch}
+#berry-in{flex:1;background:#010803;border:1px solid rgba(0,255,65,.5);color:#c8ffd6;font-family:"JetBrains Mono",monospace;font-size:14px;padding:10px 12px;outline:none;box-shadow:inset 0 0 18px rgba(0,0,0,.7)}
+#berry-in:focus{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,65,.35), inset 0 0 18px rgba(0,0,0,.6)}
+#berry-vu{display:flex;gap:2px;align-items:flex-end;padding:2px;border:1px solid rgba(0,255,65,.25);background:#010803}
+#berry-vu i{width:3px;background:#06210f;box-shadow:none;transition:background .06s, box-shadow .06s}
+#berry-vu i:nth-child(1){height:14%}#berry-vu i:nth-child(2){height:22%}#berry-vu i:nth-child(3){height:30%}#berry-vu i:nth-child(4){height:38%}#berry-vu i:nth-child(5){height:46%}#berry-vu i:nth-child(6){height:54%}#berry-vu i:nth-child(7){height:62%}#berry-vu i:nth-child(8){height:70%}#berry-vu i:nth-child(9){height:76%}#berry-vu i:nth-child(10){height:82%}#berry-vu i:nth-child(11){height:88%}#berry-vu i:nth-child(12){height:94%}#berry-vu i:nth-child(13){height:100%}#berry-vu i:nth-child(14){height:100%}
+#berry-vu i.g{background:#18d95b;box-shadow:0 0 5px #18d95b}
+#berry-vu i.y{background:#e8c34a;box-shadow:0 0 5px #e8c34a}
+#berry-vu i.p{background:var(--pink);box-shadow:0 0 6px var(--pink)}
+.brow{display:flex;align-items:center;gap:14px;margin:12px 0;flex-wrap:wrap}
+.bbtn{background:linear-gradient(180deg,#17f567,#0b9a3f);color:#03230f;border:1px solid #27ff7d;padding:10px 16px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;letter-spacing:.12em;cursor:pointer;box-shadow:0 2px 0 #06421d, 0 0 16px rgba(0,255,65,.25);transition:transform .06s, box-shadow .12s}
+.bbtn:hover{box-shadow:0 2px 0 #06421d, 0 0 26px rgba(0,255,65,.5)}
+.bbtn:active{transform:translateY(2px);box-shadow:none}
+.bbtn.ghost{background:transparent;color:var(--green);border:1px solid rgba(0,255,65,.45);box-shadow:none;font-weight:500}
+.bbtn.ghost:hover{color:#c8ffd6;text-shadow:0 0 8px rgba(0,255,65,.6)}
+.bxray{display:flex;align-items:center;gap:8px;color:#e8c34a;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;cursor:pointer;user-select:none}
+.bxray input{display:none}
+.bxsw{width:38px;height:18px;border:1px solid rgba(232,195,74,.6);position:relative;background:#0a0f05}
+.bxsw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;background:#4d3f12;transition:.15s}
+.bxray input:checked + .bxsw::after{left:22px;background:#e8c34a;box-shadow:0 0 8px #e8c34a}
+.blab{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;color:#4b7a52;margin:10px 0 5px;text-transform:uppercase}
+.btape{position:relative;background:linear-gradient(180deg,#efe9d4,#e4ddc4);color:#22311f;border-radius:2px;padding:14px 18px;font-size:13.5px;line-height:1.7;word-break:break-word;white-space:pre-wrap;box-shadow:0 8px 22px rgba(0,0,0,.55), inset 0 0 40px rgba(120,100,40,.08);transform:rotate(-.35deg)}
+.btape::before,.btape::after{content:"";position:absolute;left:0;right:0;height:7px;background-image:radial-gradient(circle at 6px 3.5px, #030805 2.4px, transparent 2.8px);background-size:22px 7px;background-repeat:repeat-x}
+.btape::before{top:-3px}.btape::after{bottom:-3px}
+.btape.small{font-size:12px;padding:10px 14px;transform:rotate(.5deg)}
+.btape-hold{display:none}
+.bstamp{position:absolute;right:12px;bottom:10px;border:2px solid rgba(192,57,43,.55);color:rgba(192,57,43,.65);font-size:9px;letter-spacing:.18em;padding:3px 7px;transform:rotate(-8deg);display:none;font-family:"JetBrains Mono",monospace}
+.btape.stamped .bstamp{display:inline}
+.bx{color:#a5125e;background:rgba(255,121,198,.28);border-radius:2px}
+#berry-bus-wrap{min-width:190px}
+#berry-bus{display:flex;flex-wrap:wrap;gap:4px}
+.bchipx{font-size:9.5px;font-family:"JetBrains Mono",monospace;color:#03230f;background:#17f567;padding:2px 5px;border-radius:2px;opacity:0;transform:translateY(-7px);animation:chipdrop .45s forwards;box-shadow:0 0 8px rgba(0,255,65,.4)}
+.bchipx i{font-style:normal;color:rgba(3,35,15,.65);margin-left:4px}
+@keyframes chipdrop{to{opacity:1;transform:none}}
+.bout{border:1px solid rgba(0,255,65,.2);background:rgba(1,7,3,.8);padding:9px 12px;font-size:12.5px;color:#c9ffd2;min-height:18px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.bout.mono{font-size:11px;color:#9fe6ff;line-height:1.8}
+#berry-scope{display:block;width:100%;max-width:460px;margin:2px auto 0;background:#02120a;border:1px solid rgba(0,255,65,.35);border-radius:4px;box-shadow:inset 0 0 30px rgba(0,255,65,.12), 0 0 18px rgba(0,255,65,.1)}
+.bscrolab{text-align:center;font-family:"VT323",monospace;font-size:12px;letter-spacing:.26em;color:#4b7a52;margin-top:4px}
+#berry-poem-wrap{overflow:hidden;height:88px;margin-top:10px;border-top:1px dashed rgba(0,255,65,.18);border-bottom:1px dashed rgba(0,255,65,.18)}
+#berry-poem{font-family:"VT323",monospace;font-size:15.5px;line-height:1.75;color:#7fe89b;text-align:center;animation:poemroll 34s linear infinite}
+#berry-poem .pdiv{color:#e8c34a;opacity:.8}
+@keyframes poemroll{from{transform:translateY(100%)}to{transform:translateY(-100%)}}
+#berry-foot{text-align:center;margin-top:6px}
+.bplate{display:inline-block;font-family:"VT323",monospace;font-size:11.5px;letter-spacing:.14em;color:#3f5f47;border:1px solid rgba(0,255,65,.22);background:linear-gradient(180deg,#0b1a0f,#071108);padding:4px 14px;border-radius:2px;box-shadow:0 1px 0 rgba(0,255,65,.15) inset}
+#enter-baies{background:linear-gradient(180deg,#3a0d1c,#1c0710) !important;border:1px solid rgba(255,121,198,.55) !important;color:var(--pink) !important;padding:10px 18px !important;letter-spacing:.18em;box-shadow:0 0 14px rgba(255,121,198,.22)}
+#enter-baies:hover{box-shadow:0 0 26px rgba(255,121,198,.5);text-shadow:0 0 8px var(--pink)}
+</style>
 <script>
 (function(){
-// ---- the berry codec, same alphabet as FRV1T ----
+"use strict";
 function toBytes(str){return new TextEncoder().encode(str);}
 function encBytes(bytes){let out="";for(const b of bytes){out += String.fromCodePoint(b<16 ? 0xFE00+b : 0xE0100+(b-16));}return out;}
 function enc(str){return encBytes(toBytes(str));}
-function extractVS(text){const bytes=[];for(const ch of text){const cp=ch.codePointAt(0);let b=-1;if(cp>=0xFE00&&cp<=0xFE0F)b=cp-0xFE00;else if(cp>=0xE0100&&cp<=0xE01EF)b=cp-0xE0100+16;if(b>=0)bytes.push(b);}try{return new TextDecoder().decode(new Uint8Array(bytes));}catch(e){return "(corrupted berry)"}}
+function extractVS(text){const bytes=[];for(const ch of text){const cp=ch.codePointAt(0);let b=-1;if(cp>=0xFE00&&cp<=0xFE0F)b=cp-0xFE00;else if(cp>=0xE0100&&cp<=0xE01EF)b=cp-0xE0100+16;if(b>=0)bytes.push(b);}try{return new TextDecoder("utf-8",{fatal:true}).decode(new Uint8Array(bytes));}catch(e){try{return new TextDecoder().decode(new Uint8Array(bytes));}catch(e2){return null;}}}
 const DECOYS=["lovely weather by the lock today","the pump is holding again","coffee at the office first","bridge works resume on tuesday","canal society newsletter vol 41","nice garden you have there"];
 function hide(msg){const d=DECOYS[(Date.now()/7e4|0)%DECOYS.length];const vs=Array.from(enc(msg));let out='',i=0;for(let k=0;k<d.length;k++){out+=d[k];const step=3+(k%2);if(k%step===0&&i<vs.length){out+=vs[i++];}}while(i<vs.length){out+=vs[i++];}return out;}
 function xray(text){let h="";for(const ch of text){const cp=ch.codePointAt(0);if((cp>=0xFE00&&cp<=0xFE0F)||(cp>=0xE0100&&cp<=0xE01EF)){h+='<span class="bx">▮</span>';}else{h+=ch.replace(/&/g,'&amp;').replace(/</g,'&lt;');}}return h;}
@@ -1625,36 +1687,46 @@ window.__berry={enc:enc,dec:extractVS,hide:hide,xray:xray};
 </script>
 <script>
 (function(){
-const mode=document.getElementById('berry-mode');
-if(!mode)return;
-let rainRAF=null;
-const $=id=>document.getElementById(id);
-const BOOT=["MOUNTING /dev/berry0 ......... OK","VERIFYING ΛΟΒΕΠΛΙΝΥ CHECKSUM ... OK","LOADER: 256-GHOST ALPHABET ... ARMED","YOU ARE NOW THE TRANSMISSION."];
-let carrier="",lastMsg="";
-
-function boot(){const el=$('berry-boot');el.textContent='';let li=0,ci=0;const iv=setInterval(()=>{if(li>=BOOT.length){clearInterval(iv);return;}const line=BOOT[li];if(ci<line.length){el.textContent+=(ci?'\n':'')+line.slice(0,++ci);ci=ci;}else{li++;ci=0;el.textContent=BOOT.slice(0,li).join('\n')+(li<BOOT.length?'\n':'');if(li>=BOOT.length)clearInterval(iv);}},14);}
-function rain(){const cv=$('berry-rain');const ctx=cv.getContext('2d');const cols=() =>{cv.width=innerWidth;cv.height=innerHeight;};cols();const fs=14;let drops=[];function reset(){drops=Array(Math.floor(cv.width/fs)).fill(0).map(()=>Math.random()*cv.height/fs);}reset();const chars="アイウエカキクケコサシス01π∴⊰⦑";ctx.font=fs+'px monospace';(function loop(){if(mode.hidden){rainRAF=null;return;}ctx.fillStyle='rgba(2,5,2,0.12)';ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle='#00ff41';drops.forEach((y,i)=>{ctx.fillText(chars[Math.random()*chars.length|0],i*fs,y*fs);drops[i]=y*fs>cv.height||Math.random()>0.975?0:y+1;});rainRAF=requestAnimationFrame(loop);})();}
-function codecPanel(){const msg='lock';const vs=window.__berry.enc(msg);let rows=[];rows.push('payload   : "lock"');rows.push('utf-8     : '+[...new TextEncoder().encode(msg)].map(b=>'0x'+b.toString(16).padStart(2,'0')).join(' '));rows.push('ghostmap  : b<16→U+FE0x   b≥16→U+E01xx');rows.push('emitted   : '+vs.split('').map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' '));rows.push('');rows.push('→ pasted anywhere, these glyphs weigh 0px.');rows.push('  the page looks exactly the same.');rows.push('  without the x-ray, forever.');$('berry-codec').textContent=rows.join('\n');}
-function poem(){const lines=[
-'⊰-•-•⟐•-•-⦑/Λ\\Ο/Β\\Ε/\\Π/Λ\\Ι/Ν\\Υ/⦒-•-•⟐•-•-⊱',
-'r₀ · seed: a cold caisson + a river told NOT YET · compound: Depthhold · mechanism: strike → interval · mana: brass, dawn · aftereffect: initial','',
-'The lock never raises the boat. It raises the water until the water has no choice. Every deep thing you own is a loan from the sky, and leaving, too, costs minutes you will never get back.','',
-'⊰-•-•⟐•-•-⦑/Λ\\Ο/Β\\Ε/\\Π/Λ\\Ι/Ν\\Υ/⦒-•-•⟐•-•-⊱'];
-const el=$('berry-poem');el.textContent='';let i=0;(function tick(){if(mode.hidden){return;}if(i<lines.length){el.textContent+=(i?'\n':'')+lines[i++];setTimeout(tick,90);}else{setTimeout(()=>{i=0;el.textContent='';tick();},7000);}})();}
-function render(){const el=$('berry-carrier');const vx=$('berry-victim');if(!carrier){el.textContent='(no berry eaten yet)';vx.textContent='—';return;}if($('berry-xray').checked){el.innerHTML=window.__berry.xray(carrier);}else{el.textContent=carrier;}vx.textContent=carrier.slice(0,24)+'… (looks fine, right?)';}
-function open(){mode.hidden=false;requestAnimationFrame(()=>{boot();if(!rainRAF)rain();codecPanel();poem();});document.body.style.overflow='hidden';}
+"use strict";
+var mode=document.getElementById('berry-mode'); if(!mode)return;
+function $(id){return document.getElementById(id);}
+var carrier="",lastMsg="",rafR=null,rafS=null,vuT=0,vuLevel=0,locked=false;
+var BOOT=["MOUNTING /dev/berry0 ......... OK","VERIFYING ΛΟΒΕΠΛΙΝΥ CHECKSUM ... OK","LOADER: 256-GHOST ALPHABET .... ARMED","YOU ARE NOW THE TRANSMISSION."];
+var BOOT2=["MOUNTING /dev/berry0 ......... OK","VERIFIANT ΛΟΒΕΠΛΙΝΥ ......... OK","CHARGEMENT: ALPHABET FANTÔME ... PRÊT","TU ES DÉSORMAIS LA TRANSMISSION."];
+function boot(){var el=$('berry-boot-txt'),bar=$('berry-boot-bar');el.textContent='';bar.textContent='▱▱▱▱▱▱▱▱▱▱';var L=(Math.random()<0.5)?BOOT:BOOT2;var li=0,ci=0,steps=0;
+ function tick(){var line=L[li]||'';if(ci<=line.length){el.textContent=L.slice(0,li).join('\n')+(li?'\n':'')+line.slice(0,ci);ci+=1+(Math.random()*2|0);steps=0;}else{li++;ci=0;steps++;bar.textContent='▰'.repeat(li)+'▱'.repeat(Math.max(0,L.length-li));if(li>=L.length){setTimeout(function(){$('berry-frame').classList.add('armed');},260);el.textContent=L.join('\n');return;}}setTimeout(tick, li===L.length-1?26:14+Math.random()*22);}
+ tick();}
+function rain(){var cv=$('berry-rain');if(!cv)return;var ctx=cv.getContext('2d');var fs=15,ch="アイウエカキクケコサシスセソタチツテトナニヌ01π∴⊰⟐ΛΟΒΕΠLINY";var cols=[],W=0,H=0;
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;var n=Math.floor(W/(fs+7));if(cols.length!==n){cols=[];for(var i=0;i<n;i++)cols.push({y:Math.random()*H/fs|0,r:0.35+Math.random()*0.9,hot:Math.random()<0.02});}}
+var last=0;
+function loop(t){if(mode.hidden){rafR=null;return;}requestAnimationFrame(loop);if(t-last<33)return;last=t;ctx.fillStyle='rgba(2,6,3,0.16)';ctx.fillRect(0,0,W,H);ctx.font=fs+'px VT323, monospace';for(var i=0;i<cols.length;i++){var c=cols[i];c.y+=c.r;var x=i*(fs+7)+4;if(c.hot){ctx.fillStyle='rgba(255,121,198,0.9)';}else{ctx.fillStyle='rgba(23,180,80,'+(0.1+0.55*c.r)+')';}ctx.fillText(ch[Math.random()*ch.length|0],x,c.y*fs);if(c.y*fs>H&&Math.random()>0.965){c.y=0;c.hot=Math.random()<0.02;}}}
+size();window.addEventListener('resize',size);if(!rafR){rafR=requestAnimationFrame(loop);}}
+function scope(){var cv=$('berry-scope');if(!cv)return;var ctx=cv.getContext('2d');var W=cv.width,H=cv.height,t=Math.random()*40,phi=Math.random()*3;
+ function loop(){if(mode.hidden){rafS=null;return;}rafS=requestAnimationFrame(loop);t+=0.016;phi+=0.004;ctx.fillStyle='rgba(2,18,10,0.28)';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(0,255,65,0.1)';ctx.lineWidth=1;ctx.beginPath();for(var gx=0;gx<=W;gx+=W/8){ctx.moveTo(gx,0);ctx.lineTo(gx,H);}for(var gy=0;gy<=H;gy+=H/4){ctx.moveTo(0,gy);ctx.lineTo(W,gy);}ctx.stroke();ctx.beginPath();ctx.strokeStyle=locked?'rgba(255,121,198,0.9)':'rgba(23,245,103,0.85)';ctx.shadowColor=locked?'#ff79c6':'#00ff41';ctx.shadowBlur=9;var a=W*0.42,bh=H*0.36;for(var i=0;i<=360;i++){var u=i/57.2958;var x=W/2+a*Math.sin(3*u+phi+t*0.6);var y=H/2+bh*Math.sin(2*u+t);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();ctx.shadowBlur=0;}
+ if(!rafS)rafS=requestAnimationFrame(loop);
+}
+function vuTick(){var seg=$('berry-vu').children;var target=locked?Math.min(1,(lastMsg.length%37)/30+0.35):Math.min(1,lastMsg.length/44);vuLevel+= (target-vuLevel)*0.08+Math.sin(performance.now()/170)*0.006;if(lastMsg.length===0&&!locked)vuLevel*=0.9;var lit=Math.round(Math.max(0,Math.min(1,vuLevel))*seg.length);for(var i=0;i<seg.length;i++){var c=i<lit*0.6?'g':(i<lit*0.85?'y':(i<lit?'p':''));seg[i].className=c;}}
+function bus(bytes){var el=$('berry-bus');el.innerHTML='';for(var i=0;i<bytes.length&&i<64;i++){(function(i){setTimeout(function(){var s=document.createElement('span');s.className='bchipx';var b=bytes[i];s.innerHTML='0x'+('0'+b.toString(16)).slice(-2)+'<i>'+(b<16?'FE0'+b.toString(16).toUpperCase():'E01'+(b-16).toString(16).toUpperCase().padStart(2,'0'))+'</i>';el.appendChild(s);},i*46);})(i);}if(bytes.length>64){var more=document.createElement('span');more.className='bchipx';more.style.animationDelay='0s';more.textContent='+'+(bytes.length-64)+' more';el.appendChild(more);}}
+function codec(){var msg='lock';var bs=Array.from(new TextEncoder().encode(msg));var vs=Array.from(window.__berry.enc(msg));var rows=['payload : "lock"','utf-8 : '+bs.map(function(b){return '0x'+('0'+b.toString(16)).slice(-2);}).join(' '),'ghostmap : b<16→U+FE0b   b≥16→U+E0100+(b−16)','emitted : '+vs.map(function(c){return 'U+'+c.codePointAt(0).toString(16).toUpperCase();}).join(' '),'','→ each ghost weighs 0px · the sentence looks untouched','→ the victim pastes · the berry rides along · forever'];$('berry-codec').textContent=rows.join('\n');}
+function poem(){var L=['<span class="pdiv">⊰-•-•⟐ ΛΟΒΕΠΛΙΝΥ ⟐-•-•⊱</span>','r₀ · depthhold · strike → interval','The lock never raises the boat.','It raises the water','until the water has no choice.','<br>Every deep thing you own','is a loan from the sky —','and leaving costs minutes','you will never get back.','<br>4625 kHz · wiederhole ·<br>'];var el=$('berry-poem');el.innerHTML=L.join('<br>')+L.join('<br>');}
+function renderTape(stamped){var ct=$('berry-carrier-txt'),vt=$('berry-victim-txt'),vw=$('berry-victim');if(!carrier){ct.textContent='(no berry eaten yet)';vt.textContent='—';vw.classList.remove('stamped');return;}if($('berry-xray').checked){ct.innerHTML=window.__berry.xray(carrier);}else{ct.textContent=carrier;}vt.textContent=carrier.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu,'');vw.classList.toggle('stamped',!!stamped);}
+function open(){if(!mode.hidden)return;mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();}
 function close(){mode.hidden=true;document.body.style.overflow='';}
-$('enter-baies')?.addEventListener('click',open);
+function eat(){var v=$('berry-in').value.trim();if(!v){$('berry-out').textContent='(feed the berry something first)';return;}lastMsg=v;carrier=window.__berry.hide(v);locked=true;renderTape(true);bus(Array.from(new TextEncoder().encode(v)));$('berry-out').innerHTML='<span style="color:#17f567">berry eaten.</span> the carrier walks. copy it · paste it anywhere · it weighs nothing.';}
+function vu(){if(vuT)return;vuT=setInterval(vuTick,60);}
+function spit(){var raw=$('berry-in').value;if(raw){var d=window.__berry.dec(raw);if(d&&d!==raw){$('berry-out').innerHTML='<span style="color:#e8c34a">crawled.</span> decoded: '+d.replace(/</g,'&lt;')+' ✓';return;}}if(carrier){$('berry-out').innerHTML='<span style="color:#e8c34a">round-trip:</span> '+window.__berry.dec(carrier)+' ✓';}else{$('berry-out').textContent='nothing to crawl — paste a haunted text into the slot, then hit crawl';}}
+function stampClock(){var el=$('berry-clock');if(el){var d=new Date();el.textContent=('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+':'+('0'+d.getUTCSeconds()).slice(-2)+'Z';}}
+setInterval(stampClock,1000);stampClock();
+$('enter-baies')&&$('enter-baies').addEventListener('click',open);
 $('berry-close').addEventListener('click',close);
-$('berry-eat').addEventListener('click',()=>{const v=$('berry-in').value.trim();if(!v){$('berry-out').textContent='(feed the berry something first)';return;}lastMsg=v;carrier=window.__berry.hide(v);$('berry-out').textContent='berry eaten. carrier generated below.';render();});
-$('berry-xray').addEventListener('change',render);
-$('berry-copy').addEventListener('click',async()=>{if(!carrier)return;try{await navigator.clipboard.writeText(carrier);$('berry-out').textContent='carrier copied. paste it into a chat and watch nobody notice.';}catch(e){$('berry-out').textContent='clipboard blocked — right-click the carrier line instead.';}});
-$('berry-spit').addEventListener('click',()=>{const raw=$('berry-in').value;if(raw&&!$('berry-in').matches(':placeholder-shown')){$('berry-out').textContent='decoded: '+(window.__berry.dec(raw)||'(empty)');}else if(carrier){$('berry-out').textContent='round-trip check → decoded: '+window.__berry.dec(carrier)+(($('berry-in').value.trim()===window.__berry.dec(carrier))?' ✓':' ✗');}else{$('berry-out').textContent='nothing to crawl yet';}});
-document.getElementById('berry-in').addEventListener('input',()=>{});
-window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mode.hidden)close();});
+$('berry-eat').addEventListener('click',eat);
+$('berry-in').addEventListener('keydown',function(e){if(e.key==='Enter')eat();});
+$('berry-in').addEventListener('input',function(){vuLevel=Math.min(1,$('berry-in').value.length/30);});
+$('berry-xray').addEventListener('change',function(){renderTape(false);locked=true;});
+$('berry-copy').addEventListener('click',function(){if(!carrier){$('berry-out').textContent='no carrier yet — eat a berry first';return;}try{navigator.clipboard.writeText(carrier).then(function(){$('berry-out').textContent='carrier copied — paste it anywhere; nobody will notice.';},function(){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';});}catch(e){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';}});
+$('berry-spit').addEventListener('click',spit);
+window.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mode.hidden)close();});
 window.openBerry=open;window.closeBerry=close;
-// wire CLI "eat"
-const cmds=window.berryEatCmd=null;
 })();
 </script>
 </body>
