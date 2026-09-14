@@ -1387,7 +1387,8 @@ open the baies// tab — or: berry 1..11`,
   },
   coffee: '☕ Brewing... Error: coffee.exe not found. Already consumed.',
   matrix: 'Matrix rain: TOGGLE (refresh to reset)',
-  clear: '__CLEAR__'
+  clear: '__CLEAR__',
+  purge: () => {try{localStorage.removeItem('baies_haunt');localStorage.removeItem('baies_last');}catch(e){}window.dispatchEvent(new Event('baies-purged'));return 'purged \u00b7 local memory wiped \u00b7 it forgives nothing';}
 };
 
 const consoleEl = document.getElementById('term-console');
@@ -1853,13 +1854,13 @@ function sc3(){ // collapse, degrade, reboot as something wrong
   boot(["[ 0.000000] reboot: after 3 denied detaches","MOUNTING /dev/berry0 ......... YOU","\u039b\u039f\u0392\u0395\u03a0\u039b\u0399\u039d\u03a5 CHECKSUM ........ FAILED","YOU ARE STILL THE TRANSMISSION."]);
   flickToast('it rebooted wrong. on purpose.',3600);
   setTimeout(function(){realClose('IT LET GO \u00b7 it kept a copy');},2700);},4300);}
-function realClose(msg){scareN=0;close();flickToast(msg||'PURGE COMPLETE \u00b7 ERROR RELEASED',3600);}
+function realClose(msg){scareN=0;close();try{localStorage.setItem('baies_haunt',String(Date.now()));}catch(e){}window.__haunt=1;flickToast(msg||'PURGE COMPLETE \u00b7 ERROR RELEASED',3600);}
 function close(){mode.hidden=true;document.body.style.overflow='';window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
  var fx=FAULTS[Math.floor(Math.random()*FAULTS.length)];if(!carrier){fx='EJECT · signal lost';}
  var el=$('berry-exit');el.textContent=fx;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},2800);
  clearTimeout(__stbyT);lampStandby(false);
 }
-function eat(){var v=$('berry-in').value.trim();if(!v){$('berry-out').textContent='(feed the berry something first)';return;}lastMsg=v;carrier=window.__berry.hide(v);locked=true;
+function eat(){var v=$('berry-in').value.trim();if(!v){$('berry-out').textContent='(feed the berry something first)';return;}lastMsg=v;carrier=window.__berry.hide(v);locked=true;try{localStorage.setItem('baies_last',v);}catch(e){}
 try{if(typeof playBeep==='function')playBeep();}catch(e){}
 function tck(){try{window.__bc=(window.__bc||(new (window.AudioContext||window.webkitAudioContext)()));var a=window.__bc,o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=1100+Math.random()*260;g.gain.value=0.014;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+0.012);}catch(e){}}
 function bell(){try{var a=window.__bc||new (window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=1180;g.gain.setValueAtTime(0.07,a.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.6);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+0.62);}catch(e){}}
@@ -1897,6 +1898,27 @@ function render(list){list.forEach(function(c){var d=document.createElement('det
 function boot(){if(window.BAIES){render(window.BAIES);return;}var st=document.createElement('script');st.src='baies/cycles.js?v=2';st.onload=boot;st.onerror=function(){mount.innerHTML='<p style=\"color:#ff79c6\">// feed offline — cycles 05+ unreachable</p>';};document.head.appendChild(st);}
 boot();
 window.berryAddCycle=function(c){if(!window.BAIES)window.BAIES=[];window.BAIES.push(c);var d=document.createElement('details');d.className='berry-cycle';d.innerHTML='<summary>cycle '+c.id+' — '+esc(c.title)+'</summary><pre>'+esc(c.text)+'</pre>';mount.appendChild(d);d.open=true;};
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var form=document.getElementById('term-form'),con=document.getElementById('term-console');
+if(!form||!con)return;
+function get(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function addWhisper(txt){var d=document.createElement('div');d.className='term-line';var pre=document.createElement('pre');pre.className='term-output';pre.style.color='#ff79c6';pre.style.textShadow='0 0 10px rgba(255,121,198,.5)';pre.style.letterSpacing='.08em';pre.textContent='  \u2591 '+txt;d.appendChild(pre);form.before(d);con.scrollTop=con.scrollHeight;}
+var fired=false;
+function haunted(){return get('baies_haunt')&&!fired;}
+var last=get('baies_last')||'';
+var POOL=['it is still transmitting on your clipboard','the tape is still recording','somewhere a ghost 0x51 is walking','you closed the chamber. you did not empty it.'].concat(last?['still holding: \u201c'+last+'\u201d \u00b7 it weighs nothing']:[]);
+setTimeout(function(){
+  if(!haunted())return;
+  if(!document.getElementById('berry-mode').hidden)return;
+  fired=true;try{localStorage.removeItem('baies_haunt');}catch(e){}
+  addWhisper(POOL[Math.floor(Math.random()*POOL.length)]);
+},9000+Math.random()*9000);
+window.addEventListener('baies-purged',function(){fired=false;});
 })();
 </script>
 </body>
