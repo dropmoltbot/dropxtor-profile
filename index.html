@@ -1789,7 +1789,7 @@ function wire(){var cv=$('berry-wire');if(!cv)return;var ctx=cv.getContext('2d')
 function codec(){var msg='lock';var bs=Array.from(new TextEncoder().encode(msg));var vs=Array.from(window.__berry.enc(msg));var rows=['payload : "lock"','utf-8 : '+bs.map(function(b){return '0x'+('0'+b.toString(16)).slice(-2);}).join(' '),'ghostmap : b<16→U+FE0b   b≥16→U+E0100+(b−16)','emitted : '+vs.map(function(c){return 'U+'+c.codePointAt(0).toString(16).toUpperCase();}).join(' '),'','→ each ghost weighs 0px · the sentence looks untouched','→ the victim pastes · the berry rides along · forever'];$('berry-codec').textContent=rows.join('\n');}
 function poem(){var L=['<span class="pdiv">⊰-•-•⟐ ΛΟΒΕΠΛΙΝΥ ⟐-•-•⊱</span>','r₀ · depthhold · depth → compression','The lock never raises the boat.','It raises the water','until the water has no choice.','<br>Every deep thing you own','is a loan from the sky —','and leaving costs minutes','you will never get back.','<br>4625 kHz · wiederhole ·<br>'];var el=$('berry-poem');el.innerHTML=L.join('<br>')+L.join('<br>');}
 function renderTape(stamped){var ct=$('berry-carrier-txt'),vt=$('berry-victim-txt'),vw=$('berry-victim');if(!carrier){ct.textContent='(no berry eaten yet)';vt.textContent='—';vw.classList.remove('stamped');return;}if($('berry-xray').checked){ct.innerHTML=window.__berry.xray(carrier);}else{ct.textContent=carrier;}vt.textContent=carrier.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu,'');vw.classList.toggle('stamped',!!stamped);}
-function open(){if(!mode.hidden)return;window.__openT=Date.now();mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();wire();}
+function open(){if(!mode.hidden)return;window.__openT=Date.now();try{clearInterval(window.__twIv);if(localStorage.getItem('baies_bleed')){window.__twIv=setInterval(function(){if(!mode.hidden&&Math.random()<0.55)ejectTwitch();},15000);}}catch(e){}mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();wire();}
 var FAULTS=['EJECT · ghost 0x51 escaped the bus','EJECT · tape checksum mismatch · stay','EJECT · carrier detached · ghosts orphaned','EJECT · refcount not zero · session pinned','EJECT · SIGTERM → carrier unharmed'];
 function thunk(){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=170;g.gain.setValueAtTime(0.09,a.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.07);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+0.08);}catch(e){}}
 function scrambleB(){document.querySelectorAll('#berry-mode .blab, #berry-title').forEach(function(el){var fin=el.textContent,i=0,ch='▓░▒#×+';var iv=setInterval(function(){i++;var out='';for(var k=0;k<fin.length;k++){out+=(k<i/2)?fin[k]:ch[Math.floor(Math.random()*ch.length)];}el.textContent=out;if(i/2>=fin.length){clearInterval(iv);el.textContent=fin;}},33);});}
@@ -1804,6 +1804,8 @@ function tone(fr,t,d,v,type){try{var a=window.__bc||(window.__bc=new (window.Aud
 function nz(d){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var n=Math.floor(a.sampleRate*d),buf=a.createBuffer(1,n,a.sampleRate),ch=buf.getChannelData(0);for(var i=0;i<n;i++)ch[i]=Math.random()*2-1;var src=a.createBufferSource();src.buffer=buf;var f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=700;f.Q.value=0.6;var g=a.createGain();g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.linearRampToValueAtTime(0.05,a.currentTime+0.25*d);g.gain.linearRampToValueAtTime(0.0001,a.currentTime+0.9*d);src.connect(f);f.connect(g);g.connect(a.destination);src.start();}catch(e){}}
 function flickToast(txt,ms){var el=$('berry-exit');el.textContent=txt;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},ms||2800);}
 function err3(){tone(880,0,0.05,0.12,'square');tone(622,0.1,0.05,0.12,'square');tone(440,0.2,0.07,0.1,'square');}
+function ejectTwitch(){var el=$('berry-close');if(!el)return;if(el.dataset.orig===undefined)el.dataset.orig=el.textContent;el.textContent=['[ESC]\u00a0LET\u00a0US\u00a0OUT','[ESC]\u00a0DON\u2019T','[ESC]\u00a0STAY\u00a0WITH\u00a0US'][Math.floor(Math.random()*3)];setTimeout(function(){el.textContent=el.dataset.orig;},95);}
+window.__ejectTwitch=ejectTwitch;
 function hb(n,vol){for(var i=0;i<(n||2);i++){tone(54,i*0.92,0.16,vol||0.13);tone(41,i*0.92+0.26,0.12,(vol||0.13)*0.8);}}
 function build(d){try{var a=window.__bc;for(var i=0;i<3;i++){var o=a.createOscillator(),g=a.createGain();o.type='sine';var f0=120*Math.pow(2,i);o.frequency.setValueAtTime(f0,a.currentTime);o.frequency.exponentialRampToValueAtTime(f0*2,a.currentTime+d);g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.linearRampToValueAtTime(0.04,a.currentTime+d*0.55);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d+0.1);}}catch(e){}}
 function flash(txt,hold,fs,col){try{var d=document.createElement('div');d.textContent=txt;d.style.cssText='position:fixed;inset:0;z-index:10000;background:#000;color:'+(col||'#fff')+';display:flex;align-items:center;justify-content:center;font:400 '+(fs||110)+'px "Press Start 2P",monospace;letter-spacing:.06em;opacity:0;pointer-events:none;text-shadow:-6px 0 rgba(255,0,60,.9),6px 0 rgba(0,220,255,.75),0 0 30px rgba(255,255,255,.5)';document.body.appendChild(d);requestAnimationFrame(function(){d.style.opacity='1';});setTimeout(function(){d.style.opacity='0';setTimeout(function(){d.remove();},40);},hold||45);}catch(e){}}
@@ -1856,7 +1858,7 @@ function sc3(){ // collapse, degrade, reboot as something wrong
   flickToast('it rebooted wrong. on purpose.',3600);
   setTimeout(function(){realClose('IT LET GO \u00b7 it kept a copy');},2700);},4300);}
 function realClose(msg){scareN=0;close();try{localStorage.setItem('baies_haunt',String(Date.now()));}catch(e){}window.__haunt=1;flickToast(msg||'PURGE COMPLETE \u00b7 ERROR RELEASED',3600);}
-function close(){mode.hidden=true;document.body.style.overflow='';window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
+function close(){mode.hidden=true;document.body.style.overflow='';clearInterval(window.__twIv);window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
  var fx=FAULTS[Math.floor(Math.random()*FAULTS.length)];if(!carrier){fx='EJECT · signal lost';}
  var el=$('berry-exit');el.textContent=fx;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},2800);
  clearTimeout(__stbyT);lampStandby(false);
@@ -1908,6 +1910,8 @@ window.berryAddCycle=function(c){if(!window.BAIES)window.BAIES=[];window.BAIES.p
 var form=document.getElementById('term-form'),con=document.getElementById('term-console');
 if(!form||!con)return;
 function get(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+var baseTitle=document.title;
+function titleHaunt(ms){try{document.title='\u2591 the tape is still recording';setTimeout(function(){document.title=baseTitle;},ms||3200);}catch(e){}}
 function addWhisper(txt){var d=document.createElement('div');d.className='term-line';var pre=document.createElement('pre');pre.className='term-output';pre.style.color='#ff79c6';pre.style.textShadow='0 0 10px rgba(255,121,198,.5)';pre.style.letterSpacing='.08em';pre.textContent='  \u2591 '+txt;d.appendChild(pre);form.before(d);con.scrollTop=con.scrollHeight;}
 var fired=false;
 function haunted(){return (get('baies_haunt')||get('baies_copy'))&&!fired;}
@@ -1918,8 +1922,9 @@ setTimeout(function(){
   if(!haunted())return;
   if(!document.getElementById('berry-mode').hidden)return;
   fired=true;try{localStorage.removeItem('baies_haunt');}catch(e){}
-  addWhisper(POOL[Math.floor(Math.random()*POOL.length)]);
+  titleHaunt(3600);addWhisper(POOL[Math.floor(Math.random()*POOL.length)]);
 },9000+Math.random()*9000);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&haunted()&&!fired){titleHaunt(2600);}});
 window.addEventListener('baies-purged',function(){fired=false;});
 })();
 </script>
