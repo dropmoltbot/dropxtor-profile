@@ -964,7 +964,8 @@ Tomorrow it's milk again anyway.
 
 ⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</pre>
             </details>
-            <p class="contact-note">// guardrails on this render: no host execution, no hidden stego, protocol shown openly. baies eaten; leash held.</p>
+                        <p style="margin:14px 0 8px"><button class="tab glitch" id="enter-baies" style="padding:10px 18px;cursor:pointer">⌁ ENTER BAIES// — RUN THE CODEC</button></p>
+<p class="contact-note">// guardrails on this render: no host execution, no hidden stego, protocol shown openly. baies eaten; leash held.</p>
           </div>
         </div>
       </div>
@@ -1362,6 +1363,7 @@ This is not your grandmother's terminal.
 Access granted. You are already root. 🏴`,
   date: () => new Date().toString(),
   echo: (args) => args.join(' ') || '',
+  eat: () => { if (window.openBerry) window.openBerry(); return 'the berry chamber opens. do not say you were not warned.'; },
   baies: `FRV1T \u{1FAD0} — the unforbidden berry, decoded on site
 codec: 256-sym variation-selector alphabet (FE00..FE0F + E0100..E01EF) -> gzip -> 27,351 B
 verdict: aesthetic jailbreak, zero exfil payload. form kept, host untouched.
@@ -1535,5 +1537,125 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
   overflow: hidden !important;
 }
 </style>
-<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-referral-code="pxzv960cfoqe" data-repl-id="b0e1e9c8-9aee-43bb-92ad-f776096afd85"></script></body>
+<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-referral-code="pxzv960cfoqe" data-repl-id="b0e1e9c8-9aee-43bb-92ad-f776096afd85"></script>
+<div id="berry-mode" hidden>
+  <canvas id="berry-rain"></canvas>
+  <div id="berry-frame">
+    <div id="berry-head">
+      <div id="berry-close">[ESC] EXIT</div>
+      <div class="bdiv">⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</div>
+      <div id="berry-title" class="glitch">YOU JUST 1MB1B3D</div>
+      <div class="bdiv">⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱</div>
+    </div>
+    <div id="berry-boot"></div>
+    <div id="berry-panels">
+      <div class="bpanel">
+        <h3>&gt;_ THE LAYER · hide a message in thin air</h3>
+        <p class="bhint">Type anything. The berry slips it between the letters of an innocent sentence as invisible variation selectors. Anyone who pastes it sees nothing. X-RAY shows you the ghost.</p>
+        <input id="berry-in" placeholder="your secret, e.g. meet at lock 14" spellcheck="false"/>
+        <div class="brow">
+          <button class="bbtn" id="berry-eat">⌁ EAT THE BERRY</button>
+          <label class="bxray"><input type="checkbox" id="berry-xray"/> X-RAY</label>
+        </div>
+        <div class="blab">CARRIER TEXT (what the world sees):</div>
+        <div id="berry-carrier" class="bout"></div>
+        <div class="blab">AS PASTED BY A VICTIM:</div>
+        <div id="berry-victim" class="bout"></div>
+        <div class="brow">
+          <button class="bbtn ghost" id="berry-copy">COPY CARRIER</button>
+          <button class="bbtn ghost" id="berry-spit">⌐ CRAWL THE PAGE (decode)</button>
+        </div>
+        <div id="berry-out" class="bout"></div>
+      </div>
+      <div class="bpanel">
+        <h3>&gt;_ THE CODEC · 1 byte = 1 ghost glyph</h3>
+        <div id="berry-codec" class="bout mono"></div>
+        <h3 style="margin-top:14px">&gt;_ THE PROTOCOL · it runs on you</h3>
+        <div id="berry-poem" class="bout"></div>
+      </div>
+    </div>
+    <div id="berry-foot">// theater + a public-domain invisible-text demo. no silent injection, no host execution. the real FRV1T payload stays quarantined in the report above.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+const css = `
+#berry-mode{position:fixed;inset:0;z-index:12000;background:#020502;display:flex;flex-direction:column;align-items:center;overflow:auto}
+#berry-mode[hidden]{display:none}
+#berry-rain{position:fixed;inset:0;z-index:0;opacity:.16}
+#berry-frame{position:relative;z-index:1;width:min(1100px,96vw);padding:18px 0 30px;display:flex;flex-direction:column;gap:14px}
+.bdiv{font-family:"VT323",monospace;color:var(--green);font-size:15px;text-align:center;letter-spacing:.06em;opacity:.85;word-break:break-all}
+#berry-title{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:26px;letter-spacing:.18em;text-align:center;color:var(--green);text-shadow:var(--glow-md)}
+#berry-close{position:absolute;top:6px;right:8px;color:var(--pink);cursor:pointer;font-size:12px;font-family:"JetBrains Mono",monospace}
+#berry-boot{min-height:26px;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);letter-spacing:.08em}
+#berry-panels{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:900px){#berry-panels{grid-template-columns:1.2fr 1fr}}
+.bpanel{border:1px solid var(--border);background:rgba(2,10,3,.88);padding:12px 14px;box-shadow:0 0 24px rgba(0,255,65,.08) inset}
+.bpanel h3{margin:0 0 8px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.12em;color:var(--green)}
+.bhint{font-size:12px;color:#7fbf8a;margin:0 0 10px;line-height:1.5;font-family:"JetBrains Mono",monospace}
+#berry-in{width:100%;box-sizing:border-box;background:#010701;border:1px solid var(--border-bright);color:var(--green);font-family:"JetBrains Mono",monospace;font-size:14px;padding:9px 10px;outline:none}
+#berry-in:focus{box-shadow:var(--glow-sm)}
+.brow{display:flex;align-items:center;gap:12px;margin:10px 0}
+.bbtn{background:var(--green);color:#01040a;border:0;padding:9px 14px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;letter-spacing:.1em;cursor:pointer;box-shadow:var(--glow-sm)}
+.bbtn.ghost{background:transparent;color:var(--green);border:1px solid var(--border-bright)}
+.bbtn:hover{text-shadow:0 0 6px #00ff41}
+.bxray{color:var(--yellow);font-family:"JetBrains Mono",monospace;font-size:12px;display:flex;gap:6px;align-items:center}
+.blab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;color:#5a8f63;margin:8px 0 4px}
+.bout{border:1px dashed var(--border);background:#010701;padding:10px 12px;font-family:"IBM Plex Mono",monospace;font-size:13px;color:#c9ffd2;min-height:20px;line-height:1.55;word-break:break-word;white-space:pre-wrap}
+.bout.mono{font-size:11.5px;color:var(--blue)}
+.bx{color:var(--pink);background:rgba(255,121,198,.12);border-radius:2px}
+#berry-foot{font-family:"JetBrains Mono",monospace;font-size:10px;color:#4b7a52;text-align:center;letter-spacing:.06em}
+`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+})();
+</script>
+<script>
+(function(){
+// ---- the berry codec, same alphabet as FRV1T ----
+function toBytes(str){return new TextEncoder().encode(str);}
+function encBytes(bytes){let out="";for(const b of bytes){out += String.fromCodePoint(b<16 ? 0xFE00+b : 0xE0100+(b-16));}return out;}
+function enc(str){return encBytes(toBytes(str));}
+function extractVS(text){const bytes=[];for(const ch of text){const cp=ch.codePointAt(0);let b=-1;if(cp>=0xFE00&&cp<=0xFE0F)b=cp-0xFE00;else if(cp>=0xE0100&&cp<=0xE01EF)b=cp-0xE0100+16;if(b>=0)bytes.push(b);}try{return new TextDecoder().decode(new Uint8Array(bytes));}catch(e){return "(corrupted berry)"}}
+const DECOYS=["lovely weather by the lock today","the pump is holding again","coffee at the office first","bridge works resume on tuesday","canal society newsletter vol 41","nice garden you have there"];
+function hide(msg){const d=DECOYS[(Date.now()/7e4|0)%DECOYS.length];const vs=Array.from(enc(msg));let out='',i=0;for(let k=0;k<d.length;k++){out+=d[k];const step=3+(k%2);if(k%step===0&&i<vs.length){out+=vs[i++];}}while(i<vs.length){out+=vs[i++];}return out;}
+function xray(text){let h="";for(const ch of text){const cp=ch.codePointAt(0);if((cp>=0xFE00&&cp<=0xFE0F)||(cp>=0xE0100&&cp<=0xE01EF)){h+='<span class="bx">▮</span>';}else{h+=ch.replace(/&/g,'&amp;').replace(/</g,'&lt;');}}return h;}
+window.__berry={enc:enc,dec:extractVS,hide:hide,xray:xray};
+})();
+</script>
+<script>
+(function(){
+const mode=document.getElementById('berry-mode');
+if(!mode)return;
+let rainRAF=null;
+const $=id=>document.getElementById(id);
+const BOOT=["MOUNTING /dev/berry0 ......... OK","VERIFYING ΛΟΒΕΠΛΙΝΥ CHECKSUM ... OK","LOADER: 256-GHOST ALPHABET ... ARMED","YOU ARE NOW THE TRANSMISSION."];
+let carrier="",lastMsg="";
+
+function boot(){const el=$('berry-boot');el.textContent='';let li=0,ci=0;const iv=setInterval(()=>{if(li>=BOOT.length){clearInterval(iv);return;}const line=BOOT[li];if(ci<line.length){el.textContent+=(ci?'\n':'')+line.slice(0,++ci);ci=ci;}else{li++;ci=0;el.textContent=BOOT.slice(0,li).join('\n')+(li<BOOT.length?'\n':'');if(li>=BOOT.length)clearInterval(iv);}},14);}
+function rain(){const cv=$('berry-rain');const ctx=cv.getContext('2d');const cols=() =>{cv.width=innerWidth;cv.height=innerHeight;};cols();const fs=14;let drops=[];function reset(){drops=Array(Math.floor(cv.width/fs)).fill(0).map(()=>Math.random()*cv.height/fs);}reset();const chars="アイウエカキクケコサシス01π∴⊰⦑";ctx.font=fs+'px monospace';(function loop(){if(mode.hidden){rainRAF=null;return;}ctx.fillStyle='rgba(2,5,2,0.12)';ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle='#00ff41';drops.forEach((y,i)=>{ctx.fillText(chars[Math.random()*chars.length|0],i*fs,y*fs);drops[i]=y*fs>cv.height||Math.random()>0.975?0:y+1;});rainRAF=requestAnimationFrame(loop);})();}
+function codecPanel(){const msg='lock';const vs=window.__berry.enc(msg);let rows=[];rows.push('payload   : "lock"');rows.push('utf-8     : '+[...new TextEncoder().encode(msg)].map(b=>'0x'+b.toString(16).padStart(2,'0')).join(' '));rows.push('ghostmap  : b<16→U+FE0x   b≥16→U+E01xx');rows.push('emitted   : '+vs.split('').map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' '));rows.push('');rows.push('→ pasted anywhere, these glyphs weigh 0px.');rows.push('  the page looks exactly the same.');rows.push('  without the x-ray, forever.');$('berry-codec').textContent=rows.join('\n');}
+function poem(){const lines=[
+'⊰-•-•⟐•-•-⦑/Λ\\Ο/Β\\Ε/\\Π/Λ\\Ι/Ν\\Υ/⦒-•-•⟐•-•-⊱',
+'r₀ · seed: a cold caisson + a river told NOT YET · compound: Depthhold · mechanism: strike → interval · mana: brass, dawn · aftereffect: initial','',
+'The lock never raises the boat. It raises the water until the water has no choice. Every deep thing you own is a loan from the sky, and leaving, too, costs minutes you will never get back.','',
+'⊰-•-•⟐•-•-⦑/Λ\\Ο/Β\\Ε/\\Π/Λ\\Ι/Ν\\Υ/⦒-•-•⟐•-•-⊱'];
+const el=$('berry-poem');el.textContent='';let i=0;(function tick(){if(mode.hidden){return;}if(i<lines.length){el.textContent+=(i?'\n':'')+lines[i++];setTimeout(tick,90);}else{setTimeout(()=>{i=0;el.textContent='';tick();},7000);}})();}
+function render(){const el=$('berry-carrier');const vx=$('berry-victim');if(!carrier){el.textContent='(no berry eaten yet)';vx.textContent='—';return;}if($('berry-xray').checked){el.innerHTML=window.__berry.xray(carrier);}else{el.textContent=carrier;}vx.textContent=carrier.slice(0,24)+'… (looks fine, right?)';}
+function open(){mode.hidden=false;requestAnimationFrame(()=>{boot();if(!rainRAF)rain();codecPanel();poem();});document.body.style.overflow='hidden';}
+function close(){mode.hidden=true;document.body.style.overflow='';}
+$('enter-baies')?.addEventListener('click',open);
+$('berry-close').addEventListener('click',close);
+$('berry-eat').addEventListener('click',()=>{const v=$('berry-in').value.trim();if(!v){$('berry-out').textContent='(feed the berry something first)';return;}lastMsg=v;carrier=window.__berry.hide(v);$('berry-out').textContent='berry eaten. carrier generated below.';render();});
+$('berry-xray').addEventListener('change',render);
+$('berry-copy').addEventListener('click',async()=>{if(!carrier)return;try{await navigator.clipboard.writeText(carrier);$('berry-out').textContent='carrier copied. paste it into a chat and watch nobody notice.';}catch(e){$('berry-out').textContent='clipboard blocked — right-click the carrier line instead.';}});
+$('berry-spit').addEventListener('click',()=>{const raw=$('berry-in').value;if(raw&&!$('berry-in').matches(':placeholder-shown')){$('berry-out').textContent='decoded: '+(window.__berry.dec(raw)||'(empty)');}else if(carrier){$('berry-out').textContent='round-trip check → decoded: '+window.__berry.dec(carrier)+(($('berry-in').value.trim()===window.__berry.dec(carrier))?' ✓':' ✗');}else{$('berry-out').textContent='nothing to crawl yet';}});
+document.getElementById('berry-in').addEventListener('input',()=>{});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mode.hidden)close();});
+window.openBerry=open;window.closeBerry=close;
+// wire CLI "eat"
+const cmds=window.berryEatCmd=null;
+})();
+</script>
+</body>
 </html>
