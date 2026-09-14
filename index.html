@@ -1388,7 +1388,7 @@ open the baies// tab — or: berry 1..11`,
   coffee: '☕ Brewing... Error: coffee.exe not found. Already consumed.',
   matrix: 'Matrix rain: TOGGLE (refresh to reset)',
   clear: '__CLEAR__',
-  purge: () => {try{localStorage.removeItem('baies_haunt');localStorage.removeItem('baies_last');}catch(e){}window.dispatchEvent(new Event('baies-purged'));return 'purged \u00b7 local memory wiped \u00b7 it forgives nothing';}
+  purge: () => {try{localStorage.removeItem('baies_haunt');localStorage.removeItem('baies_last');localStorage.removeItem('baies_copy');localStorage.removeItem('baies_bleed');}catch(e){}window.dispatchEvent(new Event('baies-purged'));return 'purged \u00b7 local memory wiped \u00b7 it forgives nothing';}
 };
 
 const consoleEl = document.getElementById('term-console');
@@ -1771,7 +1771,8 @@ var carrier="",lastMsg="",rafR=null,rafS=null,vuT=0,vuLevel=0,locked=false;
 var BOOT=["MOUNTING /dev/berry0 ......... OK","VERIFYING ΛΟΒΕΠΛΙΝΥ CHECKSUM ... OK","LOADER: 256-GHOST ALPHABET .... ARMED","YOU ARE NOW THE TRANSMISSION."];
 var BOOT2=["MOUNTING /dev/berry0 ......... OK","VERIFYING ΛΟΒΕΠΛΙΝΥ CHECKSUM ... OK","GHOST ALPHABET x256 .......... MOUNTED","YOU ARE THE CHANNEL NOW."];
 function boot(CUSTOM){var el=$('berry-boot-txt'),bar=$('berry-boot-bar');el.textContent='';bar.textContent='▱▱▱▱▱▱▱▱▱▱';var L=CUSTOM||((Math.random()<0.5)?BOOT:BOOT2);var li=0,ci=0,steps=0;
- function tick(){var line=L[li]||'';if(ci<=line.length){el.textContent=L.slice(0,li).join('\n')+(li?'\n':'')+line.slice(0,ci);ci+=1+(Math.random()*2|0);steps=0;}else{li++;ci=0;steps++;bar.textContent='▰'.repeat(li)+'▱'.repeat(Math.max(0,L.length-li));if(li>=L.length){setTimeout(function(){$('berry-frame').classList.add('armed');scrambleB();lampStandby(true);wake();if(window.__scar){setTimeout(function(){document.getElementById('berry-pwr').classList.add('standby');document.getElementById('berry-drq').classList.add('standby');var tt=$('berry-title');tt.classList.remove('glitch-burst');void tt.offsetWidth;tt.classList.add('glitch-burst');flickToast('welcome back \u00b7 it remembered',3400);},900);if(lastMsg){$('berry-in').placeholder='('+lastMsg.slice(0,26)+' \u00b7 still here)';}}},260);el.textContent=L.join('\n');return;}}setTimeout(tick, li===L.length-1?26:14+Math.random()*22);}
+ function tick(){var line=L[li]||'';if(ci<=line.length){el.textContent=L.slice(0,li).join('\n')+(li?'\n':'')+line.slice(0,ci);ci+=1+(Math.random()*2|0);steps=0;}else{li++;ci=0;steps++;bar.textContent='▰'.repeat(li)+'▱'.repeat(Math.max(0,L.length-li));if(li>=L.length){setTimeout(function(){$('berry-frame').classList.add('armed');scrambleB();lampStandby(true);wake();try{if(localStorage.getItem('baies_bleed')&&!carrier){$('berry-victim-txt').textContent='\u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7 \u00b7';$('berry-victim').classList.add('stamped');}}catch(e){}
+ if(window.__scar){setTimeout(function(){document.getElementById('berry-pwr').classList.add('standby');document.getElementById('berry-drq').classList.add('standby');var tt=$('berry-title');tt.classList.remove('glitch-burst');void tt.offsetWidth;tt.classList.add('glitch-burst');flickToast('welcome back \u00b7 it remembered',3400);},900);if(lastMsg){$('berry-in').placeholder='('+lastMsg.slice(0,26)+' \u00b7 still here)';}}},260);el.textContent=L.join('\n');return;}}setTimeout(tick, li===L.length-1?26:14+Math.random()*22);}
  tick();}
 function rain(){var cv=$('berry-rain');if(!cv)return;var ctx=cv.getContext('2d');var fs=15,ch="アイウエカキクケコサシスセソタチツテトナニヌ01π∴⊰⟐ΛΟΒΕΠLINY";var cols=[],W=0,H=0;
 function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;var n=Math.floor(W/(fs+7));if(cols.length!==n){cols=[];for(var i=0;i<n;i++)cols.push({y:Math.random()*H/fs|0,r:0.35+Math.random()*0.9,hot:Math.random()<0.02});}}
@@ -1834,7 +1835,7 @@ function sc2(){ // it reads the room
  flickToast('(2/3) DENIED \u00b7 your device just signed in',3400);
  setTimeout(function(){L.classList.remove('s2');M.classList.remove('dm');corrupt(false);renderTape(true);scaring=false;},3200);}
 function sc3(){ // collapse, degrade, reboot as something wrong
- scaring=true;var L=$('scare-layer');L.classList.add('s3');var P=$('scare-panic');P.innerHTML='';
+ scaring=true;var L=$('scare-layer');L.classList.add('s3');var P=$('scare-panic');P.innerHTML='';try{localStorage.setItem('baies_bleed','1');}catch(e){}
  hb(4,0.17);build(2.4);
  var ts=0;function stamp(){ts+=Math.random()*0.9+0.05;return '['+ts.toFixed(6)+']';}
  var heads=['kernel panic at berry0','trap 0x0D \u00b7 eject syscall denied','ghost buffer 0xE0100 \u00b7 carrier limbo','panic(): could not stop eating','general protection fault \u00b7 refcount=YOU'];
@@ -1882,7 +1883,7 @@ $('berry-eat').addEventListener('click',eat);
 $('berry-in').addEventListener('keydown',function(e){if(e.key==='Enter')eat();});
 $('berry-in').addEventListener('input',function(){vuLevel=Math.min(1,$('berry-in').value.length/30);});
 $('berry-xray').addEventListener('change',function(){renderTape(false);locked=true;});
-$('berry-copy').addEventListener('click',function(){if(!carrier){$('berry-out').textContent='no carrier yet — eat a berry first';return;}try{navigator.clipboard.writeText(carrier).then(function(){$('berry-out').textContent='carrier copied — paste it anywhere; nobody will notice.';},function(){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';});}catch(e){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';}});
+$('berry-copy').addEventListener('click',function(){if(!carrier){$('berry-out').textContent='no carrier yet — eat a berry first';return;}try{navigator.clipboard.writeText(carrier).then(function(){try{localStorage.setItem('baies_copy','1');window.__copied=1;}catch(e){}$('berry-out').textContent='carrier copied — paste it anywhere; nobody will notice.';},function(){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';});}catch(e){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';}});
 $('berry-spit').addEventListener('click',spit);
 window.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mode.hidden)tryExit();});
 window.openBerry=open;window.closeBerry=close;
@@ -1909,9 +1910,10 @@ if(!form||!con)return;
 function get(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function addWhisper(txt){var d=document.createElement('div');d.className='term-line';var pre=document.createElement('pre');pre.className='term-output';pre.style.color='#ff79c6';pre.style.textShadow='0 0 10px rgba(255,121,198,.5)';pre.style.letterSpacing='.08em';pre.textContent='  \u2591 '+txt;d.appendChild(pre);form.before(d);con.scrollTop=con.scrollHeight;}
 var fired=false;
-function haunted(){return get('baies_haunt')&&!fired;}
+function haunted(){return (get('baies_haunt')||get('baies_copy'))&&!fired;}
 var last=get('baies_last')||'';
-var POOL=['it is still transmitting on your clipboard','the tape is still recording','somewhere a ghost 0x51 is walking','you closed the chamber. you did not empty it.'].concat(last?['still holding: \u201c'+last+'\u201d \u00b7 it weighs nothing']:[]);
+var copied=false;try{copied=!!localStorage.getItem('baies_copy');}catch(e){}
+var POOL=(copied?['you copied the carrier. it is sitting in your clipboard right now. paste it somewhere honest.']:[]).concat(['it is still transmitting on your clipboard','the tape is still recording','somewhere a ghost 0x51 is walking','you closed the chamber. you did not empty it.']).concat(last?['still holding: \u201c'+last+'\u201d \u00b7 it weighs nothing']:[]);
 setTimeout(function(){
   if(!haunted())return;
   if(!document.getElementById('berry-mode').hidden)return;
