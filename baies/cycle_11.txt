@@ -1,0 +1,79 @@
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π/Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
+r₀ · seed [constructed]: a charted-as-safe coast + a lead line that disagrees with the map · compound: Deadreckon · taking: sailed, by guess, into a known error · mechanism: position → guess · mana: tallow, sea-ink · aftereffect: initial
+
+The *Grovenor* was four days out of Falmouth with a chart that was *good.* Which is to say: the soundings along that shore had been taken by men in a rowboat in flat calm, and the coast had since moved a mile to the east, and no one who would die on it that night could know the coast had opinions about its own location.
+
+The master puts a pin in the chart every noon. That pin is not where the ship *is.* The pin is where the ship *might be,* plus a day of reckoning — speed by the log-line, course by the compass, drift by a guess about the current that is really a prayer. Two pins, four days apart, and the gap between them is not distance; the gap is a *number of ways to be wrong,* stacked.
+
+   the ship's whole geography, in 1700:
+   latitude — you can get this from the sun, cheap, any clear noon.
+   longitude — this you cannot get unless you know
+   *what time it is back where you started.*
+
+That's the whole of it, and the whole of it took the Admiralty forty years to offer a fortune for. The error is not the sea. The error is that a place is *two* numbers, and the second number is not a place at all. The second number is an hour.
+
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π\Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
+r₁ · seed [inherited]: "the second number is an hour" + a joiner from Yorkshire, 1761, who refused to be a clockmaker · compound: Marinehour · taking: built, out of wood and two bimetallic strips, a thing that kept the port's noon in a rolling hull · mechanism: guess → clock · mana: lignum vitae, brass-cut oil · aftereffect: longitude, as luggage
+
+Harrison's answer to the astronomers was that they were *studying the sky to dodge the machine.* The lunaries wanted to read the angle of the moon against the stars — a beautiful method, useless on a wet deck — and Harrison said: bring a clock. Keep the home time *in the box.* At noon, see where the sun is; subtract; the minutes you owe are degrees; you have your east-west.
+
+   one hour of error = 15 degrees of longitude.
+   1 minute of error = a quarter of a degree ≈
+   about the width, at sea, of the mistake that sank the *Grovenor.*
+
+   (a chronometer that gains half a second a day is a good clock;
+   a chronometer that gains half a second a day is
+   also six nautical miles a week of walking off a cliff.)
+
+The H4 is a *large watch.* It came off a joiner's bench and it was, against every astronomer who had ever drawn a moon, *right:* it lost five seconds on an eighty-one-day run to Jamaica. Longitude, the whole century's problem, folded down into a *thing you can hold.* The prize was never quite awarded to him. The machine that wins an argument does not always get the money, which is a separate and older problem than navigation, and which we will, at this point in the cycle, mention once, quietly.
+
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π\Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
+r₂ · seed [inherited]: "a thing you can hold" + the prime meridian, agreed, then argued · compound: Zerochapel · taking: drew a line, then every navy redrew it somewhere else · mechanism: clock → convention · mana: green paint, iron, politics · aftereffect: the hour, made a place
+
+Every clock needs an *here* to be the time at. So humanity, which could not agree on much, picked a hill outside London and said: longitude zero, and — for the ships — time zero, the port's noon, the home the chronometer is homesick for. Which is a line you cannot see, and the whole of the British Empire's maps are *pinned to it,* and the French put theirs at Paris for sixty years, and the Americans at a Washington that is a different argument, until 1884 somebody convened a conference and made *Greenwich* a habit by voting.
+
+   15°/hour, so:
+   your local noon − Greenwich noon =
+   (how many degrees east or west your feet are)
+
+and the beautiful, invisible seam of it: the chronometer is not *telling time.* It is telling *Greenwich* time, forever, in a rolling box, so that wherever you are, you are carrying the *elsewhere* with you. Position became the *difference between two times,* and a ship's noon is where you are and where home is, at once, subtracted.
+
+   (an island you cannot see
+   is an hour you can carry.
+   the whole planet is a *timezone* now, not a place.)
+
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π\Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
+r₂′ · seed [carried down]: "carrying the elsewhere" + the satellites, and Einstein, on the payroll · compound: Driftclock · taking: corrected, by relativity, so the phone can say the café · mechanism: convention → fix · mana: cesium, 20,200 km, thin air · aftereffect: time, with interest due
+
+The clocks are still good; now they fall *through a hole in the sky.*
+
+GPS is Harrison's argument with four satellites and one uncomfortable fact: the satellites run *faster* up there — gravity is shallower in orbit, the special-and-general relativity bookkeeping says +45.7 microseconds a day — and *slower* because they're moving at 14,000 km/h, which says −7.2. Net: about **+38 microseconds a day** of drift from doing nothing.
+
+   38 microseconds =
+   11.4 km of longitude. *per day.*
+
+   leave relativity out of the box and the fix
+   walks away from you at ten kilometers a day,
+   and your little blue dot is *in the next town by Friday.*
+
+So the whole of your Sunday plan — where the café is, where the *you* is, on a glass rectangle that fits where the chronometer used to fit — rests on a *corrected time,* a clock on a hill agreeing, to the microsecond, with a clock on a satellite, which is the *Grovenor's* exact and fatal problem, solved by the one number the eighteenth century could not hold: that *time itself* is a little local, a little relative, and *the fix is the difference, kept by a machine you cannot see, that agrees with home.*
+
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π\Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
+r₃ ↟ · seed [brought back, bent]: "the fix is the difference" + the last man who winds the chronometers, at the Observatory · compound: Homepinned · taking: wound, by hand, the clocks that nobody reads anymore · mechanism: fix → keeping · mana: whale-oil, brass key, 09:58 · aftereffect: home, carried anyway
+
+The Royal Observatory still has a man whose job is *to be the difference.* He winds the historic regulators at 09:58 and 13:58 and the room keeps four times that Greenwich agrees to be, and every one of those pendulums is a small argument against a world where *home* is a number the satellites only pretend to hold. Because the fix is the difference, and the difference is *between two homes,* and if there were no home to be homesick for there would be no east, no west, just a grey everywhere.
+
+   (what a chronometer is, in the end, is not a clock.
+   it is *a held memory of noon somewhere else,*
+   so you can learn where you are by seeing how far you've gotten from it.)
+
+He is the last job in this room. He is the *same* job as the man who sounded that coast by rowboat in flat calm and drew the safe line and, being honest, put *unknowns* where he could not know, and the master who pinned his might-be, and Harrison with his two strips of metal, and the physicist who, in the last century, told the satellites *bend the second the way the hill bends it, or the dot lies.* Keeping home. Winding it twice a day. The whole planet, every phone, every ship, still *pinned to the pin* he turns in a room.
+
+   the pin is not where the ship is.
+   the pin is the hour it is carrying home.
+
+The coast, which still has opinions, has not been re-surveyed. The satellites are older than the youngest of their own corrections. And the blue dot says *you are here,* which is, if you have followed the whole cut of it, the most *polite* thing the machine could say, because what it knows, precisely, is the *how-far-from-home* of you, and the rest — the *here,* the town, the particular smell of the quay at low water, the chart the rowboat made, *wrong,* and beloved — that part you have still, and carry in, the way the box carried the noon of the hill, against the long dark, wound, twice a day, on schedule:
+
+   *somewhere, it is still exactly now.*
+
+⊰-•-•⟐•-•-⦑/Λ\Ο/Β\Ε/\Π\Λ\Ι/Ν\Υ/⦒-•-•⟐•-•-⊱
