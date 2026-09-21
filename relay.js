@@ -38,7 +38,7 @@
 
   var style = document.createElement("style");
   style.textContent = [
-    "#relay-root{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;z-index:10050;background:#010302;cursor:crosshair;touch-action:none}",
+    "#relay-root{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;z-index:40;background:#010302;cursor:crosshair;touch-action:none}",
     "#relay-root.dock{top:auto;left:auto;right:14px;bottom:18px;width:156px;height:156px;z-index:45;border:1px solid rgba(0,255,65,.28);background:#010302;box-shadow:0 0 0 1px rgba(0,0,0,.65),0 0 28px rgba(0,255,65,.16)}",
     "#relay-gl{display:block;width:100%;height:100%;touch-action:none}",
     "#relay-hud{position:absolute;left:0;right:0;bottom:6vh;text-align:center;pointer-events:none;font-family:\"JetBrains Mono\",ui-monospace,monospace;color:#d7ffe4}",
@@ -82,12 +82,12 @@
   root.appendChild(phaseEl);
   root.appendChild(hud);
   root.appendChild(closeBtn);
-  document.documentElement.appendChild(root);
+  document.body.appendChild(root);
 
   var tube = el("canvas");
   tube.id = "tube-gl";
   tube.setAttribute("aria-hidden", "true");
-  document.documentElement.appendChild(tube);
+  document.body.appendChild(tube);
 
   function compile(gl, type, src) {
     var s = gl.createShader(type);
@@ -329,31 +329,9 @@
     dist = Math.max(2.4, Math.min(9, dist + (e.deltaY > 0 ? 0.18 : -0.18)));
   }, { passive: false });
 
-  function dock() {
-    open = false;
-    root.classList.add("dock");
-  }
-  function expand() {
-    open = true;
-    root.classList.remove("dock");
-    arm();
-    chirp();
-  }
-  window.openRelay = expand;
-  window.dockRelay = dock;
-  closeBtn.addEventListener("click", function (e) { e.stopPropagation(); dock(); });
-  root.addEventListener("click", function (e) {
-    if (!open && e.target !== closeBtn) expand();
-  });
-  window.addEventListener("keydown", function (e) {
-    if (!open || root.classList.contains("dock")) return;
+  function onFieldKey(e) {
+    if (!open) return;
     var k = e.key;
-    if (k === "Escape") {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      dock();
-      return;
-    }
     if (k !== "1" && k !== "2" && k !== "3" && k !== "4" && k.indexOf("Arrow") !== 0) return;
     e.preventDefault();
     e.stopPropagation();
@@ -365,14 +343,70 @@
     else if (k === "ArrowRight") yaw += 0.12;
     else if (k === "ArrowUp") dist = Math.max(2.4, dist - 0.25);
     else if (k === "ArrowDown") dist = Math.min(9, dist + 0.25);
-  }, true);
+  }
+  function placeDock() {
+    if (!window.CARRIER) return;
+    var s = window.CARRIER.seal();
+    if (!s || !s.x) return;
+    root.style.right = "auto";
+    root.style.bottom = "auto";
+    var dx = s.x - (window.innerWidth / 2);
+    var dy = s.y - (window.innerHeight / 2);
+    var len = Math.hypot(dx, dy) || 1;
+    var x = s.x + (dx / len) * 108 - 78;
+    var y = s.y + (dy / len) * 108 - 78;
+    x = Math.max(12, Math.min(window.innerWidth - 168, x));
+    y = Math.max(12, Math.min(window.innerHeight - 168, y));
+    root.style.left = Math.round(x) + "px";
+    root.style.top = Math.round(y) + "px";
+  }
+  function syncField() {
+    if (!window.CARRIER) return;
+    window.CARRIER.claim("field", {
+      el: root,
+      z: open ? 320 : 40,
+      keys: open,
+      onEsc: dock,
+      onKey: onFieldKey,
+      tick: function () { if (!open) placeDock(); }
+    });
+    if (tube) tube.style.zIndex = "22";
+  }
+  function dock() {
+    open = false;
+    root.classList.add("dock");
+    placeDock();
+    syncField();
+  }
+  function expand() {
+    open = true;
+    root.classList.remove("dock");
+    root.style.left = "";
+    root.style.top = "";
+    root.style.right = "";
+    root.style.bottom = "";
+    syncField();
+    arm();
+    chirp();
+  }
+  window.openRelay = expand;
+  window.dockRelay = dock;
+  closeBtn.addEventListener("click", function (e) { e.stopPropagation(); dock(); });
+  root.addEventListener("click", function (e) {
+    if (!open && e.target !== closeBtn) expand();
+  });
+  syncField();
 
   var scale = [0, 2, 4, 7, 9];
   function arm() {
     if (audioArmed) return;
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    actx = new AC();
+    var shared = window.CARRIER && window.CARRIER.audio(true);
+    if (!shared) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      shared = new AC();
+    }
+    actx = shared;
     audioArmed = true;
     filter = actx.createBiquadFilter();
     filter.type = "lowpass";

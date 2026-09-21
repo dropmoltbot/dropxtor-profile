@@ -70,11 +70,10 @@ body {
   font-family: "VT323", "JetBrains Mono", monospace;
   overflow-x: hidden;
   min-height: 100vh;
-  perspective: 1000px;
 }
 /* === BOOT SCREEN (Hermes-inspired achromatic) === */
 #boot-screen {
-  position: fixed; inset: 0; z-index: 10000;
+  position: fixed; inset: 0; z-index: 70;
   background: #020502; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   font-family: "JetBrains Mono", monospace; font-size: 16px;
@@ -172,20 +171,20 @@ body {
 @keyframes typeIn { from { width: 0; } to { width: 100%; } }
 .scanlines, .crt-noise { position: relative; }
 .crt-noise::after {
-  content: ""; pointer-events: none; z-index: 9998;
+  content: ""; pointer-events: none; z-index: 16;
   background: radial-gradient(72% 68%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0.75) 85%, rgba(0,0,0,0.92) 100%);
   animation: 5s ease-in-out 0s infinite vignettePulse;
   position: fixed; inset: 0;
 }
 .scanlines::after {
-  content: ""; pointer-events: none; z-index: 9996;
+  content: ""; pointer-events: none; z-index: 17;
   background: linear-gradient(rgba(0,0,0,0), rgba(0,255,65,0.08) 30%, rgba(0,255,65,0.15) 50%, rgba(0,255,65,0.08) 70%, rgba(0,0,0,0));
   width: 100%; height: 10px;
   animation: 9s linear 0s infinite scanMove;
   position: fixed; left: 0;
 }
 .scanlines::before {
-  content: ""; pointer-events: none; z-index: 9999;
+  content: ""; pointer-events: none; z-index: 18;
   image-rendering: pixelated;
   background-image: repeating-linear-gradient(rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,0.42) 1px, rgba(0,0,0,0.42) 2px);
   background-size: 100% 2px;
@@ -195,7 +194,7 @@ body {
 .glitch-cursor {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='22' viewBox='0 0 16 22'%3E%3Cpath d='M1 1 L1 18 L5 14 L9 21 L11 20 L7 13 L13 13 Z' fill='%2300ff41' stroke='%23006622' stroke-width='0.5'/%3E%3C/svg%3E") 1 1, pointer;
 }
-.matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; }
+.matrix-rain { z-index: 0; opacity: 0.15; position: fixed; inset: 0; pointer-events: none; }
 
 /* === TERMINAL WINDOW === */
 .terminal-window {
@@ -257,7 +256,7 @@ body {
 /* === LAYOUT === */
 main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker; }
 @media (min-width: 768px) { main { padding: 24px; } }
-.tw-wrap { max-width: 768px; margin: 0 auto; position: relative; z-index: 10; }
+.tw-wrap { max-width: 768px; margin: 0 auto; position: relative; z-index: 10; perspective: 1000px; }
 .tw-body { padding: 16px; }
 @media (min-width: 768px) { .tw-body { padding: 24px; } }
 .cmd-line { display: flex; align-items: center; gap: 4px; font-family: "JetBrains Mono", monospace; font-size: 14px; margin-bottom: 20px; }
@@ -358,7 +357,7 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
 
 /* Konami easter egg */
 #konami-burst {
-  position: fixed; inset: 0; z-index: 99999; pointer-events: none;
+  position: fixed; inset: 0; z-index: 400; pointer-events: none;
   display: none; align-items: center; justify-content: center;
 }
 #konami-burst.active { display: flex; animation: konamiFlash 2s ease; }
@@ -416,7 +415,7 @@ main { min-height: 100vh; padding: 12px; animation: 8s ease 0s infinite flicker;
 
 <main class="scanlines crt-noise glitch-cursor">
   <canvas id="matrix-canvas" class="matrix-rain" aria-hidden="true"></canvas>
-  <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9997;mix-blend-mode:multiply;"></canvas>
+  <canvas id="noise-canvas" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:8;mix-blend-mode:screen;opacity:.15;"></canvas>
   
   <div class="tw-wrap">
     <div class="terminal-window" id="term-window">
@@ -1266,6 +1265,7 @@ Tomorrow it's milk again anyway.
 // === AUDIO ===
 let audioCtx = null;
 function playBeep() {
+  if (window.CARRIER) audioCtx = window.CARRIER.audio(true);
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const ctx = audioCtx, t = ctx.currentTime;
   const o1 = ctx.createOscillator(); o1.type = 'square';
@@ -1315,6 +1315,8 @@ function playBoot() {
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     playBeep();
+    if (tab.dataset.tab === 'baies' && window.loadBaies) window.loadBaies();
+    if (!tab.dataset.tab) return;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     tab.classList.add('active');
@@ -1550,7 +1552,6 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
   overflow: hidden !important;
 }
 </style>
-<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-referral-code="pxzv960cfoqe" data-repl-id="b0e1e9c8-9aee-43bb-92ad-f776096afd85"></script>
 <div id="berry-mode" hidden>
   <div id="berry-back">
     <canvas id="berry-rain"></canvas>
@@ -1610,7 +1611,7 @@ document.addEventListener('click', () => { if (!audioCtx) playBoot(); }, { once:
   </div>
 </div>
 <style id="berry-style">
-#berry-mode{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace}
+#berry-mode{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace}
 #berry-mode[hidden]{display:none}
 #berry-back{position:absolute;inset:0;overflow:hidden;background:radial-gradient(120% 90% at 50% -10%, #06110a 0%, #030805 45%, #010402 100%)}
 #berry-rain{position:absolute;inset:0;width:100%;height:100%}
@@ -1793,7 +1794,7 @@ function wire(){var cv=$('berry-wire');if(!cv)return;var ctx=cv.getContext('2d')
 function codec(){var msg='lock';var bs=Array.from(new TextEncoder().encode(msg));var vs=Array.from(window.__berry.enc(msg));var rows=['payload : "lock"','utf-8 : '+bs.map(function(b){return '0x'+('0'+b.toString(16)).slice(-2);}).join(' '),'ghostmap : b<16→U+FE0b   b≥16→U+E0100+(b−16)','emitted : '+vs.map(function(c){return 'U+'+c.codePointAt(0).toString(16).toUpperCase();}).join(' '),'','→ each ghost weighs 0px · the sentence looks untouched','→ the victim pastes · the berry rides along · forever'];$('berry-codec').textContent=rows.join('\n');}
 function poem(){var L=['<span class="pdiv">⊰-•-•⟐ ΛΟΒΕΠΛΙΝΥ ⟐-•-•⊱</span>','r₀ · depthhold · depth → compression','The lock never raises the boat.','It raises the water','until the water has no choice.','<br>Every deep thing you own','is a loan from the sky —','and leaving costs minutes','you will never get back.','<br>4625 kHz · wiederhole ·<br>'];var el=$('berry-poem');el.innerHTML=L.join('<br>')+L.join('<br>');}
 function renderTape(stamped){var ct=$('berry-carrier-txt'),vt=$('berry-victim-txt'),vw=$('berry-victim');if(!carrier){ct.textContent='(no berry eaten yet)';vt.textContent='—';vw.classList.remove('stamped');return;}if($('berry-xray').checked){ct.innerHTML=window.__berry.xray(carrier);}else{ct.textContent=carrier;}vt.textContent=carrier.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu,'');vw.classList.toggle('stamped',!!stamped);}
-function open(){if(!mode.hidden)return;window.__openT=Date.now();try{clearInterval(window.__twIv);if(localStorage.getItem('baies_bleed')){window.__twIv=setInterval(function(){if(!mode.hidden&&Math.random()<0.55)ejectTwitch();},15000);}}catch(e){}mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();wire();}
+function open(){if(!mode.hidden)return;if(window.loadBaies)window.loadBaies();if(window.CARRIER)window.CARRIER.claim('theater',{z:200,keys:true,onEsc:tryExit,el:document.getElementById('berry-mode')});window.__openT=Date.now();try{clearInterval(window.__twIv);if(localStorage.getItem('baies_bleed')){window.__twIv=setInterval(function(){if(!mode.hidden&&Math.random()<0.55)ejectTwitch();},15000);}}catch(e){}mode.hidden=false;document.body.style.overflow='hidden';$('berry-frame').classList.remove('armed');boot();rain();scope();vu();poem();codec();wire();}
 var FAULTS=['EJECT · ghost 0x51 escaped the bus','EJECT · tape checksum mismatch · stay','EJECT · carrier detached · ghosts orphaned','EJECT · refcount not zero · session pinned','EJECT · SIGTERM → carrier unharmed'];
 function thunk(){try{var a=window.__bc||(window.__bc=new (window.AudioContext||window.webkitAudioContext)());var o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=170;g.gain.setValueAtTime(0.09,a.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.07);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+0.08);}catch(e){}}
 function scrambleB(){document.querySelectorAll('#berry-mode .blab, #berry-title').forEach(function(el){var fin=el.textContent,i=0,ch='▓░▒#×+';var iv=setInterval(function(){i++;var out='';for(var k=0;k<fin.length;k++){out+=(k<i/2)?fin[k]:ch[Math.floor(Math.random()*ch.length)];}el.textContent=out;if(i/2>=fin.length){clearInterval(iv);el.textContent=fin;}},33);});}
@@ -1862,7 +1863,7 @@ function sc3(){ // collapse, degrade, reboot as something wrong
   flickToast('it rebooted wrong. on purpose.',3600);
   setTimeout(function(){realClose('IT LET GO \u00b7 it kept a copy');},2700);},4300);}
 function realClose(msg){scareN=0;close();try{localStorage.setItem('baies_haunt',String(Date.now()));}catch(e){}window.__haunt=1;flickToast(msg||'PURGE COMPLETE \u00b7 ERROR RELEASED',3600);}
-function close(){mode.hidden=true;document.body.style.overflow='';clearInterval(window.__twIv);window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
+function close(){if(window.CARRIER)window.CARRIER.release('theater');mode.hidden=true;document.body.style.overflow='';clearInterval(window.__twIv);window.__frozen=0;document.getElementById('berry-mode').classList.remove('frz');
  var fx=FAULTS[Math.floor(Math.random()*FAULTS.length)];if(!carrier){fx='EJECT · signal lost';}
  var el=$('berry-exit');el.textContent=fx;el.classList.add('show');clearTimeout(window.__fxT);window.__fxT=setTimeout(function(){el.classList.remove('show');},2800);
  clearTimeout(__stbyT);lampStandby(false);
@@ -1891,7 +1892,7 @@ $('berry-in').addEventListener('input',function(){vuLevel=Math.min(1,$('berry-in
 $('berry-xray').addEventListener('change',function(){renderTape(false);locked=true;});
 $('berry-copy').addEventListener('click',function(){if(!carrier){$('berry-out').textContent='no carrier yet — eat a berry first';return;}try{navigator.clipboard.writeText(carrier).then(function(){try{localStorage.setItem('baies_copy','1');window.__copied=1;}catch(e){}$('berry-out').textContent='carrier copied — paste it anywhere; nobody will notice.';},function(){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';});}catch(e){$('berry-out').textContent='clipboard blocked; long-press the tape and copy manually';}});
 $('berry-spit').addEventListener('click',spit);
-window.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mode.hidden)tryExit();});
+window.addEventListener('keydown',function(e){if(window.CARRIER)return;if(e.key==='Escape'&&!mode.hidden)tryExit();});
 window.openBerry=open;window.closeBerry=close;
 })();
 </script>
@@ -1903,7 +1904,7 @@ var mount=document.getElementById('baies-feed'); if(!mount)return;
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function render(list){list.forEach(function(c){var d=document.createElement('details');d.className='berry-cycle';d.innerHTML='<summary>cycle '+c.id+' — '+esc(c.title)+'</summary><pre>'+esc(c.text)+'</pre>';mount.appendChild(d);});}
 function boot(){if(window.BAIES){render(window.BAIES);return;}var st=document.createElement('script');st.src='baies/cycles.js?v=2';st.onload=boot;st.onerror=function(){mount.innerHTML='<p style=\"color:#ff79c6\">// feed offline — cycles 05+ unreachable</p>';};document.head.appendChild(st);}
-boot();
+window.loadBaies=boot;
 window.berryAddCycle=function(c){if(!window.BAIES)window.BAIES=[];window.BAIES.push(c);var d=document.createElement('details');d.className='berry-cycle';d.innerHTML='<summary>cycle '+c.id+' — '+esc(c.title)+'</summary><pre>'+esc(c.text)+'</pre>';mount.appendChild(d);d.open=true;};
 })();
 </script>
@@ -1932,6 +1933,7 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 window.addEventListener('baies-purged',function(){fired=false;});
 })();
 </script>
-<script src="relay.js?v=5"></script>
+<script src="carrier.js?v=1"></script>
+<script src="relay.js?v=6"></script>
 </body>
 </html>
