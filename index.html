@@ -973,10 +973,10 @@ Tomorrow it's milk again anyway.
 
       <div class="status-bar">
         <div class="sb-left"><span class="sb-dot">●</span><span>SSH</span><span class="sb-sep">│</span><span>UTF-8</span><span class="sb-sep">│</span><span>ZSH</span></div>
-        <div class="sb-right"><span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span><span class="sb-sep">│</span><span class="sb-clock" id="clock">--:--:--</span></div>
+        <div class="sb-right"><button type="button" id="relay-chip" class="sb-crt">RELAY</button><span class="sb-sep">│</span><span class="sb-crt">CRT</span><span class="sb-sep">│</span><span class="sb-ok glow-sm">SYS OK</span><span class="sb-sep">│</span><span class="sb-pid">PID 5689</span><span class="sb-sep">│</span><span class="sb-clock" id="clock">--:--:--</span></div>
       </div>
     </div>
-    <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history · try "help"</p>
+    <p class="hint-bar"><span class="pulse">_</span> ESC clear · Tab autocomplete · ↑↓ history · try "help" · relay</p>
   </div>
 </main>
 
@@ -1338,6 +1338,7 @@ const commands = {
   date      - Current time
   echo      - Echo text
   matrix    - Toggle matrix rain
+  relay     - Open the living carrier
   coffee    - ☕`,
   about: `// dropxtor
 Full-stack vibe coder & blockchain enthusiast.
@@ -1434,6 +1435,9 @@ form.addEventListener('submit', (e) => {
   
   if (main === 'clear' || commands[main] === '__CLEAR__') {
     [...consoleEl.querySelectorAll('.term-line')].forEach(el => el.remove());
+  } else if (main === 'relay') {
+    if (window.openRelay) window.openRelay();
+    addOutput('carrier lock. the relay is live. esc docks it.');
   } else if (main === 'matrix') {
     const c = document.getElementById('matrix-canvas');
     c.style.opacity = c.style.opacity === '0.15' ? '0.35' : '0.15';
@@ -1928,5 +1932,6 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 window.addEventListener('baies-purged',function(){fired=false;});
 })();
 </script>
+<script src="relay.js?v=4"></script>
 </body>
 </html>
