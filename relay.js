@@ -13,7 +13,7 @@
   var morph = 0;
   var yaw = 0.7;
   var pitch = 0.32;
-  var dist = 4.6;
+  var dist = 3.15;
   var tear = 0;
   var mx = 0;
   var my = 0;
@@ -39,11 +39,11 @@
   var style = document.createElement("style");
   style.textContent = [
     "#relay-root{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;z-index:40;background:#010302;cursor:crosshair;touch-action:none}",
-    "#relay-root.dock{top:auto;left:auto;right:14px;bottom:18px;width:156px;height:156px;z-index:45;border:1px solid rgba(0,255,65,.28);background:#010302;box-shadow:0 0 0 1px rgba(0,0,0,.65),0 0 28px rgba(0,255,65,.16)}",
+    "#relay-root.dock{top:auto;left:auto;right:16px;bottom:16px;width:72px;height:72px;z-index:40;border:0;background:transparent;box-shadow:none}",
     "#relay-gl{display:block;width:100%;height:100%;touch-action:none}",
     "#relay-hud{position:absolute;left:0;right:0;bottom:6vh;text-align:center;pointer-events:none;font-family:\"JetBrains Mono\",ui-monospace,monospace;color:#d7ffe4}",
     "#relay-root.dock #relay-hud,#relay-root.dock #relay-close,#relay-root.dock #relay-phase{display:none}",
-    "#relay-phase{position:absolute;top:18px;left:18px;font:11px \"JetBrains Mono\",monospace;letter-spacing:.22em;color:#6dff8a;opacity:.72;pointer-events:none}",
+    "#relay-phase{display:none}",
     "#relay-kicker{font-size:11px;letter-spacing:.46em;color:#6dff8a;opacity:.75;margin-bottom:8px}",
     "#relay-title{font-family:VT323,monospace;font-size:clamp(46px,8vw,96px);letter-spacing:.16em;line-height:.85;text-shadow:0 0 22px rgba(0,255,65,.4)}",
     "#relay-mode{margin-top:12px;font-size:13px;letter-spacing:.34em;color:#f6851b}",
@@ -66,12 +66,8 @@
   phaseEl.id = "relay-phase";
   phaseEl.textContent = "PHASE 0.000";
   var hud = el("div", [
-    '<div id="relay-kicker">CARRIER LOCK</div>',
     '<div id="relay-title">RELAY</div>',
-    '<div id="relay-mode">ANVILVEIN</div>',
-    '<div id="relay-sub">a knot is a memory that refuses to be a line</div>',
-    '<div id="relay-keys">DRAG ORBIT · SCROLL DOLLY · 1–4 FIELD · ESC DOCKS THE TERMINAL</div>',
-    '<div id="relay-credit">relay // dropmoltbot</div>'
+    '<div id="relay-mode">ANVILVEIN</div>'
   ].join(""));
   hud.id = "relay-hud";
   var closeBtn = el("button");

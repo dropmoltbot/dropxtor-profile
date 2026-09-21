@@ -133,61 +133,10 @@
     if (wrap && on) wrap.style.clipPath = "";
   }
 
-  function draw(ph) {
-    if (!gl) return;
-    var field = layers.field && layers.field.keys;
-    var theater = layers.theater && layers.theater.keys;
-    if (field || theater) {
-      hideMembrane(true);
-      return;
-    }
-    hideMembrane(false);
-    resize();
-    var w = membrane.width, h = membrane.height;
-    gl.clearRect(0, 0, w, h);
-    wrap = wrap || document.querySelector(".tw-wrap");
-    if (!wrap) return;
-    var rect = wrap.getBoundingClientRect();
-    if (rect.width < 40) return;
-    var pts = aperture(rect, ph);
-    seal.x = pts[5][0];
-    seal.y = pts[5][1];
-
-    gl.fillStyle = "rgba(1,3,2,0.78)";
-    gl.beginPath();
-    gl.rect(0, 0, w, h);
-    gl.moveTo(pts[0][0], pts[0][1]);
-    for (var i = 1; i < pts.length; i++) gl.lineTo(pts[i][0], pts[i][1]);
-    gl.closePath();
-    gl.fill("evenodd");
-
-    gl.strokeStyle = "rgba(246,133,27,0.55)";
-    gl.lineWidth = 1;
-    gl.beginPath();
-    gl.moveTo(pts[0][0], pts[0][1]);
-    for (var j = 1; j < pts.length; j++) gl.lineTo(pts[j][0], pts[j][1]);
-    gl.closePath();
-    gl.stroke();
-
-    gl.strokeStyle = "rgba(109,255,138,0.7)";
-    gl.lineWidth = 1;
-    for (var g = 0; g < pts.length; g++) {
-      var a = pts[g], b = pts[(g + 1) % pts.length];
-      for (var k = 1; k <= 4; k++) {
-        var t = k / 5;
-        glyph(gl, a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 11, g * 1.7 + k * 0.9, ph);
-      }
-    }
-    var ring = Math.min(w, h) * 0.46;
-    gl.strokeStyle = "rgba(109,255,138,0.28)";
-    for (var n = 0; n < 28; n++) {
-      var ang = (n / 28) * 6.28318 + ph * 0.05;
-      glyph(gl, w / 2 + Math.cos(ang) * ring, h / 2 + Math.sin(ang) * ring * 0.92, 16, n * 0.77, ph);
-    }
-
-    mark.style.left = Math.round(pts[0][0]) + "px";
-    mark.style.top = Math.round(Math.max(8, pts[0][1] - 18)) + "px";
-    mark.textContent = "SPECIMEN  ·  " + ph.toFixed(2);
+  function draw() {
+    if (membrane) membrane.style.display = "none";
+    if (mark) mark.style.display = "none";
+    if (wrap) wrap.style.clipPath = "";
   }
 
   function frame(now) {
